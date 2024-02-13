@@ -1,0 +1,125 @@
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-black.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-blackitalic.otf') format('opentype');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-bolditalic.otf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-extrabold.otf') format('opentype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-extrabolditalic.otf') format('opentype');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-extralight.otf') format('opentype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-extralightitalic.otf') format('opentype');
+    font-weight: 200;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-lightitalic.otf') format('opentype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-mediumitalic.otf') format('opentype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-semibold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-semibolditalic.otf') format('opentype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-thin.otf') format('opentype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lufga';
+    src: url('../public/fonts/Fontspring-DEMO-lufga-thinitalic.otf') format('opentype');
+    font-weight: 100;
+    font-style: italic;
+}
