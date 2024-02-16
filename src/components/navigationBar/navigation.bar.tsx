@@ -1,5 +1,5 @@
 import { NavBarCell } from './navigation.bar.cell';
-import { Popover } from '@headlessui/react';
+import { Popover, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded';
 import StyleRoundedIcon from '@mui/icons-material/StyleRounded';
@@ -7,6 +7,7 @@ import LocalDiningRoundedIcon from '@mui/icons-material/LocalDiningRounded';
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
+import { Fragment } from 'react';
 
 export function NavBar() {
     return (
@@ -44,23 +45,34 @@ function BottomButtonNavBar() {
                 <div className='h-8 w-8 rounded-full bg-blue-700'></div>
                 <span>Pierre Gourgouillon</span>
             </Popover.Button>
-            <Popover.Panel className="popover absolute bottom-full left-0 z-20 mb-1 w-full overflow-hidden rounded-lg border border-gray-400 bg-white p-1.5 shadow-lg outline-none opacity-100 translate-y-0">
-              <nav>
-                <Link to="">
-                    <div className='flex gap-2 text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded cursor-pointer'>
-                        <TuneRoundedIcon className='w-6 h-6'/>
-                        <span className='font-lufga font-normal'>Settings</span>
-                    </div>
-                </Link>
-                <div className="h-px bg-gray-300 my-1.5"/>
-                <Link to="">
-                    <div className='flex gap-2 text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded cursor-pointer'>
-                        <LogoutRoundedIcon className='w-6 h-6'/>
-                        <span className='font-lufga font-normal'>Log out</span>
-                    </div>
-                </Link>
-              </nav>
-            </Popover.Panel>
+            <Transition
+                as={Fragment}
+                show={open}
+                enter="transition ease-out duration-200"
+                enterFrom="transform opacity-0 -translate-y-1"
+                enterTo="transform opacity-100 translate-y-0"
+                leave="transition ease-in duration-150"
+                leaveFrom="transform opacity-100 translate-y-0"
+                leaveTo="transform opacity-0 -translate-y-1"
+            >
+                <Popover.Panel className="popover absolute bottom-full left-0 z-20 mb-1 w-full overflow-hidden rounded-lg border border-gray-400 bg-white p-1.5 shadow-lg outline-none opacity-100 translate-y-0">
+                <nav>
+                    <Link to="">
+                        <div className='flex gap-2 text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded cursor-pointer'>
+                            <TuneRoundedIcon className='w-6 h-6'/>
+                            <span className='font-lufga font-normal'>Settings</span>
+                        </div>
+                    </Link>
+                    <div className="h-px bg-gray-300 my-1.5"/>
+                    <Link to="">
+                        <div className='flex gap-2 text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded cursor-pointer'>
+                            <LogoutRoundedIcon className='w-6 h-6'/>
+                            <span className='font-lufga font-normal'>Log out</span>
+                        </div>
+                    </Link>
+                </nav>
+                </Popover.Panel>
+            </Transition>
           </>
         )}
     </Popover>
