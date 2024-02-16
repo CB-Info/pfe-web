@@ -1,12 +1,13 @@
 import { Route, Routes } from "react-router-dom"
-import { NavigationBar } from "./components/navigation.bar"
+import { NavBar } from "./components/navigationBar/navigation.bar"
+import HomePage from "./pages/home.page"
 
 function App() {
   return (
     <div className="h-screen w-screen flex">
-      <NavigationBar/>
+      <NavBar/>
       <Routes>
-        <Route path="/home"  element={<div>home</div>}/>
+        <Route path="/home"  element={<HomePage/>}/>
       </Routes>
     </div>
   )

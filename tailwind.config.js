@@ -6,10 +6,9 @@ export default {
   theme: {
     extend: {
       backgroundColor: {
-        "primary-orange": "#F5801E"
+        "primary-color": "#3C7FD0"
       },
       textColor: {
-        "primary-orange": "#F5801E"
       },
       fontFamily: {
         'lufga': ['Lufga', 'sans-serif'],
