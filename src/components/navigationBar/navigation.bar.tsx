@@ -11,7 +11,7 @@ import { Fragment } from 'react';
 
 export function NavBar() {
     return (
-        <div className="w-[260px] h-full bg-primary-color flex flex-col px-3 pb-2">
+        <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
             <div className='flex flex-col flex-1'>
                 <div className='flex flex-col flex-1'>
                     <div className=' flex h-28'></div>
