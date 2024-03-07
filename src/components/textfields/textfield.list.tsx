@@ -6,30 +6,31 @@ import tw from 'twin.macro'
 interface TextfieldListProps {
     valuesToDisplay: string[]
     onClicked: Dispatch<SetStateAction<string>>
+    label: string
 }
 
-export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, onClicked }) => {
+const Cell = styled.div(({ theme }) => [
+    tw`
+        rounded
+        p-1.5
+        font-inter
+        text-sm
+        font-medium
+        cursor-pointer
+        select-none
+    `,
+    css`
+      color: ${theme.blue500};
+
+      &:hover {
+        background-color: ${theme.blue100};
+      }
+    `,
+]);
+
+export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, onClicked, label }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedValue, setSelectedValue] = useState(valuesToDisplay[0]);
-
-    const Cell = styled.div(({ theme }) => [
-        tw`
-            rounded
-            p-1.5
-            font-inter
-            text-sm
-            font-medium
-            cursor-pointer
-            select-none
-        `,
-        css`
-          color: ${theme.blue500};
-
-          &:hover {
-            background-color: ${theme.blue100};
-          }
-        `,
-    ]);
 
     const handleCellClick = (value: string) => {
         onClicked(value);
@@ -39,7 +40,7 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, o
 
     return (
         <div className="flex flex-col w-full relative">
-            <span className='font-inter text-sm pb-2 select-none'>Nom du plat</span>
+            <span className='font-inter text-sm pb-2 select-none'>{label}</span>
             <div className="flex border border-solid bg-white border-blue-sky justify-between items-center rounded-lg p-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)} >
                 <span className='text-textfield-color font-inter text-sm select-none'>{selectedValue}</span>
                 <KeyboardArrowDownIcon className='text-slate-400'/>
