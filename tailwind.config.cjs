@@ -9,11 +9,11 @@ module.exports = {
         "primary-color": "#3C7FD0",
         "bg-color": "#F8F9FA"
       },
-      borderColor: {
-        "blue-sky": "#DFEAF2"
+      placeholderColor: {
+        "primary-color": "#718EBF"
       },
-      textColor: {
-        "textfield-color": "#718EBF"
+      borderColor: {
+        "primary-color": "#DFEAF2"
       },
       fontFamily: {
         'lufga': ['Lufga', 'sans-serif'],
