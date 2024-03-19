@@ -2,10 +2,11 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Dispatch, SetStateAction, useState } from 'react';
 import styled, { css } from "styled-components"
 import tw from 'twin.macro'
+import { Modal } from '../modal';
 
 interface TextfieldListProps {
     valuesToDisplay: string[]
-    onClicked: Dispatch<SetStateAction<string>>
+    onClicked: (value: string) => void
     label: string
 }
 
@@ -43,16 +44,16 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, o
             <span className='font-inter text-sm pb-2 select-none'>{label}</span>
             <div className="flex border border-solid bg-white border-blue-sky justify-between items-center rounded-lg p-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)} >
                 <span className='text-textfield-color font-inter text-sm select-none'>{selectedValue}</span>
-                <KeyboardArrowDownIcon className='text-slate-400'/>
+                <KeyboardArrowDownIcon className='text-slate-400' />
             </div>
-            { isOpen && (
-                <div className='flex flex-col rounded-lg p-1.5 bg-white absolute top-full left-0 right-0 mt-2 border border-solid border-blue-sky gap-1'>
+            {isOpen && (
+                <Modal onClose={() => setIsOpen(false)} fullWidth>
                     {valuesToDisplay.map((element, index) => {
                         return (
                             <Cell key={index} onClick={() => handleCellClick(element)}>{element}</Cell>
                         )
                     })}
-                </div>
+                </Modal>
             )}
         </div>
     )

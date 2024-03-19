@@ -14,7 +14,12 @@ export const lightTheme: DefaultTheme = {
   blue500: "#3B82F6",
   blue600: "#2563EB",
   blue100: "#DBEAFE",
-  buttonText: "#FFFFFF"
+  buttonText: "#FFFFFF",
+  backgroundColor: "#F5F7FA",
+  titleColor: "#343C6A",
+  badgeColor: "#6C757D",
+  errorPastelColor: "#F8D7DA",
+  blackColor: "#000000"
 };
 
 export const darkTheme: DefaultTheme = {
@@ -26,5 +31,10 @@ export const darkTheme: DefaultTheme = {
   blue100: "#DBEAFE",
   blue500: "#3B82F6",
   blue600: "#2563EB",
-  buttonText: "#FFFFFF"
+  buttonText: "#FFFFFF",
+  backgroundColor: "#F5F7FA",
+  titleColor: "#343C6A",
+  badgeColor: "#6C757D",
+  errorPastelColor: "#F8D7DA",
+  blackColor: "#000000"
 };
