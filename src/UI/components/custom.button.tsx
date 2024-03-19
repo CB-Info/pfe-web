@@ -16,6 +16,7 @@ export enum WidthButton {
 }
 
 interface CustomButtonProps {
+    inputType?: "submit" | "reset" | "button"| undefined
     type: TypeButton
     children: ReactNode
     onClick: () => void
@@ -116,11 +117,12 @@ const TextButton = styled.button<PrimaryButtonProps>(({ theme, width = WidthButt
     `,
 ]);
 
-export const CustomButton: React.FC<CustomButtonProps> = ({ type, width = WidthButton.MEDIUM, children, onClick, isLoading = false, isDisabled = false }) => {
+export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button", type, width = WidthButton.MEDIUM, children, onClick, isLoading = false, isDisabled = false }) => {
     switch (type) {
         case TypeButton.PRIMARY:
             return (
-                <PrimaryButton 
+                <PrimaryButton
+                    type={inputType}
                     onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
                     width={width} 
                     isDisabled={isDisabled} 
@@ -132,6 +134,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ type, width = WidthB
         case TypeButton.SECONDARY:
             return (
                 <SecondaryButton 
+                    type={inputType}
                     onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
                     width={width} 
                     isDisabled={isDisabled} 
@@ -142,7 +145,8 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ type, width = WidthB
 
         case TypeButton.TEXT:
             return (
-                <TextButton 
+                <TextButton
+                    type={inputType}
                     onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
                     width={width}
                     isDisabled={isDisabled} 
