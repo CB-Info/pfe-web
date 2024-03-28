@@ -7,7 +7,7 @@ interface TextInputProps {
   label: string,
   value: string | number,
   onChange: (newValue: string) => void,
-  type?: 'text' | 'password' | 'email' | 'textarea' | 'number',
+  type?: 'text' | 'password' | 'email' | 'textarea' | 'number' | 'checkbox',
   isError: boolean,
   isDisabled?: boolean,
 }
