@@ -8,6 +8,9 @@ import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import { Fragment } from 'react';
+import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../auth/auth.reducer';
+import { auth } from '../../../firebase-config';
+import { signOut } from '@firebase/auth';
 
 export function NavBar() {
     return (
@@ -33,6 +36,19 @@ export function NavBar() {
 }
 
 function BottomButtonNavBar() {
+    const dispatch = useUsersListerDispatchContext();
+    const state = useUsersListerStateContext();
+
+    const onLogout = async () => {
+      try {
+        await signOut(auth);
+        dispatch({ type: "UPDATE_USER", payload: undefined });
+        console.log("Déconnexion réussie");
+      } catch (error) {
+        console.error("Erreur lors de la déconnexion", error);
+      }
+    };
+    
     return (
     <Popover className="group relative">
         {({ open }) => (
@@ -43,7 +59,7 @@ function BottomButtonNavBar() {
               } flex w-full items-center gap-2 rounded-lg p-2 text-sm focus:outline-none text-white hover:bg-white hover:bg-opacity-10`}
             >
                 <div className='h-8 w-8 rounded-full bg-blue-700'></div>
-                <span>Pierre Gourgouillon</span>
+                <span>{state.currentUser?.firstname} {state.currentUser?.lastname}</span>
             </Popover.Button>
             <Transition
                 as={Fragment}
@@ -64,12 +80,10 @@ function BottomButtonNavBar() {
                         </div>
                     </Link>
                     <div className="h-px bg-gray-300 my-1.5"/>
-                    <Link to="">
-                        <div className='flex gap-2 text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded cursor-pointer'>
-                            <LogoutRoundedIcon className='w-6 h-6'/>
-                            <span className='font-lufga font-normal'>Log out</span>
-                        </div>
-                    </Link>
+                    <div className='flex gap-2 text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded cursor-pointer' onClick={onLogout}>
+                        <LogoutRoundedIcon className='w-6 h-6'/>
+                        <span className='font-lufga font-normal'>Log out</span>
+                    </div>
                 </nav>
                 </Popover.Panel>
             </Transition>
