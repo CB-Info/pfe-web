@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from 'react';
 import { SearchInput } from "../UI/components/input/searchInput"
 import DrawerButton from '../UI/components/drawer';
 import AddDishPage from './add.dish.page';
+import { BaseContent } from '../UI/components/base.content';
 
 export default function HomePage() {
   const [dishName, setDishName] = useState('');
@@ -12,7 +13,7 @@ export default function HomePage() {
   };
       
     return (
-        <div className="h-screen w-full bg-bg-color">
+        <BaseContent>
             <span>Home</span>
             <SearchInput label="Rechercher un plat" error={false} name="Recherche" value={searchValue} onChange={handleSearchValueChange}/>
             <div>Valeur saisie : {dishName}</div>
@@ -20,6 +21,6 @@ export default function HomePage() {
             <DrawerButton width={360} label='Ajouter un repas'>
               <AddDishPage/>
             </DrawerButton>
-        </div>
+        </BaseContent>
     )
 }

@@ -5,6 +5,7 @@ import CustomButton, { TypeButton, WidthButton } from "../UI/components/custom.b
 import { useUsersListerDispatchContext } from '../auth/auth.reducer';
 import { UserRepositoryImpl } from '../network/repositories/user.respository';
 import { useAlerts } from '../UI/components/alert/alerts-context';
+import { BaseContent } from '../UI/components/base.content';
 
 
 export default function LoginPage() {
@@ -29,7 +30,7 @@ export default function LoginPage() {
   };
   
   return (
-    <div className="h-screen w-full bg-bg-color flex flex-col">
+    <BaseContent>
       <div className="flex flex-col items-center justify-center h-full">
         <div className="p-6 bg-white rounded-lg shadow-xl flex flex-col items-center justify-center gap-4">
           <div className='flex flex-col items-center justify-center'>
@@ -56,7 +57,7 @@ export default function LoginPage() {
           </form>
         </div>
       </div>
-    </div>
+    </BaseContent>
   );
 }
 

@@ -1,5 +1,5 @@
 import { auth } from "../../firebase-config";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, updateProfile, updateEmail, updatePassword } from "firebase/auth";
 import { Data } from "./ingredients.repository";
 import { UserDto } from "../../dto/user.dto";
 import { User } from "../../models/user.model";
@@ -10,6 +10,7 @@ export class UserRepositoryImpl {
     async login(email: string, password: string): Promise<User> {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const token = await userCredential.user.getIdToken();
+        console.log(token)
 
         const response = await fetch(`${this.url}/me`, {
             method: "GET",
@@ -30,4 +31,28 @@ export class UserRepositoryImpl {
         }
     }
 
+
+    async updateUser(userId: string, updateUser: UserDto): Promise<User> {
+        //const token = await user.getIdToken();
+        const response = await fetch(`${this.url}/${userId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updateUser)
+        });
+
+        if (!response.ok) {
+            throw new Error('Échec de la mise à jour de l’utilisateur');
+        }
+
+        const updatedUserData: Data<UserDto> = await response.json();
+        return {
+            id: updatedUserData.data._id,
+            email: updatedUserData.data.email,
+            firstname: updatedUserData.data.firstname,
+            lastname: updatedUserData.data.lastname
+        };
+    }
 }
