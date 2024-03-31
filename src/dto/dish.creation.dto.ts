@@ -1,14 +1,10 @@
 import { IngredientUnity } from "../models/ingredient.model"
-import { IngredientDto } from "./ingredient.dto"
+import { DishCategory } from "./dish.dto"
 
-export enum DishCategory {
-    MEAT = "MEAT"
-}
-
-export interface DishDto {
+export interface DishCreationDto {
     _id: string
     name: string
-    ingredients: DishIngredientDto[]
+    ingredients: DishIngredientCreationDto[]
     price: number
     description: string
     category: DishCategory
@@ -16,8 +12,8 @@ export interface DishDto {
     isAvailable: boolean
 }
 
-export interface DishIngredientDto {
-    ingredientRef: IngredientDto
+export interface DishIngredientCreationDto {
+    ingredientId: string
     unity: IngredientUnity
     quantity: number
 }

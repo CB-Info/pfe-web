@@ -11,7 +11,6 @@ import { BaseContent } from '../UI/components/base.content';
 export default function LoginPage() {
   const [emailInput, setEmailInput] = useState("")
   const [passwordInput, setPasswordInput] = useState("")
-  const dispatch = useUsersListerDispatchContext()
   const { addAlert, clearAlerts } = useAlerts();
   const [isLoading, setIsLoading] = useState(false)
 
@@ -21,10 +20,9 @@ export default function LoginPage() {
     setIsLoading(true)
     event.preventDefault();
     try {
-      const user = await userRepository.login(emailInput, passwordInput)
-      dispatch({ type: "UPDATE_USER", payload: user })
+      await userRepository.login(emailInput, passwordInput)
     } catch (error) {
-        addAlert({ severity: "error", message: "L'utilisateur ou le mot de passe est incorrecte" })
+      addAlert({ severity: "error", message: "L'utilisateur ou le mot de passe est incorrecte" })
     }
     setIsLoading(false)
   };

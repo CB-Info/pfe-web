@@ -7,7 +7,7 @@ interface ContainerDrawerProps {
     width: number
 }
 
-const ContainerDrawer = styled.div<ContainerDrawerProps>(({ theme, width }) => [
+export const ContainerDrawer = styled.div<ContainerDrawerProps>(({ theme, width }) => [
     tw`
         menu
         h-full
@@ -18,15 +18,17 @@ const ContainerDrawer = styled.div<ContainerDrawerProps>(({ theme, width }) => [
     `,
 ]);
 
+
 interface DrawerButtonProps {
+    drawerId: string
+    defaultChildren: ReactNode
     children: ReactNode
     width: number
-    label: string
 }
 
-const DrawerButton: React.FC<DrawerButtonProps> = ({ children, width, label }) => {
+const Drawer: React.FC<DrawerButtonProps> = ({ children, width, drawerId, defaultChildren }) => {
     const toggleDrawer = () => {
-        const drawerCheckbox = document.getElementById('my-drawer-4') as HTMLInputElement;
+        const drawerCheckbox = document.getElementById(drawerId) as HTMLInputElement;
         if (drawerCheckbox) {
             drawerCheckbox.checked = !drawerCheckbox.checked;
         }
@@ -34,25 +36,20 @@ const DrawerButton: React.FC<DrawerButtonProps> = ({ children, width, label }) =
 
     return (
         <div className="drawer drawer-end">
-            <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
+            <input id={drawerId} type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
-                <CustomButton 
-                    type={TypeButton.PRIMARY} 
-                    onClick={toggleDrawer}
-                    width={WidthButton.MEDIUM} 
-                    isLoading={false}
-                >
-                    { label }
-                </CustomButton>
-            </div> 
-            <div className="drawer-side">
-                <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
+                <div onClick={toggleDrawer}>
+                    {defaultChildren}
+                </div>
+            </div>
+            <div className="drawer-side z-50">
+                <label htmlFor={drawerId} aria-label="close sidebar" className="drawer-overlay"></label>
                 <ContainerDrawer width={width}>
-                    { children }
+                    {children}
                 </ContainerDrawer>
             </div>
         </div>
     )
 }
 
-export default DrawerButton
+export default Drawer

@@ -34,7 +34,7 @@ const Input = styled.input(({ theme }) => [
 export const SearchInput: React.FC<SearchInputProps> = ({ label, value, onChange }) => {
 
     return (
-        <label className="flex flex-col">
+        <label className="flex flex-col w-full">
             <div className="mb-2">
                 <span className="text-primary-color text-sm font-inter">{label}</span>
             </div>

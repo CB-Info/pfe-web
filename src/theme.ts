@@ -20,7 +20,9 @@ export const lightTheme: DefaultTheme = {
   titleColor: "#343C6A",
   badgeColor: "#6C757D",
   errorPastelColor: "#F8D7DA",
-  blackColor: "#000000"
+  blackColor: "#000000",
+  lineColorHeader: "#E6EFF5",
+  backgroundHeader: "#FFFFFF"
 };
 
 export const darkTheme: DefaultTheme = {
@@ -38,5 +40,7 @@ export const darkTheme: DefaultTheme = {
   titleColor: "#343C6A",
   badgeColor: "#6C757D",
   errorPastelColor: "#F8D7DA",
-  blackColor: "#000000"
+  blackColor: "#000000",
+  lineColorHeader: "#E6EFF5",
+  backgroundHeader: "#FFFFFF"
 };

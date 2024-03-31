@@ -9,8 +9,8 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import { Fragment } from 'react';
 import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../auth/auth.reducer';
-import { auth } from '../../../firebase-config';
-import { signOut } from '@firebase/auth';
+import { useAlerts } from '../alert/alerts-context';
+import FirebaseAuthManager from '../../../firebase.auth.manager';
 
 export function NavBar() {
     return (
@@ -38,14 +38,15 @@ export function NavBar() {
 function BottomButtonNavBar() {
     const dispatch = useUsersListerDispatchContext();
     const state = useUsersListerStateContext();
+    const { addAlert, clearAlerts } = useAlerts();
 
     const onLogout = async () => {
       try {
-        await signOut(auth);
+        await FirebaseAuthManager.getInstance().logout()
         dispatch({ type: "UPDATE_USER", payload: undefined });
-        console.log("Déconnexion réussie");
+        clearAlerts()
       } catch (error) {
-        console.error("Erreur lors de la déconnexion", error);
+        addAlert({ severity: "error", message: "Erreur lors de la déconnexion" })
       }
     };
     
