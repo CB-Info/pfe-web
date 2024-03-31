@@ -73,7 +73,7 @@ function BottomButtonNavBar() {
             >
                 <Popover.Panel className="popover absolute bottom-full left-0 z-20 mb-1 w-full overflow-hidden rounded-lg border border-gray-400 bg-white p-1.5 shadow-lg outline-none opacity-100 translate-y-0">
                 <nav>
-                    <Link to="">
+                    <Link to="/settings">
                         <div className='flex gap-2 text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded cursor-pointer'>
                             <TuneRoundedIcon className='w-6 h-6'/>
                             <span className='font-lufga font-normal'>Settings</span>
