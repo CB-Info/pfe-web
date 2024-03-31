@@ -1,16 +1,17 @@
-import { auth } from "../../firebase-config";
-import { signInWithEmailAndPassword, updateProfile, updateEmail, updatePassword } from "firebase/auth";
 import { Data } from "./ingredients.repository";
 import { UserDto } from "../../dto/user.dto";
 import { User } from "../../models/user.model";
+import FirebaseAuthManager from "../../firebase.auth.manager";
 
 export class UserRepositoryImpl {
     private url: string = "http://localhost:3000/users";
 
-    async login(email: string, password: string): Promise<User> {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const token = await userCredential.user.getIdToken();
-        console.log(token)
+    async login(email: string, password: string) {
+        await FirebaseAuthManager.getInstance().login(email, password);
+    }
+
+    async getMe(): Promise<User> {
+        const token = await FirebaseAuthManager.getInstance().getToken();
 
         const response = await fetch(`${this.url}/me`, {
             method: "GET",
@@ -20,8 +21,6 @@ export class UserRepositoryImpl {
             }
         })
         const body: Data<UserDto> = await response.json()
-
-        console.log(body.data)
 
         return {
             id: body.data._id,
@@ -33,7 +32,7 @@ export class UserRepositoryImpl {
 
 
     async updateUser(userId: string, updateUser: UserDto): Promise<User> {
-        //const token = await user.getIdToken();
+        const token = await FirebaseAuthManager.getInstance().getToken()
         const response = await fetch(`${this.url}/${userId}`, {
             method: 'PATCH',
             headers: {

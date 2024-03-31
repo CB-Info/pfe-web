@@ -1,5 +1,7 @@
+import { DishCreationDto } from "../../dto/dish.creation.dto";
 import { DishDto } from "../../dto/dish.dto";
 import { IngredientDto } from "../../dto/ingredient.dto";
+import FirebaseAuthManager from "../../firebase.auth.manager";
 import { Dish } from "../../models/dish.model";
 import { Ingredient } from "../../models/ingredient.model";
 import { Data } from "./ingredients.repository";
@@ -9,10 +11,15 @@ export class DishesRepositoryImpl {
 
     async getTopIngredients(): Promise<Ingredient[]> {
         try {
-            const response = await fetch(`${this.url}/top-ingredients`)
+            const token = await FirebaseAuthManager.getInstance().getToken()
+            const response = await fetch(`${this.url}/top-ingredients`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                }
+            })
             const data: Data<IngredientDto[]> = await response.json()
-
-            console.log(data.data.map((element) => new Ingredient(element._id, element.name, element.unity, element.value)))
 
             return data.data.map((element) => new Ingredient(element._id, element.name, element.unity, element.value))
         } catch (error) {
@@ -20,18 +27,47 @@ export class DishesRepositoryImpl {
         }
     }
 
-    async create(newDish: DishDto): Promise<Dish> {
+    async create(newDish: DishCreationDto) {
         try {
-            const response = await fetch(this.url, {
+            const token = await FirebaseAuthManager.getInstance().getToken()
+            await fetch(this.url, {
                 method: "POST",
                 headers: {
-                'Content-Type': 'application/json', // Indique le type de contenu envoyé
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(newDish)
             })
-            const body: Data<DishDto> = await response.json()
+        } catch (error) {
+            throw new Error("")
+        }
+    }
 
-            return Dish.fromDto(body.data)
+    async getAll(): Promise<Dish[]> {
+        const token = await FirebaseAuthManager.getInstance().getToken()
+        const response = await fetch(this.url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`
+            }
+        })
+        const body: Data<DishDto[]> = await response.json()
+
+        return body.data.map((dish) => Dish.fromDto(dish))
+    }
+
+    async update(dish: DishCreationDto) {
+        try {
+            const token = await FirebaseAuthManager.getInstance().getToken()
+            await fetch(`${this.url}/${dish._id}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(dish)
+            })
         } catch (error) {
             throw new Error("")
         }

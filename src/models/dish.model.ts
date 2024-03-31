@@ -1,5 +1,5 @@
 import { DishCategory, DishDto, DishIngredientDto } from "../dto/dish.dto"
-import { IngredientUnity } from "./ingredient.model"
+import { Ingredient, IngredientUnity } from "./ingredient.model"
 
 export class Dish {
     _id: string
@@ -23,18 +23,21 @@ export class Dish {
     }
 
     static fromDto(dto: DishDto): Dish {
-        const ingredients = dto.ingredients.map((e) => new DishIngredient(e.ingredientId, e.unity, e.quantity))
+        const ingredients = dto.ingredients.map((e) => {
+            const ingredient = new Ingredient(e.ingredientRef._id, e.ingredientRef.name)
+            return  new DishIngredient(ingredient, e.unity, e.quantity)
+        })
         return new Dish(dto._id, dto.name, ingredients, dto.price, dto.description, dto.category, dto.isAvailable, dto.timeCook)
     }
 }
 
 export class DishIngredient {
-    _id: string
+    ingredient: Ingredient
     unity: IngredientUnity
     quantity: number
 
-    constructor(_id: string, unity: IngredientUnity, quantity: number) {
-        this._id = _id
+    constructor(ingredient: Ingredient, unity: IngredientUnity, quantity: number) {
+        this.ingredient = ingredient
         this.unity = unity
         this.quantity = quantity
     }

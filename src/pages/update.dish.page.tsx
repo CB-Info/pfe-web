@@ -9,17 +9,23 @@ import { Ingredient } from "../models/ingredient.model";
 import { NumberInput } from "../UI/components/input/number.input";
 import { CircularProgress } from "@mui/material";
 import { DishesRepositoryImpl } from "../network/repositories/dishes.repository";
-import { DishCategory, DishIngredientDto } from "../dto/dish.dto";
+import { DishCategory } from "../dto/dish.dto";
 import { toCapitalize } from "../string+extension";
 import { useAlerts } from "../UI/components/alert/alerts-context";
 import { DishIngredientCreationDto } from "../dto/dish.creation.dto";
+import { Dish } from "../models/dish.model";
 
-export default function AddDishPage() {
-    const [dishName, setDishName] = useState("")
-    const [dishDescription, setDishDescription] = useState("")
-    const [dishPrice, setDishPrice] = useState("")
-    const [dishCategory, setDishCategory] = useState<DishCategory>(DishCategory.MEAT)
-    const [ingredientsDish, setIngredientsDish] = useState<Ingredient[]>([])
+interface UpdateDishPageProps {
+    dish: Dish,
+    onClickOnConfirm: () => void
+}
+
+const UpdateDishPage: React.FC<UpdateDishPageProps> = ({ dish, onClickOnConfirm }) => {
+    const [dishName, setDishName] = useState(dish.name)
+    const [dishDescription, setDishDescription] = useState(dish.description)
+    const [dishPrice, setDishPrice] = useState(String(dish.price))
+    const [dishCategory, setDishCategory] = useState<DishCategory>(dish.category)
+    const [ingredientsDish, setIngredientsDish] = useState<Ingredient[]>(dish.ingredients.map((e) => new Ingredient(e.ingredient._id, e.ingredient.name, e.unity, e.quantity)))
     const [allIngredients, setAllIngredients] = useState<Ingredient[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [isLoadingCreationDish, setIsLoadingCreationDish] = useState(false)
@@ -60,11 +66,12 @@ export default function AddDishPage() {
     }
 
     function handleOnClosePage() {
-        const drawerCheckbox = document.getElementById('add-drawer-dish') as HTMLInputElement;
+        const drawerCheckbox = document.getElementById('update-dish-drawer') as HTMLInputElement;
         if (drawerCheckbox) {
             reset()
             drawerCheckbox.checked = !drawerCheckbox.checked;
         }
+        onClickOnConfirm()
     }
 
     function handleOnClickOnCellCategory(e: string) {
@@ -101,8 +108,8 @@ export default function AddDishPage() {
         if (validateForm()) {
             try {
                 setIsLoadingCreationDish(true)
-                await dishesRepository.create({
-                    _id: "",
+                await dishesRepository.update({
+                    _id: dish._id,
                     name: dishName,
                     ingredients: ingredientsDish.map((e): DishIngredientCreationDto => { 
                         return { ingredientId: e._id, unity: e.unity, quantity: e.value ?? 0 }
@@ -146,7 +153,7 @@ export default function AddDishPage() {
                             </div>
                             <div className="flex justify-between">
                                 <CustomButton  type={TypeButton.TEXT} onClick={handleOnClosePage} width={WidthButton.SMALL} isLoading={false}>Annuler</CustomButton>
-                                <CustomButton inputType="submit" type={TypeButton.PRIMARY} onClick={() => {}} width={WidthButton.SMALL} isLoading={isLoadingCreationDish}>Créer</CustomButton>
+                                <CustomButton inputType="submit" type={TypeButton.PRIMARY} onClick={() => {}} width={WidthButton.SMALL} isLoading={isLoadingCreationDish}>Modifier</CustomButton>
                             </div>
                         </form>
                     </div>
@@ -154,3 +161,5 @@ export default function AddDishPage() {
         </div>
     )
 }
+
+export default UpdateDishPage

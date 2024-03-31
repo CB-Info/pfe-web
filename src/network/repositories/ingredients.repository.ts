@@ -1,4 +1,5 @@
 import { IngredientDto } from "../../dto/ingredient.dto";
+import FirebaseAuthManager from "../../firebase.auth.manager";
 import { Ingredient } from "../../models/ingredient.model";
 
 export interface Data<T> {
@@ -11,10 +12,12 @@ export class IngredientRepositoryImpl {
 
     async createOne(newIngredient: IngredientDto): Promise<Ingredient> {
         try {
+            const token = await FirebaseAuthManager.getInstance().getToken();
             const response = await fetch(this.url, {
                 method: "POST",
                 headers: {
-                'Content-Type': 'application/json', // Indique le type de contenu envoyé
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(newIngredient)
             })
@@ -28,7 +31,14 @@ export class IngredientRepositoryImpl {
 
     async getAll(): Promise<Ingredient[]> {
         try {
-            const response = await fetch(this.url)
+            const token = await FirebaseAuthManager.getInstance().getToken();
+            const response = await fetch(this.url, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                }
+            })
             const data: Data<IngredientDto[]> = await response.json()
 
             return data.data.map((element) => new Ingredient(element._id, element.name, element.unity, element.value))
@@ -39,7 +49,14 @@ export class IngredientRepositoryImpl {
 
     async getByName(name: string): Promise<Ingredient[]> {
         try {
-            const response = await fetch(`${this.url}/search?name=${name}`)
+            const token = await FirebaseAuthManager.getInstance().getToken();
+            const response = await fetch(`${this.url}/search?name=${name}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                }
+            })
             const data: Data<IngredientDto[]> = await response.json()
 
             return data.data.map((element) => new Ingredient(element._id, element.name, element.unity, element.value))
