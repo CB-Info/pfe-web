@@ -1,7 +1,7 @@
-import React, { FC, ReactNode, useEffect, useReducer, useState } from "react";
-import FirebaseAuthManager from "../firebase.auth.manager";
-import { UsersListerDispatchContext, UsersListerInitialState, usersListerlocalReducer, UsersListerStateContext } from "./auth.reducer";
-import LoginPage from "../pages/login.page";
+import { FC, ReactNode, useEffect, useReducer, useState } from "react";
+import FirebaseAuthManager from "../network/authentication/firebase.auth.manager";
+import { UsersListerDispatchContext, UsersListerInitialState, usersListerlocalReducer, UsersListerStateContext } from "../reducers/auth.reducer";
+import LoginPage from "../UI/pages/authentication/login.page";
 
 const AuthProvider: FC<{children: ReactNode}> = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);

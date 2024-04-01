@@ -1,7 +1,7 @@
 import { Data } from "./ingredients.repository";
-import { UserDto } from "../../dto/user.dto";
-import { User } from "../../models/user.model";
-import FirebaseAuthManager from "../../firebase.auth.manager";
+import { UserDto } from "../../data/dto/user.dto";
+import { User } from "../../data/models/user.model";
+import FirebaseAuthManager from "../authentication/firebase.auth.manager";
 
 export class UserRepositoryImpl {
     private url: string = "http://localhost:3000/users";

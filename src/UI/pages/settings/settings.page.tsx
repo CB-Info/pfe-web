@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ProfilContent } from "../UI/components/settingsContent/profilContent";
-import { PreferencesContent } from "../UI/components/settingsContent/preferencesContent";
-import { BaseContent } from '../UI/components/base.content';
-import { PanelContent } from '../UI/components/panel.content';
+import { ProfilContent } from "../../components/settingsContent/profilContent";
+import { PreferencesContent } from "../../components/settingsContent/preferencesContent";
+import { BaseContent } from '../../components/contents/base.content';
+import { PanelContent } from '../../components/contents/panel.content';
 
 const tabs = ['Profil', 'Préférences', 'Sécurité'];
 
@@ -11,8 +11,7 @@ export default function SettingsPage() {
 
   return (
     <BaseContent>
-      <div className="w-full h-16 bg-red-500">
-
+      <div className="w-full h-16">
       </div>
       <div className="w-full h-full p-4">
         <PanelContent>

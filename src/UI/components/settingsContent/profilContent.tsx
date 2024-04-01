@@ -1,7 +1,7 @@
 import { TextInput } from '../input/textInput';
-import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../auth/auth.reducer';
+import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../reducers/auth.reducer';
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
-import CustomButton, { TypeButton, WidthButton } from '../custom.button';
+import CustomButton, { TypeButton, WidthButton } from '../buttons/custom.button';
 import { useState } from 'react';
 
 export const ProfilContent: React.FC = () => {

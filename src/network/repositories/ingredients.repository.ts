@@ -1,6 +1,6 @@
-import { IngredientDto } from "../../dto/ingredient.dto";
-import FirebaseAuthManager from "../../firebase.auth.manager";
-import { Ingredient } from "../../models/ingredient.model";
+import { IngredientDto } from "../../data/dto/ingredient.dto";
+import FirebaseAuthManager from "../authentication/firebase.auth.manager";
+import { Ingredient } from "../../data/models/ingredient.model";
 
 export interface Data<T> {
     error: string

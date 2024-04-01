@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useRef, useState, ReactNode, FC } from "react";
-import { Alert, AlertsWrapper } from "./alert";
+import { createContext, useContext, useRef, useState, ReactNode, FC } from "react";
+import { Alert, AlertsWrapper } from "../UI/components/alert/alert";
 
 // Définition du type de l'alerte
 interface AlertType {

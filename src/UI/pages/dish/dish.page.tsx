@@ -1,17 +1,17 @@
-import DrawerButton, { ContainerDrawer } from '../UI/components/drawer';
-import TitleStyle from '../UI/style/title.style';
+import DrawerButton, { ContainerDrawer } from '../../components/drawer';
+import TitleStyle from '../../style/title.style';
 import AddDishPage from './add.dish.page';
 import { useEffect, useState } from 'react';
 import { CircularProgress } from '@mui/material';
-import { SearchInput } from '../UI/components/input/searchInput';
-import TextfieldList from '../UI/components/textfields/textfield.list';
-import { DishesRepositoryImpl } from '../network/repositories/dishes.repository';
-import { useAlerts } from '../UI/components/alert/alerts-context';
-import { Dish } from '../models/dish.model';
-import CustomizedTables from './demo';
+import { SearchInput } from '../../components/input/searchInput';
+import TextfieldList from '../../components/input/textfield.list';
+import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
+import { useAlerts } from '../../../contexts/alerts.context';
+import { Dish } from '../../../data/models/dish.model';
+import CustomizedTables from '../../components/tables/dish.table';
 import UpdateDishPage from './update.dish.page';
-import CustomButton, { TypeButton, WidthButton } from '../UI/components/custom.button';
-import { BaseContent } from '../UI/components/base.content';
+import CustomButton, { TypeButton, WidthButton } from '../../components/buttons/custom.button';
+import { BaseContent } from '../../components/contents/base.content';
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false)

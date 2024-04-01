@@ -1,15 +1,15 @@
-import { Modal, PositionModal } from "../../modal"
+import { Modal, PositionModal } from "../../modals/modal"
 import ModalInput from "../../../style/modal.input.style"
-import { Ingredient } from "../../../../models/ingredient.model"
+import { Ingredient } from "../../../../data/models/ingredient.model"
 import { NavigationModal, useIngredientsListerDispatchContext, useIngredientsListerStateContext } from "../ingredients.lister.reducer"
-import { CellButton } from "../../cell.button"
+import { CellButton } from "../../buttons/cell.button"
 import { CellCLStyle } from "../ingredients.lister.style"
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { toCapitalize } from '../../../../string+extension';
+import { toCapitalize } from '../../../../applications/extensions/string+extension';
 import { ChangeEvent, useState } from "react"
-import { ConfirmationModal } from "../../confirmation.modal"
-import CustomButton, { TypeButton, WidthButton } from "../../custom.button"
+import { ConfirmationModal } from "../../modals/confirmation.modal"
+import CustomButton, { TypeButton, WidthButton } from "../../buttons/custom.button"
 import ModalButton from "../../../style/modal.button"
 
 interface IngredientModalCreation {

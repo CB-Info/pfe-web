@@ -1,6 +1,6 @@
 import { useReducer } from 'react';
-import Badge from '../badge';
-import { Ingredient } from '../../../models/ingredient.model';
+import Badge from '../badge/badge';
+import { Ingredient } from '../../../data/models/ingredient.model';
 import {  DotButton } from './ingredients.lister.style';
 import { IngredientsListerDispatchContext, IngredientsListerStateContext, NavigationModal, ingredientsListerInitialState, ingredientsListerlocalReducer } from './ingredients.lister.reducer';
 import { IngredientsModal } from './children/ingredients.modal';

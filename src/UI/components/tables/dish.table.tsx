@@ -9,8 +9,7 @@ import Paper from '@mui/material/Paper';
 import { IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react';
-import { Dish } from '../models/dish.model';
-import UpdateDishPage from './update.dish.page';
+import { Dish } from '../../../data/models/dish.model';
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: '16px',

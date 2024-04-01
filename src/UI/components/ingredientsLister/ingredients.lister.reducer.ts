@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { Ingredient } from "../../../models/ingredient.model";
+import { Ingredient } from "../../../data/models/ingredient.model";
 
 export enum NavigationModal {
     HOME,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '../../../context/ThemeContext'; // Assurez-vous d'importer useTheme correctement
+import { useTheme } from '../../../contexts/theme.context'; // Assurez-vous d'importer useTheme correctement
 
 export const PreferencesContent: React.FC = () => {
     const { isDarkMode, toggleTheme } = useTheme();
