@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
 import { TextInput } from '../input/textInput';
 import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../auth/auth.reducer';
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 import CustomButton, { TypeButton, WidthButton } from '../custom.button';
+import { useState } from 'react';
 
 export const ProfilContent: React.FC = () => {
     const dispatch = useUsersListerDispatchContext();
     const { currentUser } = useUsersListerStateContext();
+    const [isLoadingUpdateUser, setIsLoadingUpdateUser] = useState(false)
     const [lastName, setLastName] = useState(currentUser?.lastname ?? "")
     const [firstName, setFirstName] = useState(currentUser?.firstname ?? "")
     const [email, setEmail] = useState(currentUser?.email ?? "")
@@ -15,7 +16,7 @@ export const ProfilContent: React.FC = () => {
     const handleSubmit = async () => {
         if (currentUser){
             try {
-                //setIsLoadingUpdateUser(true)
+                setIsLoadingUpdateUser(true)
                 const userId = currentUser.id;
             
                 const updatedUser = await userRepository.updateUser(userId, {
@@ -25,7 +26,7 @@ export const ProfilContent: React.FC = () => {
                     lastname: lastName
                 });
                 dispatch({ type: "UPDATE_USER", payload: updatedUser });
-                //setIsLoadingUpdateUser(false)
+                setIsLoadingUpdateUser(false)
               } catch (error) {
               }
         }
@@ -58,7 +59,7 @@ export const ProfilContent: React.FC = () => {
                 />
             </div>
 
-            <CustomButton  type={TypeButton.PRIMARY} onClick={handleSubmit} width={WidthButton.SMALL} isLoading={false}>Enregistrer</CustomButton>
+            <CustomButton  type={TypeButton.PRIMARY} onClick={handleSubmit} width={WidthButton.SMALL} isLoading={isLoadingUpdateUser}>Enregistrer</CustomButton>
         </div>
     );
 };

@@ -15,7 +15,6 @@ export const PreferencesContent: React.FC = () => {
                     className="border rounded px-4 py-2"
                 />
             </div>
-            {/* Vous pouvez ajouter d'autres préférences ici */}
         </div>
     );
 };

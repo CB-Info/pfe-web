@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ProfilContent } from "../UI/components/settingsContent/profilContent";
 import { PreferencesContent } from "../UI/components/settingsContent/preferencesContent";
 import { BaseContent } from '../UI/components/base.content';
+import { PanelContent } from '../UI/components/panel.content';
 
 const tabs = ['Profil', 'Préférences', 'Sécurité'];
 
@@ -14,7 +15,7 @@ export default function SettingsPage() {
 
       </div>
       <div className="w-full h-full p-4">
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <PanelContent>
           <nav className="flex mb-4 w-1/3">
             {tabs.map((tab) => (
               <button
@@ -42,7 +43,7 @@ export default function SettingsPage() {
           <div className="w-full h-40 bg-pink-300"></div>
         )}
           </div>
-        </div>
+        </PanelContent>
       </div>
     </BaseContent>
   );

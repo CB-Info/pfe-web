@@ -6,6 +6,7 @@ export const DotButton = styled.button(({ theme }) => [
     tw`w-min h-min px-2 py-1 rounded text-xs font-normal cursor-pointer`,
     css`
         border: 1px dashed ${theme.badgeColor};
+        color: ${theme.textColor};
     `
 ]);
 

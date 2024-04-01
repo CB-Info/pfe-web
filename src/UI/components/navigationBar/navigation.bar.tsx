@@ -75,7 +75,7 @@ function BottomButtonNavBar() {
           <>
             <Popover.Button
               className={`${
-                open ? 'bg-white bg-opacity-10' : 'bg-primary-color'
+                open ? 'bg-white bg-opacity-10' : 'bg-slate-700'
               } flex w-full items-center gap-2 rounded-lg p-2 text-sm focus:outline-none text-white hover:bg-white hover:bg-opacity-10`}
             >
                 <div className='h-8 w-8 rounded-full bg-blue-700'></div>

@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import styled, { DefaultTheme, css } from "styled-components"
 import tw, { theme } from 'twin.macro'
+import LabelStyle from '../../style/label.style';
 
 interface TextInputProps {
   name: string | undefined
@@ -19,7 +20,6 @@ const getBorderColor = (theme: DefaultTheme, isError: boolean | undefined, isDis
 };
 
 const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ theme, isError, isDisabled }) => [
-  // Appliquez d'abord les styles Tailwind fixes via tw
   tw`
         text-sm
         font-inter
@@ -28,10 +28,9 @@ const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ t
         rounded-lg
         border
       `,
-  // Ensuite, ajoutez les styles dynamiques basés sur le thème ou les props
   css`
         border-color: ${getBorderColor(theme, isError, isDisabled)};
-        color: ${isError ? theme.errorColor : theme.textColor};
+        color: ${isError ? theme.errorColor : '#232323'};
         background-color: ${isDisabled ? theme.disabledBackgroundColor : '#FFFFFF'};
         cursor: ${isDisabled ? 'not-allowed' : 'text'};
         opacity: ${isDisabled ? '0.6' : '1'};
@@ -46,7 +45,7 @@ const Textarea = styled(BaseInput).attrs({ as: 'textarea' })`
 export const TextInput: React.FC<TextInputProps> = ({  name = undefined , label, type = "text", isError, isDisabled, value, onChange }) => {
   return (
     <div>
-      <span className="text-primary-color text-sm">{label}</span>
+      <LabelStyle>{label}</LabelStyle>
       {
         type === 'textarea' ? (
           <Textarea name={name} value={value} disabled={isDisabled} isDisabled={isDisabled} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {onChange(e.target.value)}} isError={isError} />

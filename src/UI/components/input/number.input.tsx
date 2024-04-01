@@ -2,6 +2,7 @@ import React, { ChangeEvent } from 'react';
 import styled, { DefaultTheme, css } from "styled-components"
 import tw, { theme } from 'twin.macro'
 import EuroRoundedIcon from '@mui/icons-material/EuroRounded';
+import LabelStyle from '../../style/label.style';
 
 interface NumberInputProps {
   name: string | undefined
@@ -20,7 +21,6 @@ const getBorderColor = (theme: DefaultTheme, isError: boolean | undefined, isDis
 };
 
 const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ theme, isError, isDisabled }) => [
-  // Appliquez d'abord les styles Tailwind fixes via tw
   tw`
         text-sm
         font-inter
@@ -29,10 +29,9 @@ const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ t
         rounded-l-lg
         border
       `,
-  // Ensuite, ajoutez les styles dynamiques basés sur le thème ou les props
   css`
         border-color: ${getBorderColor(theme, isError, isDisabled)};
-        color: ${isError ? theme.errorColor : theme.textColor};
+        color: ${isError ? theme.errorColor : '#232323'};
         background-color: ${isDisabled ? theme.disabledBackgroundColor : '#FFFFFF'};
         cursor: ${isDisabled ? 'not-allowed' : 'text'};
         opacity: ${isDisabled ? '0.6' : '1'};
@@ -60,7 +59,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, labe
 
   return (
     <div className='flex flex-col'>
-        <span className="text-primary-color text-sm pb-2">{label}</span>
+        <LabelStyle>{label}</LabelStyle>
       <div className='flex'>
         <BaseInput name={name} type={type} value={value} disabled={isDisabled} isDisabled={isDisabled} onChange={handleOnChange} isError={isError} />
         <div className="p-2.5 h-full text-sm font-medium text-slate-400 bg-slate-100 rounded-e-lg border border-primary-color focus:outline-none">
