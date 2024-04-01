@@ -1,9 +1,9 @@
-import { DishCreationDto } from "../../dto/dish.creation.dto";
-import { DishDto } from "../../dto/dish.dto";
-import { IngredientDto } from "../../dto/ingredient.dto";
-import FirebaseAuthManager from "../../firebase.auth.manager";
-import { Dish } from "../../models/dish.model";
-import { Ingredient } from "../../models/ingredient.model";
+import { DishCreationDto } from "../../data/dto/dish.creation.dto";
+import { DishDto } from "../../data/dto/dish.dto";
+import { IngredientDto } from "../../data/dto/ingredient.dto";
+import FirebaseAuthManager from "../authentication/firebase.auth.manager";
+import { Dish } from "../../data/models/dish.model";
+import { Ingredient } from "../../data/models/ingredient.model";
 import { Data } from "./ingredients.repository";
 
 export class DishesRepositoryImpl {

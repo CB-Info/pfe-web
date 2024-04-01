@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import CustomButton, { TypeButton, WidthButton } from "./custom.button"
 import styled, { css } from "styled-components"
 import tw from 'twin.macro'
 

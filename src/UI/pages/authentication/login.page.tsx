@@ -1,11 +1,10 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
-import { TextInput } from "../UI/components/input/textInput";
-import TitleStyle from "../UI/style/title.style";
-import CustomButton, { TypeButton, WidthButton } from "../UI/components/custom.button";
-import { useUsersListerDispatchContext } from '../auth/auth.reducer';
-import { UserRepositoryImpl } from '../network/repositories/user.respository';
-import { useAlerts } from '../UI/components/alert/alerts-context';
-import { BaseContent } from '../UI/components/base.content';
+import { TextInput } from "../../components/input/textInput";
+import TitleStyle from "../../style/title.style";
+import CustomButton, { TypeButton, WidthButton } from "../../components/buttons/custom.button";
+import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
+import { useAlerts } from '../../../contexts/alerts.context';
+import { BaseContent } from '../../components/contents/base.content';
 
 
 export default function LoginPage() {

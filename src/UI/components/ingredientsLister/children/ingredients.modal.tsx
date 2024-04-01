@@ -1,8 +1,8 @@
-import { Modal, PositionModal } from "../../modal"
+import { Modal, PositionModal } from "../../modals/modal"
 import ModalInput from "../../../style/modal.input.style"
-import { toCapitalize } from '../../../../string+extension';
-import { Ingredient, IngredientUnity } from "../../../../models/ingredient.model";
-import { CellButton } from "../../cell.button";
+import { toCapitalize } from '../../../../applications/extensions/string+extension';
+import { Ingredient, IngredientUnity } from "../../../../data/models/ingredient.model";
+import { CellButton } from "../../buttons/cell.button";
 import { NavigationModal, useIngredientsListerDispatchContext, useIngredientsListerStateContext } from "../ingredients.lister.reducer";
 import { IngredientsModalHome } from "./ingredients.modal.home";
 import { IngredientsModalCreation } from "./ingredients.modal.creation.ingredient";

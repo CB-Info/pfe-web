@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { User } from "../models/user.model";
+import { User } from "../data/models/user.model";
 
 type UsersListerAction = 
 | { type: 'UPDATE_USER'; payload: User | undefined }

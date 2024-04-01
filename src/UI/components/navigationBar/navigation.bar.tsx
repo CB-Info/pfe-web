@@ -8,9 +8,9 @@ import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import { Fragment, useEffect } from 'react';
-import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../auth/auth.reducer';
-import { useAlerts } from '../alert/alerts-context';
-import FirebaseAuthManager from '../../../firebase.auth.manager';
+import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../reducers/auth.reducer';
+import { useAlerts } from '../../../contexts/alerts.context';
+import FirebaseAuthManager from '../../../network/authentication/firebase.auth.manager';
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 
 export function NavBar() {

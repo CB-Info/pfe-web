@@ -1,18 +1,18 @@
 import { FormEvent, useEffect, useState } from "react";
-import BorderContainer from "../UI/style/border.container.style";
-import { TextInput } from "../UI/components/input/textInput";
-import TextfieldList from "../UI/components/textfields/textfield.list";
-import CustomButton, { TypeButton, WidthButton } from "../UI/components/custom.button";
-import TitleStyle from "../UI/style/title.style";
-import IngredientsLister from "../UI/components/ingredientsLister/ingredients.lister";
-import { Ingredient } from "../models/ingredient.model";
-import { NumberInput } from "../UI/components/input/number.input";
+import BorderContainer from "../../style/border.container.style";
+import { TextInput } from "../../components/input/textInput";
+import TextfieldList from "../../components/input/textfield.list";
+import CustomButton, { TypeButton, WidthButton } from "../../components/buttons/custom.button";
+import TitleStyle from "../../style/title.style";
+import IngredientsLister from "../../components/ingredientsLister/ingredients.lister";
+import { Ingredient } from "../../../data/models/ingredient.model";
+import { NumberInput } from "../../components/input/number.input";
 import { CircularProgress } from "@mui/material";
-import { DishesRepositoryImpl } from "../network/repositories/dishes.repository";
-import { DishCategory, DishIngredientDto } from "../dto/dish.dto";
-import { toCapitalize } from "../string+extension";
-import { useAlerts } from "../UI/components/alert/alerts-context";
-import { DishIngredientCreationDto } from "../dto/dish.creation.dto";
+import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
+import { DishCategory, DishIngredientDto } from "../../../data/dto/dish.dto";
+import { toCapitalize } from "../../../applications/extensions/string+extension";
+import { useAlerts } from "../../../contexts/alerts.context";
+import { DishIngredientCreationDto } from "../../../data/dto/dish.creation.dto";
 
 interface AddDishPageProps {
     onClickOnConfirm: () => void

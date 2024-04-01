@@ -1,11 +1,11 @@
 import { ChangeEvent, useEffect, useState } from "react"
-import { Modal, PositionModal } from "../../modal"
+import { Modal, PositionModal } from "../../modals/modal"
 import ModalInput from "../../../style/modal.input.style"
-import { Ingredient, IngredientUnity } from "../../../../models/ingredient.model"
+import { Ingredient, IngredientUnity } from "../../../../data/models/ingredient.model"
 import { NavigationModal, useIngredientsListerDispatchContext, useIngredientsListerStateContext } from "../ingredients.lister.reducer"
-import { CellButton } from "../../cell.button"
+import { CellButton } from "../../buttons/cell.button"
 import { IngredientRepositoryImpl } from "../../../../network/repositories/ingredients.repository"
-import { IngredientDto } from "../../../../dto/ingredient.dto"
+import { IngredientDto } from "../../../../data/dto/ingredient.dto"
 
 interface IngredientModalHome {
     ingredientsDisplay: Ingredient[]
