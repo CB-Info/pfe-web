@@ -7,12 +7,31 @@ import LocalDiningRoundedIcon from '@mui/icons-material/LocalDiningRounded';
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../auth/auth.reducer';
 import { useAlerts } from '../alert/alerts-context';
 import FirebaseAuthManager from '../../../firebase.auth.manager';
+import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 
 export function NavBar() {
+    const userRepository = new UserRepositoryImpl()
+    const { addAlert, clearAlerts } = useAlerts();
+    const dispatch = useUsersListerDispatchContext();
+    const state = useUsersListerStateContext();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+              const user = await userRepository.getMe()
+              dispatch({ type: "UPDATE_USER", payload: user })
+            } catch (error) {
+              addAlert({ severity: 'error', message: "Erreur lors de la récupération de l'utilisateur" })
+            }
+          }
+
+        fetchUser()
+    }, [state.currentUser])
+
     return (
         <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
             <div className='flex flex-col flex-1'>

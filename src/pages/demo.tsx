@@ -20,14 +20,11 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    // Retirez le backgroundColor pour enlever le fond noir
-    // backgroundColor: theme.palette.common.black, // Cette ligne est supprimée
-    color: theme.palette.text.primary, // Utilisation de la couleur de texte primaire du thème pour les en-têtes
+    color: theme.palette.text.primary,
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    // Assurez-vous que la couleur du texte est également noire pour le corps du tableau
-    color: theme.palette.text.primary, // Utilisation de la couleur de texte primaire du thème pour le corps du tableau
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -60,7 +57,7 @@ const RowContent: React.FC<RowContentProps> = ({ row, onClick }) => {
         {row.name}
       </StyledTableCell>
       <StyledTableCell align="left">{row.ingredients.map((e) => e.ingredient.name).join(", ")}</StyledTableCell>
-      <StyledTableCell align="left">{row.price}</StyledTableCell>
+      <StyledTableCell align="left">{row.isAvailable == true ? "Actif" : "Inactif"}</StyledTableCell>
       <StyledTableCell align="right">{row.category}</StyledTableCell>
       <StyledTableCell align="right">{row.price} €</StyledTableCell>
       <StyledTableCell align="right">

@@ -14,7 +14,11 @@ import { toCapitalize } from "../string+extension";
 import { useAlerts } from "../UI/components/alert/alerts-context";
 import { DishIngredientCreationDto } from "../dto/dish.creation.dto";
 
-export default function AddDishPage() {
+interface AddDishPageProps {
+    onClickOnConfirm: () => void
+}
+
+const AddDishPage: React.FC<AddDishPageProps> = ({ onClickOnConfirm }) => {
     const [dishName, setDishName] = useState("")
     const [dishDescription, setDishDescription] = useState("")
     const [dishPrice, setDishPrice] = useState("")
@@ -115,6 +119,7 @@ export default function AddDishPage() {
                 reset()
                 setIsLoadingCreationDish(false)
                 handleOnClosePage()
+                onClickOnConfirm()
             } catch(error) {
                 addAlert({ severity: "error", message: "Une erreur est survenue lors de la création du plat", timeout: 10 })
             }
@@ -154,3 +159,5 @@ export default function AddDishPage() {
         </div>
     )
 }
+
+export default AddDishPage
