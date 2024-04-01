@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import styled, { css } from "styled-components"
 import tw from 'twin.macro'
 import { Modal } from '../modal';
+import LabelStyle from '../../style/label.style';
 
 interface TextfieldListProps {
     valuesToDisplay: string[]
@@ -41,7 +42,7 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, o
 
     return (
         <div className="flex flex-col w-full relative">
-            <span className='font-inter text-sm pb-2 select-none'>{label}</span>
+            <LabelStyle>{label}</LabelStyle>
             <div className="flex border border-solid bg-white border-blue-sky justify-between items-center rounded-lg p-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)} >
                 <span className='text-textfield-color font-inter text-sm select-none'>{selectedValue}</span>
                 <KeyboardArrowDownIcon className='text-slate-400' />

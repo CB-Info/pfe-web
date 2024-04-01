@@ -22,7 +22,8 @@ export const lightTheme: DefaultTheme = {
   errorPastelColor: "#F8D7DA",
   blackColor: "#000000",
   lineColorHeader: "#E6EFF5",
-  backgroundHeader: "#FFFFFF"
+  backgroundHeader: "#FFFFFF",
+  panelColor: "#FFFFFF"
 };
 
 export const darkTheme: DefaultTheme = {
@@ -42,5 +43,7 @@ export const darkTheme: DefaultTheme = {
   errorPastelColor: "#F8D7DA",
   blackColor: "#000000",
   lineColorHeader: "#E6EFF5",
-  backgroundHeader: "#FFFFFF"
+  backgroundHeader: "#FFFFFF",
+  panelColor: "#334155",
+  borderColor: "#DFEAF2"
 };

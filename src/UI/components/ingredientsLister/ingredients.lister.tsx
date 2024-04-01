@@ -4,6 +4,7 @@ import { Ingredient } from '../../../models/ingredient.model';
 import {  DotButton } from './ingredients.lister.style';
 import { IngredientsListerDispatchContext, IngredientsListerStateContext, NavigationModal, ingredientsListerInitialState, ingredientsListerlocalReducer } from './ingredients.lister.reducer';
 import { IngredientsModal } from './children/ingredients.modal';
+import LabelStyle from '../../style/label.style';
 
 interface IngredientsListerProps {
     ingredients: Ingredient[]
@@ -19,7 +20,7 @@ export const IngredientsLister: React.FC<IngredientsListerProps> = ({ ingredient
         <IngredientsListerStateContext.Provider value={state}>
             <IngredientsListerDispatchContext.Provider value={dispatch}>
                 <div className='flex flex-col w-full'>
-                    <span className='font-inter text-sm pb-2 select-none'>Ingrédients</span>
+                    <LabelStyle >Ingrédients</LabelStyle>
                     <div className='flex flex-wrap pb-2 gap-2'>
                         <div className='flex relative'>
                             <DotButton type='button' onClick={() => dispatch({ type: "SET_NAVIGATION_MODAL", payload: NavigationModal.HOME })}>Ajouter</DotButton>
