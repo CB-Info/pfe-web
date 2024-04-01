@@ -9,8 +9,6 @@ import { DishesRepositoryImpl } from '../network/repositories/dishes.repository'
 import { useAlerts } from '../UI/components/alert/alerts-context';
 import { Dish } from '../models/dish.model';
 import CustomizedTables from './demo';
-import { useUsersListerDispatchContext } from '../auth/auth.reducer';
-import { UserRepositoryImpl } from '../network/repositories/user.respository';
 import UpdateDishPage from './update.dish.page';
 import CustomButton, { TypeButton, WidthButton } from '../UI/components/custom.button';
 import { BaseContent } from '../UI/components/base.content';
@@ -21,8 +19,6 @@ export default function HomePage() {
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined)
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
   const { addAlert, clearAlerts } = useAlerts();
-  const dispatch = useUsersListerDispatchContext()
-  const userRepository = new UserRepositoryImpl()
   const dishRepository = new DishesRepositoryImpl()
 
   const fetchDishes = async () => {
@@ -37,17 +33,7 @@ export default function HomePage() {
     const fetch = async () => {
       setIsLoading(true)
       await fetchDishes()
-      await fetchUser()
       setIsLoading(false)
-    }
-
-    const fetchUser = async () => {
-      try {
-        const user = await userRepository.getMe()
-        dispatch({ type: "UPDATE_USER", payload: user })
-      } catch (error) {
-        addAlert({ severity: 'error', message: "Erreur lors de la récupération de l'utilisateur" })
-      }
     }
 
     fetch()
@@ -71,7 +57,11 @@ export default function HomePage() {
           >
             Ajouter un repas
           </CustomButton>} drawerId={'add-drawer-dish'}>
-            <AddDishPage />
+            <AddDishPage onClickOnConfirm={async () => {
+              setIsLoading(true)
+              await fetchDishes()
+              setIsLoading(false)
+            }}/>
           </DrawerButton>
         </div>
       </div>

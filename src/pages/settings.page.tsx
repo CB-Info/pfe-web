@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ProfilContent } from "../UI/components/settingsContent/profilContent";
 import { PreferencesContent } from "../UI/components/settingsContent/preferencesContent";
 import { BaseContent } from '../UI/components/base.content';
