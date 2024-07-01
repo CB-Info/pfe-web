@@ -1,4 +1,4 @@
-import styled, { DefaultTheme, css } from "styled-components"
+import styled, { css } from "styled-components"
 import tw from 'twin.macro'
 
 interface BadgeContainerProps {

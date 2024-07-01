@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { TextInput } from "../../components/input/textInput";
 import TitleStyle from "../../style/title.style";
 import CustomButton, { TypeButton, WidthButton } from "../../components/buttons/custom.button";
@@ -10,7 +10,7 @@ import { BaseContent } from '../../components/contents/base.content';
 export default function LoginPage() {
   const [emailInput, setEmailInput] = useState("")
   const [passwordInput, setPasswordInput] = useState("")
-  const { addAlert, clearAlerts } = useAlerts();
+  const { addAlert } = useAlerts();
   const [isLoading, setIsLoading] = useState(false)
 
   const userRepository = new UserRepositoryImpl()

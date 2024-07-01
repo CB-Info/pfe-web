@@ -1,7 +1,7 @@
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useEffect } from "react"
 import { Modal, PositionModal } from "../../modals/modal"
 import ModalInput from "../../../style/modal.input.style"
-import { Ingredient, IngredientUnity } from "../../../../data/models/ingredient.model"
+import { Ingredient } from "../../../../data/models/ingredient.model"
 import { NavigationModal, useIngredientsListerDispatchContext, useIngredientsListerStateContext } from "../ingredients.lister.reducer"
 import { CellButton } from "../../buttons/cell.button"
 import { IngredientRepositoryImpl } from "../../../../network/repositories/ingredients.repository"
@@ -72,7 +72,7 @@ export const IngredientsModalHome: React.FC<IngredientModalHome> = ({ ingredient
             dispatch({ type: "UPDATE_CURRENT_INGREDIENT", payload: newIngredient })
             dispatch({ type: "SET_NAVIGATION_MODAL", payload: NavigationModal.CREATION_INGREDIENT })
         } catch (error) {
-
+            console.log(error)
         }
     }
 

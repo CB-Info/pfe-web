@@ -9,7 +9,6 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { toCapitalize } from '../../../../applications/extensions/string+extension';
 import { ChangeEvent, useState } from "react"
 import { ConfirmationModal } from "../../modals/confirmation.modal"
-import CustomButton, { TypeButton, WidthButton } from "../../buttons/custom.button"
 import ModalButton from "../../../style/modal.button"
 
 interface IngredientModalCreation {

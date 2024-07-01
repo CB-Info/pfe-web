@@ -1,4 +1,4 @@
-import { DishCategory, DishDto, DishIngredientDto } from "../dto/dish.dto"
+import { DishCategory, DishDto } from "../dto/dish.dto"
 import { Ingredient, IngredientUnity } from "./ingredient.model"
 
 export class Dish {

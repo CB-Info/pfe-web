@@ -15,7 +15,7 @@ import { UserRepositoryImpl } from '../../../network/repositories/user.resposito
 
 export function NavBar() {
     const userRepository = new UserRepositoryImpl()
-    const { addAlert, clearAlerts } = useAlerts();
+    const { addAlert } = useAlerts();
     const dispatch = useUsersListerDispatchContext();
     const state = useUsersListerStateContext();
 

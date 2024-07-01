@@ -18,7 +18,7 @@ export default function HomePage() {
   const [dishes, setDishes] = useState<Dish[]>([])
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined)
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
-  const { addAlert, clearAlerts } = useAlerts();
+  const { addAlert } = useAlerts();
   const dishRepository = new DishesRepositoryImpl()
 
   const fetchDishes = async () => {

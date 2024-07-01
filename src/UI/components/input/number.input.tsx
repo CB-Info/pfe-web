@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import styled, { DefaultTheme, css } from "styled-components"
-import tw, { theme } from 'twin.macro'
+import tw from 'twin.macro'
 import EuroRoundedIcon from '@mui/icons-material/EuroRounded';
 import LabelStyle from '../../style/label.style';
 
