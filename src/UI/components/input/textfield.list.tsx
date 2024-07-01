@@ -1,5 +1,5 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import styled, { css } from "styled-components"
 import tw from 'twin.macro'
 import { Modal } from '../modals/modal';

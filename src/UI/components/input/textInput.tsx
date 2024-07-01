@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import styled, { DefaultTheme, css } from "styled-components"
-import tw, { theme } from 'twin.macro'
+import tw from 'twin.macro'
 import LabelStyle from '../../style/label.style';
 
 interface TextInputProps {

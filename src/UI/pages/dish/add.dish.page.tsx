@@ -9,7 +9,7 @@ import { Ingredient } from "../../../data/models/ingredient.model";
 import { NumberInput } from "../../components/input/number.input";
 import { CircularProgress } from "@mui/material";
 import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
-import { DishCategory, DishIngredientDto } from "../../../data/dto/dish.dto";
+import { DishCategory } from "../../../data/dto/dish.dto";
 import { toCapitalize } from "../../../applications/extensions/string+extension";
 import { useAlerts } from "../../../contexts/alerts.context";
 import { DishIngredientCreationDto } from "../../../data/dto/dish.creation.dto";

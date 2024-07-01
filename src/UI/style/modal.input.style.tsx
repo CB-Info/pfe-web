@@ -1,10 +1,7 @@
 import styled, { css } from "styled-components"
 import tw from 'twin.macro'
 
-interface ModalInputProps {
-}
-
-const ModalInput = styled.input<ModalInputProps>(({ theme }) => [
+const ModalInput = styled.input(() => [
     tw`
         font-inter
     `,

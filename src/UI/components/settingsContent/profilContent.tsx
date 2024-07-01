@@ -28,6 +28,7 @@ export const ProfilContent: React.FC = () => {
                 dispatch({ type: "UPDATE_USER", payload: updatedUser });
                 setIsLoadingUpdateUser(false)
               } catch (error) {
+                console.log(error)
               }
         }
       };
