@@ -10,8 +10,8 @@ interface NumberInputProps {
   value: string | number,
   onChange: (newValue: string) => void,
   type?: 'number',
-  isError?: boolean,
-  isDisabled?: boolean,
+  isError: boolean,
+  isDisabled: boolean,
 }
 
 const getBorderColor = (theme: DefaultTheme, isError: boolean | undefined, isDisabled: boolean | undefined) => {
@@ -20,7 +20,7 @@ const getBorderColor = (theme: DefaultTheme, isError: boolean | undefined, isDis
   return theme.borderColor; // Couleur par défaut si ni isError ni isDisabled
 };
 
-const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ theme, isError, isDisabled }) => [
+const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ theme, $isError, $isDisabled }) => [
   tw`
         text-sm
         font-inter
@@ -30,13 +30,13 @@ const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ t
         border
       `,
   css`
-        border-color: ${getBorderColor(theme, isError, isDisabled)};
-        color: ${isError ? theme.errorColor : '#232323'};
-        background-color: ${isDisabled ? theme.disabledBackgroundColor : '#FFFFFF'};
-        cursor: ${isDisabled ? 'not-allowed' : 'text'};
-        opacity: ${isDisabled ? '0.6' : '1'};
+        border-color: ${getBorderColor(theme, $isError, $isDisabled)};
+        color: ${$isError ? theme.errorColor : '#232323'};
+        background-color: ${$isDisabled ? theme.disabledBackgroundColor : '#FFFFFF'};
+        cursor: ${$isDisabled ? 'not-allowed' : 'text'};
+        opacity: ${$isDisabled ? '0.6' : '1'};
         &:focus{
-          outline: ${isError ? 'none' : ''};
+          outline: ${$isError ? 'none' : ''};
         }
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {
@@ -61,7 +61,15 @@ export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, labe
     <div className='flex flex-col'>
         <LabelStyle>{label}</LabelStyle>
       <div className='flex'>
-        <BaseInput name={name} type={type} value={value} disabled={isDisabled} isDisabled={isDisabled} onChange={handleOnChange} isError={isError} />
+        <BaseInput 
+          name={name} 
+          type={type} 
+          value={value} 
+          disabled={isDisabled} 
+          $isDisabled={isDisabled}
+          onChange={handleOnChange} 
+          $isError={isError} 
+        />
         <div className="p-2.5 h-full text-sm font-medium text-slate-400 bg-slate-100 rounded-e-lg border border-primary-color focus:outline-none">
           <EuroRoundedIcon className="opacity-70" />
         </div>

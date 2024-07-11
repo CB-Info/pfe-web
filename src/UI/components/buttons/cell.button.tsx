@@ -4,7 +4,7 @@ import tw from "twin.macro";
 
 interface CellProps {
     isImage: boolean
-    isError?: boolean
+    $isError?: boolean
 }
 
 function getPadding(isImage: boolean) {
@@ -15,7 +15,7 @@ function getPadding(isImage: boolean) {
     return tw`px-7`
 }
 
-const CellButtonStyle = styled.div<CellProps>(({ theme, isError = false , isImage}) => [
+const CellButtonStyle = styled.div<CellProps>(({ theme, $isError: isError = false , isImage}) => [
     tw`
         flex
         w-full
@@ -45,7 +45,7 @@ interface CellButtonType {
 
 export const CellButton: React.FC<CellButtonType> = ({ onClick, label, image, isError = false }) => {
     return (
-        <CellButtonStyle onClick={onClick} isError={isError} isImage={image != null ? true : false}>
+        <CellButtonStyle onClick={onClick} $isError={isError} isImage={image != null ? true : false}>
             {image}
             {label}
         </CellButtonStyle>

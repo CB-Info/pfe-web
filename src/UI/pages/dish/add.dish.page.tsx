@@ -138,10 +138,10 @@ const AddDishPage: React.FC<AddDishPageProps> = ({ onClickOnConfirm }) => {
                     <div className='flex flex-col h-full px-5 py-6 justify-between items-center'>
                         <form className="flex flex-1 flex-col" onSubmit={handleOnCreateButton}>
                             <div className="flex flex-1 flex-col gap-3">
-                                <TextInput name="dishName" label={"Nom"} value={dishName} onChange={(newValue) => { setDishName(newValue) }} isError={inputError == InputError.NAME} />
-                                <TextInput name="dishDescription" type="textarea" label={"Description"} value={dishDescription} onChange={(newValue) => { setDishDescription(newValue) }} isError={inputError == InputError.DESCRIPTION} />
+                                <TextInput name="dishName" label={"Nom"} value={dishName} onChange={(newValue) => { setDishName(newValue) }} $isError={inputError == InputError.NAME} />
+                                <TextInput name="dishDescription" type="textarea" label={"Description"} value={dishDescription} onChange={(newValue) => { setDishDescription(newValue) }} $isError={inputError == InputError.DESCRIPTION} />
                                 <TextfieldList valuesToDisplay={Object.values(DishCategory).map((e) => toCapitalize(e))} onClicked={handleOnClickOnCellCategory} label={"Catégorie"} />
-                                <NumberInput name="dishPrice" label={"Prix"} value={dishPrice} onChange={(newValue) => setDishPrice(newValue)} isError={inputError == InputError.PRICE}/>
+                                <NumberInput name="dishPrice" label={"Prix"} value={dishPrice} onChange={(newValue) => setDishPrice(newValue)} $isError={inputError == InputError.PRICE}/>
                                 <IngredientsLister
                                     ingredients={allIngredients} 
                                     currentIngredients={ingredientsDish}

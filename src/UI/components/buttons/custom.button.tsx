@@ -38,12 +38,12 @@ const getSize = (width: WidthButton) => {
 }
 
 interface PrimaryButtonProps {
-    width: WidthButton;
-    isDisabled: boolean
-    isLoading: boolean
+    $width: WidthButton;
+    $isDisabled: boolean
+    $isLoading: boolean
 }
 
-const PrimaryButton = styled.button<PrimaryButtonProps>(({ theme, width = WidthButton.MEDIUM, isDisabled, isLoading }) => [
+const PrimaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = WidthButton.MEDIUM, $isDisabled: isDisabled, $isLoading: isLoading }) => [
     tw`
         flex
         rounded-2xl
@@ -69,7 +69,7 @@ const PrimaryButton = styled.button<PrimaryButtonProps>(({ theme, width = WidthB
     `,
 ]);
 
-const SecondaryButton = styled.button<PrimaryButtonProps>(({ theme, width = WidthButton.MEDIUM, isDisabled, isLoading }) => [
+const SecondaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = WidthButton.MEDIUM, $isDisabled: isDisabled, $isLoading: isLoading }) => [
     tw`
         flex
         rounded-2xl
@@ -94,7 +94,7 @@ const SecondaryButton = styled.button<PrimaryButtonProps>(({ theme, width = Widt
     `,
 ]);
 
-const TextButton = styled.button<PrimaryButtonProps>(({ theme, width = WidthButton.MEDIUM, isDisabled, isLoading }) => [
+const TextButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = WidthButton.MEDIUM, $isDisabled: isDisabled, $isLoading: isLoading }) => [
     tw`
         flex
         rounded-2xl
@@ -124,9 +124,9 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button"
                 <PrimaryButton
                     type={inputType}
                     onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
-                    width={width} 
-                    isDisabled={isDisabled} 
-                    isLoading={isLoading}>
+                    $width={width} 
+                    $isDisabled={isDisabled} 
+                    $isLoading={isLoading}>
                 {isLoading ? <CircularProgress size={20}/> : children}
                 </PrimaryButton>
             )
@@ -136,9 +136,9 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button"
                 <SecondaryButton 
                     type={inputType}
                     onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
-                    width={width} 
-                    isDisabled={isDisabled} 
-                    isLoading={isLoading}>
+                    $width={width} 
+                    $isDisabled={isDisabled} 
+                    $isLoading={isLoading}>
                 {isLoading ? <CircularProgress size={20}/> : children}
                 </SecondaryButton>
             )
@@ -148,9 +148,9 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button"
                 <TextButton
                     type={inputType}
                     onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
-                    width={width}
-                    isDisabled={isDisabled} 
-                    isLoading={isLoading}>
+                    $width={width}
+                    $isDisabled={isDisabled} 
+                    $isLoading={isLoading}>
                 {isLoading ? <CircularProgress size={20}/> : children}
                 </TextButton>
             )

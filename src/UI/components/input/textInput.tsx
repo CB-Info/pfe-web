@@ -10,7 +10,7 @@ interface TextInputProps {
   onChange: (newValue: string) => void,
   type?: 'text' | 'password' | 'email' | 'textarea' | 'number' | 'checkbox',
   isError: boolean,
-  isDisabled?: boolean,
+  isDisabled: boolean,
 }
 
 const getBorderColor = (theme: DefaultTheme, isError: boolean | undefined, isDisabled: boolean | undefined) => {
@@ -19,7 +19,7 @@ const getBorderColor = (theme: DefaultTheme, isError: boolean | undefined, isDis
   return theme.borderColor; // Couleur par défaut si ni isError ni isDisabled
 };
 
-const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ theme, isError, isDisabled }) => [
+const BaseInput = styled.input<{ $isError?: boolean, $isDisabled?: boolean }>(({ theme, $isError, $isDisabled }) => [
   tw`
         text-sm
         font-inter
@@ -29,11 +29,11 @@ const BaseInput = styled.input<{ isError?: boolean, isDisabled?: boolean }>(({ t
         border
       `,
   css`
-        border-color: ${getBorderColor(theme, isError, isDisabled)};
-        color: ${isError ? theme.errorColor : '#232323'};
-        background-color: ${isDisabled ? theme.disabledBackgroundColor : '#FFFFFF'};
-        cursor: ${isDisabled ? 'not-allowed' : 'text'};
-        opacity: ${isDisabled ? '0.6' : '1'};
+        border-color: ${getBorderColor(theme, $isError, $isDisabled)};
+        color: ${$isError ? theme.errorColor : '#232323'};
+        background-color: ${$isDisabled ? theme.disabledBackgroundColor : '#FFFFFF'};
+        cursor: ${$isDisabled ? 'not-allowed' : 'text'};
+        opacity: ${$isDisabled ? '0.6' : '1'};
       `,
 ]);
 
@@ -42,15 +42,30 @@ const Textarea = styled(BaseInput).attrs({ as: 'textarea' })`
   resize: none;
 `;
 
-export const TextInput: React.FC<TextInputProps> = ({  name = undefined , label, type = "text", isError, isDisabled, value, onChange }) => {
+export const TextInput: React.FC<TextInputProps> = ({ name = undefined, label, type = "text", isError, isDisabled, value, onChange }) => {
   return (
     <div>
       <LabelStyle>{label}</LabelStyle>
       {
         type === 'textarea' ? (
-          <Textarea name={name} value={value} disabled={isDisabled} isDisabled={isDisabled} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {onChange(e.target.value)}} isError={isError} />
+          <Textarea 
+            name={name}
+            value={value} 
+            disabled={isDisabled} 
+            $isDisabled={isDisabled} 
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => { onChange(e.target.value) }} 
+            $isError={isError} 
+          />
         ) : (
-          <BaseInput name={name} type={type} value={value} disabled={isDisabled} isDisabled={isDisabled} onChange={(e: ChangeEvent<HTMLInputElement>) => {onChange(e.target.value)}} isError={isError} />
+          <BaseInput 
+            name={name} 
+            type={type} 
+            value={value} 
+            disabled={isDisabled}
+            $isDisabled={isDisabled}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => { onChange(e.target.value) }} 
+            $isError={isError} 
+          />
         )
       }
     </div>
