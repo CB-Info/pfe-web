@@ -41,21 +41,21 @@ export const ProfilContent: React.FC = () => {
                     name="lastName" 
                     value={lastName} 
                     onChange={(newValue) => setLastName(newValue)} 
-                    isError={false} 
+                    $isError={false} 
                 />
                 <TextInput 
                     label="Prénom" 
                     name="firstName" 
                     value={firstName} 
                     onChange={(newValue) => setFirstName(newValue)} 
-                    isError={false} 
+                    $isError={false} 
                 />
                 <TextInput 
                     label="Email" 
                     name="email" 
                     value={email} 
                     onChange={(newValue) => setEmail(newValue)} 
-                    isError={false} 
+                    $isError={false} 
                     type="email" 
                 />
             </div>
