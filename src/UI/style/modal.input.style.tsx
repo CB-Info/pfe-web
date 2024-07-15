@@ -1,7 +1,11 @@
 import styled, { css } from "styled-components"
 import tw from 'twin.macro'
 
-const ModalInput = styled.input(() => [
+interface ModalInputProps {
+    type?: 'text' | 'number';
+}
+
+const ModalInput = styled.input<ModalInputProps>(() => [
     tw`
         font-inter
     `,
@@ -18,6 +22,12 @@ const ModalInput = styled.input(() => [
         cursor: text;
         padding: 3px 6px;
         height: 28px;
+        ${({ type }) => type === 'number' && css`
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+         -webkit-appearance: none;
+      }
+    `}
     `,
 ]);
 
