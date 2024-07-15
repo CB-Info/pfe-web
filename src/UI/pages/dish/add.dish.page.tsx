@@ -73,7 +73,7 @@ const AddDishPage: React.FC<AddDishPageProps> = ({ onClickOnConfirm }) => {
 
     function handleOnClickOnCellCategory(e: string) {
         if (e.toUpperCase() in DishCategory) {
-            setDishCategory(DishCategory[e as keyof typeof DishCategory])
+            setDishCategory(DishCategory[e.toUpperCase() as keyof typeof DishCategory])
         }
     }
 
@@ -103,6 +103,7 @@ const AddDishPage: React.FC<AddDishPageProps> = ({ onClickOnConfirm }) => {
         e.preventDefault();
 
         if (validateForm()) {
+            //console.log(dishCategory)
             try {
                 setIsLoadingCreationDish(true)
                 await dishesRepository.create({
@@ -138,10 +139,10 @@ const AddDishPage: React.FC<AddDishPageProps> = ({ onClickOnConfirm }) => {
                     <div className='flex flex-col h-full px-5 py-6 justify-between items-center'>
                         <form className="flex flex-1 flex-col" onSubmit={handleOnCreateButton}>
                             <div className="flex flex-1 flex-col gap-3">
-                                <TextInput name="dishName" label={"Nom"} value={dishName} onChange={(newValue) => { setDishName(newValue) }} $isError={inputError == InputError.NAME} />
-                                <TextInput name="dishDescription" type="textarea" label={"Description"} value={dishDescription} onChange={(newValue) => { setDishDescription(newValue) }} $isError={inputError == InputError.DESCRIPTION} />
+                                <TextInput name="dishName" label={"Nom"} value={dishName} onChange={(newValue) => { setDishName(newValue); } } $isError={inputError == InputError.NAME} $isDisabled={false} />
+                                <TextInput name="dishDescription" type="textarea" label={"Description"} value={dishDescription} onChange={(newValue) => { setDishDescription(newValue); } } $isError={inputError == InputError.DESCRIPTION} $isDisabled={false} />
                                 <TextfieldList valuesToDisplay={Object.values(DishCategory).map((e) => toCapitalize(e))} onClicked={handleOnClickOnCellCategory} label={"Catégorie"} />
-                                <NumberInput name="dishPrice" label={"Prix"} value={dishPrice} onChange={(newValue) => setDishPrice(newValue)} $isError={inputError == InputError.PRICE}/>
+                                <NumberInput name="dishPrice" label={"Prix"} value={dishPrice} onChange={(newValue) => setDishPrice(newValue)} $isError={inputError == InputError.PRICE} $isDisabled={false}/>
                                 <IngredientsLister
                                     ingredients={allIngredients} 
                                     currentIngredients={ingredientsDish}

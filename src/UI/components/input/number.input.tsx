@@ -10,8 +10,8 @@ interface NumberInputProps {
   value: string | number,
   onChange: (newValue: string) => void,
   type?: 'number',
-  isError: boolean,
-  isDisabled: boolean,
+  $isError: boolean,
+  $isDisabled: boolean
 }
 
 const getBorderColor = (theme: DefaultTheme, isError: boolean | undefined, isDisabled: boolean | undefined) => {
@@ -45,7 +45,7 @@ const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ t
       `,
 ]);
 
-export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, label, type = "number", isError, isDisabled, value, onChange }) => {
+export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, label, type = "number", $isError, $isDisabled, value, onChange }) => {
 
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value
@@ -65,10 +65,10 @@ export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, labe
           name={name} 
           type={type} 
           value={value} 
-          disabled={isDisabled} 
-          $isDisabled={isDisabled}
+          disabled={$isDisabled} 
+          $isDisabled={$isDisabled}
           onChange={handleOnChange} 
-          $isError={isError} 
+          $isError={$isError} 
         />
         <div className="p-2.5 h-full text-sm font-medium text-slate-400 bg-slate-100 rounded-e-lg border border-primary-color focus:outline-none">
           <EuroRoundedIcon className="opacity-70" />
