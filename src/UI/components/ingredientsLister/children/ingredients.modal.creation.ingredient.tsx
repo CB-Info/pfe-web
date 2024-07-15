@@ -79,7 +79,7 @@ export const IngredientsModalCreation: React.FC<IngredientModalCreation> = ({ cu
                         <span>Valeur</span>
                     </div>
                     <div className='flex'>
-                        <ModalInput placeholder="Valeur de l'ingrédient" value={state.userIngredientValueInput} onChange={handleOnChangeIngredientValue} />
+                        <ModalInput placeholder="Valeur de l'ingrédient" value={state.userIngredientValueInput} onChange={handleOnChangeIngredientValue} type="number"/>
                     </div>
                 </CellCLStyle>
                 <div className='border border-solid border-gray-100 w-full'></div>
