@@ -8,7 +8,7 @@ import TextfieldList from '../../components/input/textfield.list';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { useAlerts } from '../../../contexts/alerts.context';
 import { Dish } from '../../../data/models/dish.model';
-import CustomizedTables from '../../components/tables/dish.table';
+import DishesTable from '../../components/tables/dishes/dish.table';
 import UpdateDishPage from './update.dish.page';
 import CustomButton, { TypeButton, WidthButton } from '../../components/buttons/custom.button';
 import { BaseContent } from '../../components/contents/base.content';
@@ -82,7 +82,7 @@ export default function HomePage() {
             </div>
           </div>
           <div>
-            <CustomizedTables dishes={dishes} setSelectedDish={handleRowClick} />
+            <DishesTable dishes={dishes} setSelectedDish={handleRowClick} />
           </div>
           {isUpdateDrawerOpen && selectedDish && (
             <UpdateDishDrawer dish={selectedDish} onClose={() => setIsUpdateDrawerOpen(false)} onCloseConfirm={async () => {
