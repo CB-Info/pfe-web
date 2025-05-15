@@ -18,21 +18,22 @@ export class CardsRepositoryImpl {
             });
             
             if (!response.ok) {
-                throw new Error('Failed to fetch cards');
+                console.error('Failed to fetch cards:', response.status);
+                return [];
             }
             
             const body: Data<CardDto[]> = await response.json();
             
-            // Add validation to ensure body.data exists and is an array
-            if (!body?.data || !Array.isArray(body.data)) {
-                console.error('Invalid response format:', body);
+            // Ensure body and body.data exist and body.data is an array
+            if (!body || !body.data || !Array.isArray(body.data)) {
+                console.error('Invalid response format or no cards available:', body);
                 return [];
             }
             
             return body.data.map(card => Card.fromDto(card));
         } catch (error) {
             console.error('Error fetching cards:', error);
-            return []; // Return empty array on error instead of throwing
+            return []; // Return empty array on error
         }
     }
 
