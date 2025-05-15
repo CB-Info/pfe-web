@@ -24,8 +24,8 @@ export class CardsRepositoryImpl {
             
             const body: Data<CardDto[]> = await response.json();
             
-            // Return early if body or body.data is falsy
-            if (!body?.data) {
+            // Enhanced null check to ensure both body and body.data exist
+            if (!body || !body.data) {
                 console.log('No cards data available');
                 return [];
             }
@@ -48,7 +48,7 @@ export class CardsRepositoryImpl {
                 },
                 body: JSON.stringify({
                     name: card.name,
-                    dishesId: card.dishes, // Changed to dishesId to match API expectation
+                    dishesId: card.dishesId, // Using dishesId directly from the DTO
                     isActive: card.isActive
                 })
             });
@@ -75,7 +75,7 @@ export class CardsRepositoryImpl {
                 },
                 body: JSON.stringify({
                     name: card.name,
-                    dishesId: card.dishes, // Changed to dishesId to match API expectation
+                    dishesId: card.dishesId, // Using dishesId directly from the DTO
                     isActive: card.isActive
                 })
             });

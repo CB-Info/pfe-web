@@ -55,7 +55,7 @@ export const CardModal: React.FC<CardModalProps> = ({
             setIsLoading(true);
             const cardData = {
                 name: name.trim(),
-                dishes: selectedDishes, // This is already an array of strings (dish IDs)
+                dishesId: selectedDishes, // Changed from dishes to dishesId to match the DTO
                 isActive
             };
 
