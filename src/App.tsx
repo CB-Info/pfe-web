@@ -6,11 +6,10 @@ import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import AlertsProvider from './contexts/alerts.context';
 import AuthProvider from './contexts/auth.provider';
 import SettingsPage from './UI/pages/settings/settings.page';
-import { ThemeProvider, useTheme } from './contexts/theme.context';
-import CardsPage from './UI/pages/cards/cards.page';
+import { ThemeProvider, useTheme } from './contexts/theme.context'; // Assurez-vous que l'importation est correcte
 
 const ThemedApp = () => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useTheme(); // Utiliser le hook useTheme pour obtenir isDarkMode
 
   return (
     <StyledThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -21,7 +20,6 @@ const ThemedApp = () => {
             <Routes>
               <Route path="/home" element={<HomePage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/cards" element={<CardsPage />} />
             </Routes>
           </div>
         </AuthProvider>
