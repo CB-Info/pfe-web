@@ -25,12 +25,12 @@ export class CardsRepositoryImpl {
             const body: Data<CardDto[]> = await response.json();
             
             // Ensure body and body.data exist and body.data is an array
-            if (!body || !body.data || !Array.isArray(body.data)) {
-                console.error('Invalid response format or no cards available:', body);
+            if (!body?.data) {
+                console.log('No cards available');
                 return [];
             }
             
-            return body.data.map(card => Card.fromDto(card));
+            return Array.isArray(body.data) ? body.data.map(card => Card.fromDto(card)) : [];
         } catch (error) {
             console.error('Error fetching cards:', error);
             return []; // Return empty array on error
