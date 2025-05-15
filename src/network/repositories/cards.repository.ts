@@ -24,7 +24,7 @@ export class CardsRepositoryImpl {
             const body: Data<CardDto[]> = await response.json();
             
             // Add validation to ensure body.data exists and is an array
-            if (!body.data || !Array.isArray(body.data)) {
+            if (!body?.data || !Array.isArray(body.data)) {
                 console.error('Invalid response format:', body);
                 return [];
             }
@@ -32,7 +32,7 @@ export class CardsRepositoryImpl {
             return body.data.map(card => Card.fromDto(card));
         } catch (error) {
             console.error('Error fetching cards:', error);
-            throw error;
+            return []; // Return empty array on error instead of throwing
         }
     }
 
