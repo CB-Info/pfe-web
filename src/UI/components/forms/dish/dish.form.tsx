@@ -13,14 +13,31 @@ import { DishCategory } from "../../../../data/dto/dish.dto";
 import { toCapitalize } from "../../../../applications/extensions/string+extension";
 import { useAlerts } from "../../../../contexts/alerts.context";
 import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
-
 import { DishFormProps, DishFormMode } from "./dish.form.props";
+import { commonValidationRules, validateField, type ValidationRules } from "../../../../utils/validation";
 
-enum InputError {
-  NAME,
-  DESCRIPTION,
-  PRICE,
+interface FormErrors {
+  name?: string;
+  description?: string;
+  price?: string;
 }
+
+const validationRules: ValidationRules = {
+  name: [
+    commonValidationRules.required,
+    commonValidationRules.minLength(3),
+    commonValidationRules.maxLength(50),
+  ],
+  description: [
+    commonValidationRules.required,
+    commonValidationRules.minLength(10),
+    commonValidationRules.maxLength(500),
+  ],
+  price: [
+    commonValidationRules.required,
+    commonValidationRules.price,
+  ],
+};
 
 const DishForm: React.FC<DishFormProps> = ({
   mode,
@@ -28,41 +45,21 @@ const DishForm: React.FC<DishFormProps> = ({
   onSubmitSuccess,
   onCancel,
 }) => {
-  const [dishName, setDishName] = useState(
-    mode === DishFormMode.UPDATE && dish ? dish.name : ""
-  );
-  const [dishDescription, setDishDescription] = useState(
-    mode === DishFormMode.UPDATE && dish ? dish.description : ""
-  );
-  const [dishPrice, setDishPrice] = useState(
-    mode === DishFormMode.UPDATE && dish ? String(dish.price) : ""
-  );
-  const [dishCategory, setDishCategory] = useState<DishCategory>(
-    mode === DishFormMode.UPDATE && dish ? dish.category : DishCategory.MEAT
-  );
+  const [dishName, setDishName] = useState(mode === DishFormMode.UPDATE && dish ? dish.name : "");
+  const [dishDescription, setDishDescription] = useState(mode === DishFormMode.UPDATE && dish ? dish.description : "");
+  const [dishPrice, setDishPrice] = useState(mode === DishFormMode.UPDATE && dish ? String(dish.price) : "");
+  const [dishCategory, setDishCategory] = useState<DishCategory>(mode === DishFormMode.UPDATE && dish ? dish.category : DishCategory.MEAT);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const defaultIngredients =
-    mode === DishFormMode.UPDATE && dish
-      ? dish.ingredients.map(
-          (ing) =>
-            new Ingredient(
-              ing.ingredient._id,
-              ing.ingredient.name,
-              ing.unity,
-              ing.quantity
-            )
-        )
-      : [];
+  const defaultIngredients = mode === DishFormMode.UPDATE && dish
+    ? dish.ingredients.map((ing) => new Ingredient(ing.ingredient._id, ing.ingredient.name, ing.unity, ing.quantity))
+    : [];
 
-  const [ingredientsDish, setIngredientsDish] = useState<Ingredient[]>(
-    defaultIngredients
-  );
+  const [ingredientsDish, setIngredientsDish] = useState<Ingredient[]>(defaultIngredients);
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingCreationDish, setIsLoadingCreationDish] = useState(false);
-  const [inputError, setInputError] = useState<InputError | undefined>(
-    undefined
-  );
 
   const dishesRepository = new DishesRepositoryImpl();
   const { addAlert, clearAlerts } = useAlerts();
@@ -86,45 +83,47 @@ const DishForm: React.FC<DishFormProps> = ({
     fetchAllIngredientsData();
   }, [addAlert, dishesRepository]);
 
-  function resetForm() {
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    // Validate each field
+    Object.keys(validationRules).forEach((field) => {
+      const value = field === 'price' ? dishPrice : field === 'name' ? dishName : dishDescription;
+      const error = validateField(value, validationRules[field]);
+      if (error) {
+        newErrors[field as keyof FormErrors] = error;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleBlur = (field: keyof FormErrors) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    if (touched[field]) {
+      const value = field === 'price' ? dishPrice : field === 'name' ? dishName : dishDescription;
+      const error = validateField(value, validationRules[field]);
+      setErrors(prev => ({ ...prev, [field]: error }));
+    }
+  };
+
+  const resetForm = () => {
     setDishName("");
     setDishDescription("");
     setDishPrice("");
     setIngredientsDish([]);
     setDishCategory(DishCategory.MEAT);
-    setInputError(undefined);
+    setErrors({});
+    setTouched({});
     clearAlerts();
-  }
+  };
 
-  function handleOnClickOnCellCategory(category: string) {
-  
+  const handleOnClickOnCellCategory = (category: string) => {
     const upper = category.toUpperCase();
     if (upper in DishCategory) {
       setDishCategory(DishCategory[upper as keyof typeof DishCategory]);
     }
-  }
-
-  const validateForm = (): boolean => {
-    if (!dishName) {
-      setInputError(InputError.NAME);
-      addAlert({ severity: "error", message: "Le nom est obligatoire", timeout: 5 });
-      return false;
-    }
-    if (!dishDescription) {
-      setInputError(InputError.DESCRIPTION);
-      addAlert({ severity: "error", message: "La description est obligatoire", timeout: 5 });
-      return false;
-    }
-    if (!dishPrice || Number(dishPrice) <= 0) {
-      setInputError(InputError.PRICE);
-      addAlert({
-        severity: "error",
-        message: "Le prix doit être un nombre positif",
-        timeout: 5,
-      });
-      return false;
-    }
-    return true;
   };
 
   async function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
@@ -180,39 +179,48 @@ const DishForm: React.FC<DishFormProps> = ({
       ) : (
         <BorderContainer>
           <div className="flex flex-col h-full px-5 py-6 justify-between items-center">
-            <form className="flex flex-1 flex-col" onSubmit={handleOnSubmit}>
+            <form className="flex flex-1 flex-col w-full" onSubmit={handleOnSubmit}>
               <div className="flex flex-1 flex-col gap-3">
                 <TextInput
                   name="dishName"
-                  label={"Nom"}
+                  label="Nom"
                   value={dishName}
                   onChange={(newValue) => setDishName(newValue)}
-                  $isError={inputError === InputError.NAME}
+                  onBlur={() => handleBlur('name')}
+                  $isError={!!errors.name}
+                  helperText={errors.name}
                   $isDisabled={false}
+                  required
                 />
                 <TextInput
                   name="dishDescription"
                   type="textarea"
-                  label={"Description"}
+                  label="Description"
                   value={dishDescription}
                   onChange={(newValue) => setDishDescription(newValue)}
-                  $isError={inputError === InputError.DESCRIPTION}
+                  onBlur={() => handleBlur('description')}
+                  $isError={!!errors.description}
+                  helperText={errors.description}
                   $isDisabled={false}
+                  required
                 />
                 <TextfieldList
                   valuesToDisplay={Object.values(DishCategory).map((cat) =>
                     toCapitalize(cat)
                   )}
                   onClicked={handleOnClickOnCellCategory}
-                  label={"Catégorie"}
+                  label="Catégorie"
                 />
                 <NumberInput
                   name="dishPrice"
-                  label={"Prix"}
+                  label="Prix"
                   value={dishPrice}
                   onChange={(newValue) => setDishPrice(newValue)}
-                  $isError={inputError === InputError.PRICE}
+                  onBlur={() => handleBlur('price')}
+                  $isError={!!errors.price}
+                  helperText={errors.price}
                   $isDisabled={false}
+                  required
                 />
                 <IngredientsLister
                   ingredients={allIngredients}
