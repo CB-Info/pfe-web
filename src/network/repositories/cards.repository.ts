@@ -8,6 +8,7 @@ export class CardsRepositoryImpl {
 
     async getAll(): Promise<Card[]> {
         try {
+            console.log('Fetching cards...');
             const token = await FirebaseAuthManager.getInstance().getToken();
             const response = await fetch(this.url, {
                 method: "GET",
@@ -19,45 +20,57 @@ export class CardsRepositoryImpl {
             
             if (!response.ok) {
                 console.error('Failed to fetch cards:', response.status);
-                return [];
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const body: Data<CardDto[]> = await response.json();
+            const body = await response.json();
+            console.log('Response body:', body);
             
-            // Enhanced null check to ensure both body and body.data exist
             if (!body || !body.data) {
                 console.log('No cards data available');
                 return [];
             }
             
-            return body.data.map(card => Card.fromDto(card));
+            const cards = body.data.map(card => Card.fromDto(card));
+            console.log('Processed cards:', cards);
+            return cards;
         } catch (error) {
             console.error('Error fetching cards:', error);
-            return [];
+            throw error;
         }
     }
 
     async create(card: CardCreationDto): Promise<void> {
         try {
+            console.log('Creating card with data:', card);
             const token = await FirebaseAuthManager.getInstance().getToken();
+            
+            // Ensure dishesId is an array
+            const payload = {
+                name: card.name,
+                dishesId: Array.isArray(card.dishesId) ? card.dishesId : [],
+                isActive: card.isActive
+            };
+            
+            console.log('Sending payload:', payload);
+            
             const response = await fetch(this.url, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    name: card.name,
-                    dishesId: card.dishesId, // Using dishesId directly from the DTO
-                    isActive: card.isActive
-                })
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => null);
-                console.error('Failed to create card:', errorData || response.statusText);
-                throw new Error('Failed to create card');
+                const errorData = await response.json();
+                console.error('Server error response:', errorData);
+                throw new Error(errorData.message || 'Failed to create card');
             }
+            
+            const responseData = await response.json();
+            console.log('Create card response:', responseData);
         } catch (error) {
             console.error('Error creating card:', error);
             throw error;
@@ -66,25 +79,35 @@ export class CardsRepositoryImpl {
 
     async update(cardId: string, card: CardCreationDto): Promise<void> {
         try {
+            console.log('Updating card:', cardId, 'with data:', card);
             const token = await FirebaseAuthManager.getInstance().getToken();
+            
+            // Ensure dishesId is an array
+            const payload = {
+                name: card.name,
+                dishesId: Array.isArray(card.dishesId) ? card.dishesId : [],
+                isActive: card.isActive
+            };
+            
+            console.log('Sending update payload:', payload);
+            
             const response = await fetch(`${this.url}/${cardId}`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    name: card.name,
-                    dishesId: card.dishesId, // Using dishesId directly from the DTO
-                    isActive: card.isActive
-                })
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => null);
-                console.error('Failed to update card:', errorData || response.statusText);
-                throw new Error('Failed to update card');
+                const errorData = await response.json();
+                console.error('Server error response:', errorData);
+                throw new Error(errorData.message || 'Failed to update card');
             }
+            
+            const responseData = await response.json();
+            console.log('Update card response:', responseData);
         } catch (error) {
             console.error('Error updating card:', error);
             throw error;
@@ -93,6 +116,7 @@ export class CardsRepositoryImpl {
 
     async delete(cardId: string): Promise<void> {
         try {
+            console.log('Deleting card:', cardId);
             const token = await FirebaseAuthManager.getInstance().getToken();
             const response = await fetch(`${this.url}/${cardId}`, {
                 method: "DELETE",
@@ -103,10 +127,12 @@ export class CardsRepositoryImpl {
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => null);
-                console.error('Failed to delete card:', errorData || response.statusText);
-                throw new Error('Failed to delete card');
+                const errorData = await response.json();
+                console.error('Server error response:', errorData);
+                throw new Error(errorData.message || 'Failed to delete card');
             }
+            
+            console.log('Card deleted successfully');
         } catch (error) {
             console.error('Error deleting card:', error);
             throw error;
