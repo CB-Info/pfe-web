@@ -31,7 +31,7 @@ export class CardsRepositoryImpl {
                 return [];
             }
             
-            const cards = body.data.map(card => Card.fromDto(card));
+            const cards = body.data ? body.data.map(card => Card.fromDto(card)) : [];
             console.log('Processed cards:', cards);
             return cards;
         } catch (error) {
