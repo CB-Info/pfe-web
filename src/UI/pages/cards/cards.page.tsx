@@ -32,8 +32,7 @@ export default function CardsPage() {
         } catch (error) {
             addAlert({ 
                 severity: 'error', 
-                message: "Erreur lors de la récupération des données",
-                timeout: 5
+                message: "Erreur lors de la récupération des données"
             });
         } finally {
             setIsLoading(false);
