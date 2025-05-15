@@ -7,7 +7,6 @@ import LocalDiningRoundedIcon from '@mui/icons-material/LocalDiningRounded';
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { Fragment, useEffect } from 'react';
 import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../reducers/auth.reducer';
 import { useAlerts } from '../../../contexts/alerts.context';
@@ -15,45 +14,44 @@ import FirebaseAuthManager from '../../../network/authentication/firebase.auth.m
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 
 export function NavBar() {
-  const userRepository = new UserRepositoryImpl()
-  const { addAlert } = useAlerts();
-  const dispatch = useUsersListerDispatchContext();
-  const state = useUsersListerStateContext();
+    const userRepository = new UserRepositoryImpl()
+    const { addAlert } = useAlerts();
+    const dispatch = useUsersListerDispatchContext();
+    const state = useUsersListerStateContext();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const user = await userRepository.getMe()
-        dispatch({ type: "UPDATE_USER", payload: user })
-      } catch (error) {
-        addAlert({ severity: 'error', message: "Erreur lors de la récupération de l'utilisateur" })
-      }
-    }
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+              const user = await userRepository.getMe()
+              dispatch({ type: "UPDATE_USER", payload: user })
+            } catch (error) {
+              addAlert({ severity: 'error', message: "Erreur lors de la récupération de l'utilisateur" })
+            }
+          }
 
-    fetchUser()
-  }, [state.currentUser])
+        fetchUser()
+    }, [state.currentUser])
 
-  return (
-    <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
-      <div className='flex flex-col flex-1'>
-        <div className='flex flex-col flex-1'>
-          <div className='flex h-28'></div>
-          <div className='flex flex-col flex-1'>
-            <NavBarCell icon={<SpaceDashboardRoundedIcon/>} label={'Dashboard'} path={'/home'}/>
-            <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/home'}/>
-            <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/cards'}/>
-            <NavBarCell icon={<LocalDiningRoundedIcon/>} label={'Dishes'} path={'/home'}/>
-            <NavBarCell icon={<MenuBookIcon/>} label={'Cartes'} path={'/cards'}/>
-          </div>
+    return (
+        <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
+            <div className='flex flex-col flex-1'>
+                <div className='flex flex-col flex-1'>
+                    <div className=' flex h-28'></div>
+                    <div className='flex flex-col flex-1'>
+                        <NavBarCell icon={<SpaceDashboardRoundedIcon/>} label={'Dashboard'} path={'/home'}/>
+                        <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/home'}/>
+                        <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/home'}/>
+                        <NavBarCell icon={<LocalDiningRoundedIcon/>} label={'Dishes'} path={'/home'}/>
+                    </div>
+                </div>
+                <div className='flex w-full items-center'>
+                    <div className='grow'>
+                        <BottomButtonNavBar/>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div className='flex w-full items-center'>
-          <div className='grow'>
-            <BottomButtonNavBar/>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+    )
 }
 
 function BottomButtonNavBar() {
