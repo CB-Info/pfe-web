@@ -24,13 +24,13 @@ export class CardsRepositoryImpl {
             
             const body: Data<CardDto[]> = await response.json();
             
-            // Handle empty or invalid response
-            if (!body || !body.data) {
+            // Return early if body or body.data is falsy
+            if (!body?.data) {
                 console.log('No cards data available');
                 return [];
             }
             
-            return Array.isArray(body.data) ? body.data.map(card => Card.fromDto(card)) : [];
+            return body.data.map(card => Card.fromDto(card));
         } catch (error) {
             console.error('Error fetching cards:', error);
             return [];
@@ -48,7 +48,7 @@ export class CardsRepositoryImpl {
                 },
                 body: JSON.stringify({
                     name: card.name,
-                    dishes: card.dishes,
+                    dishesId: card.dishes, // Changed to dishesId to match API expectation
                     isActive: card.isActive
                 })
             });
@@ -75,7 +75,7 @@ export class CardsRepositoryImpl {
                 },
                 body: JSON.stringify({
                     name: card.name,
-                    dishes: card.dishes,
+                    dishesId: card.dishes, // Changed to dishesId to match API expectation
                     isActive: card.isActive
                 })
             });

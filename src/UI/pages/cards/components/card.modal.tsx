@@ -55,7 +55,7 @@ export const CardModal: React.FC<CardModalProps> = ({
             setIsLoading(true);
             const cardData = {
                 name: name.trim(),
-                dishes: selectedDishes,
+                dishes: selectedDishes, // This is already an array of strings (dish IDs)
                 isActive
             };
 
@@ -75,6 +75,7 @@ export const CardModal: React.FC<CardModalProps> = ({
                 });
             }
             onSubmit();
+            onClose();
         } catch (error) {
             console.error('Error handling card:', error);
             addAlert({ 
