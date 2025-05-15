@@ -26,12 +26,13 @@ export class CardsRepositoryImpl {
             const body = await response.json();
             console.log('Response body:', body);
             
-            if (!body || !body.data) {
-                console.log('No cards data available');
+            // Add proper null checks and array validation
+            if (!body || !body.data || !Array.isArray(body.data)) {
+                console.log('No valid cards data available');
                 return [];
             }
             
-            const cards = body.data ? body.data.map(card => Card.fromDto(card)) : [];
+            const cards = body.data.map(card => Card.fromDto(card));
             console.log('Processed cards:', cards);
             return cards;
         } catch (error) {
