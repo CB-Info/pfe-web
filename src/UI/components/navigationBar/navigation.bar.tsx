@@ -36,11 +36,11 @@ export function NavBar() {
         <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
             <div className='flex flex-col flex-1'>
                 <div className='flex flex-col flex-1'>
-                    <div className='flex h-28'></div>
+                    <div className=' flex h-28'></div>
                     <div className='flex flex-col flex-1'>
                         <NavBarCell icon={<SpaceDashboardRoundedIcon/>} label={'Dashboard'} path={'/home'}/>
                         <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/home'}/>
-                        <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/cards'}/>
+                        <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/home'}/>
                         <NavBarCell icon={<LocalDiningRoundedIcon/>} label={'Dishes'} path={'/home'}/>
                     </div>
                 </div>
