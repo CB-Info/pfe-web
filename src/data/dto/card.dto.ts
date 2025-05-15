@@ -9,6 +9,6 @@ export interface CardDto {
 
 export interface CardCreationDto {
     name: string;
-    dishes: string[];
+    dishesId: string[]; // Changed from dishes to dishesId to match API expectation
     isActive: boolean;
 }
