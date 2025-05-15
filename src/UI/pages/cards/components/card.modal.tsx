@@ -33,31 +33,35 @@ export const CardModal: React.FC<CardModalProps> = ({
     const cardsRepository = new CardsRepositoryImpl();
 
     const handleSubmit = async () => {
-        if (!name.trim()) {
-            addAlert({ 
-                severity: 'error', 
-                message: "Le nom de la carte est requis",
-                timeout: 5
-            });
-            return;
-        }
-
-        if (selectedDishes.length === 0) {
-            addAlert({ 
-                severity: 'error', 
-                message: "Veuillez sélectionner au moins un plat",
-                timeout: 5
-            });
-            return;
-        }
-
         try {
+            if (!name.trim()) {
+                addAlert({ 
+                    severity: 'error', 
+                    message: "Le nom de la carte est requis",
+                    timeout: 5
+                });
+                return;
+            }
+
+            if (selectedDishes.length === 0) {
+                addAlert({ 
+                    severity: 'error', 
+                    message: "Veuillez sélectionner au moins un plat",
+                    timeout: 5
+                });
+                return;
+            }
+
             setIsLoading(true);
+            console.log('Selected dishes before submission:', selectedDishes);
+            
             const cardData = {
                 name: name.trim(),
-                dishesId: selectedDishes, // Changed from dishes to dishesId to match the DTO
+                dishesId: selectedDishes,
                 isActive
             };
+            
+            console.log('Submitting card data:', cardData);
 
             if (card) {
                 await cardsRepository.update(card._id, cardData);
@@ -74,6 +78,7 @@ export const CardModal: React.FC<CardModalProps> = ({
                     timeout: 5
                 });
             }
+            
             onSubmit();
             onClose();
         } catch (error) {
