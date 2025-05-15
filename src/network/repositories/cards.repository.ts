@@ -24,16 +24,16 @@ export class CardsRepositoryImpl {
             
             const body: Data<CardDto[]> = await response.json();
             
-            // Ensure body and body.data exist and body.data is an array
-            if (!body?.data) {
-                console.log('No cards available');
+            // Handle empty or invalid response
+            if (!body || !body.data) {
+                console.log('No cards data available');
                 return [];
             }
             
             return Array.isArray(body.data) ? body.data.map(card => Card.fromDto(card)) : [];
         } catch (error) {
             console.error('Error fetching cards:', error);
-            return []; // Return empty array on error
+            return [];
         }
     }
 
@@ -46,10 +46,16 @@ export class CardsRepositoryImpl {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify(card)
+                body: JSON.stringify({
+                    name: card.name,
+                    dishes: card.dishes,
+                    isActive: card.isActive
+                })
             });
 
             if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                console.error('Failed to create card:', errorData || response.statusText);
                 throw new Error('Failed to create card');
             }
         } catch (error) {
@@ -67,10 +73,16 @@ export class CardsRepositoryImpl {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify(card)
+                body: JSON.stringify({
+                    name: card.name,
+                    dishes: card.dishes,
+                    isActive: card.isActive
+                })
             });
 
             if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                console.error('Failed to update card:', errorData || response.statusText);
                 throw new Error('Failed to update card');
             }
         } catch (error) {
@@ -91,6 +103,8 @@ export class CardsRepositoryImpl {
             });
 
             if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                console.error('Failed to delete card:', errorData || response.statusText);
                 throw new Error('Failed to delete card');
             }
         } catch (error) {

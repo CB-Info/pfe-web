@@ -61,17 +61,22 @@ export const CardModal: React.FC<CardModalProps> = ({
 
             if (card) {
                 await cardsRepository.update(card._id, cardData);
+                addAlert({ 
+                    severity: 'success', 
+                    message: 'Carte modifiée avec succès',
+                    timeout: 5
+                });
             } else {
                 await cardsRepository.create(cardData);
+                addAlert({ 
+                    severity: 'success', 
+                    message: 'Carte créée avec succès',
+                    timeout: 5
+                });
             }
-
-            addAlert({ 
-                severity: 'success', 
-                message: `Carte ${card ? 'modifiée' : 'créée'} avec succès`,
-                timeout: 5
-            });
             onSubmit();
         } catch (error) {
+            console.error('Error handling card:', error);
             addAlert({ 
                 severity: 'error', 
                 message: `Erreur lors de la ${card ? 'modification' : 'création'} de la carte`,
