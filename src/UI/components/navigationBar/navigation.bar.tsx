@@ -40,7 +40,7 @@ export function NavBar() {
                     <div className='flex flex-col flex-1'>
                         <NavBarCell icon={<SpaceDashboardRoundedIcon/>} label={'Dashboard'} path={'/home'}/>
                         <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/home'}/>
-                        <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/home'}/>
+                        <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/cards'}/>
                         <NavBarCell icon={<LocalDiningRoundedIcon/>} label={'Dishes'} path={'/home'}/>
                     </div>
                 </div>
