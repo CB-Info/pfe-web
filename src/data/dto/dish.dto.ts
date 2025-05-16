@@ -14,6 +14,19 @@ export enum DishCategory {
     BEVERAGES = "BEVERAGES"
 }
 
+export const DishCategoryLabels: Record<DishCategory, string> = {
+    [DishCategory.STARTERS]: "Entrées et amuse-bouches",
+    [DishCategory.MAIN_DISHES]: "Plats principaux",
+    [DishCategory.FISH_SEAFOOD]: "Poissons et fruits de mer",
+    [DishCategory.VEGETARIAN]: "Plats végétariens",
+    [DishCategory.PASTA_RICE]: "Pâtes et riz",
+    [DishCategory.SALADS]: "Salades composées",
+    [DishCategory.SOUPS]: "Soupes et potages",
+    [DishCategory.SIDE_DISHES]: "Accompagnements",
+    [DishCategory.DESSERTS]: "Desserts et pâtisseries",
+    [DishCategory.BEVERAGES]: "Boissons"
+};
+
 export interface DishDto {
     _id: string
     name: string

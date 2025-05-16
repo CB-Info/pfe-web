@@ -9,8 +9,7 @@ import { Ingredient } from "../../../../data/models/ingredient.model";
 import { NumberInput } from "../../../components/input/number.input";
 import { CircularProgress } from "@mui/material";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
-import { DishCategory } from "../../../../data/dto/dish.dto";
-import { toCapitalize } from "../../../../applications/extensions/string+extension";
+import { DishCategory, DishCategoryLabels } from "../../../../data/dto/dish.dto";
 import { useAlerts } from "../../../../contexts/alerts.context";
 import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
 import { DishFormProps, DishFormMode } from "./dish.form.props";
@@ -95,10 +94,12 @@ const DishForm: React.FC<DishFormProps> = ({
     clearAlerts();
   }
 
-  function handleOnClickOnCellCategory(category: string) {
-    const formattedCategory = category.toUpperCase().replace(/ /g, '_');
-    if (formattedCategory in DishCategory) {
-      setDishCategory(DishCategory[formattedCategory as keyof typeof DishCategory]);
+  function handleOnClickOnCellCategory(categoryLabel: string) {
+    const category = Object.entries(DishCategoryLabels).find(
+      ([_, label]) => label === categoryLabel
+    );
+    if (category) {
+      setDishCategory(category[0] as DishCategory);
     }
   }
 
@@ -198,9 +199,7 @@ const DishForm: React.FC<DishFormProps> = ({
                   $isDisabled={false}
                 />
                 <TextfieldList
-                  valuesToDisplay={Object.values(DishCategory).map((cat) =>
-                    toCapitalize(cat)
-                  )}
+                  valuesToDisplay={Object.values(DishCategoryLabels)}
                   onClicked={handleOnClickOnCellCategory}
                   label={"Catégorie"}
                 />
