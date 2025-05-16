@@ -70,11 +70,10 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish }) => {
+const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish, onDelete }) => {
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 10;
   
-  // Reverse the dishes array to show newest first
   const reversedDishes = [...dishes].reverse();
   
   const emptyRows =
@@ -106,7 +105,12 @@ const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish }) =>
             ? reversedDishes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : reversedDishes
           ).map((dish) => (
-            <DishRow key={dish._id} row={dish} onClick={setSelectedDish}/>
+            <DishRow 
+              key={dish._id} 
+              row={dish} 
+              onClick={setSelectedDish}
+              onDelete={onDelete}
+            />
           ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
@@ -138,4 +142,4 @@ const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish }) =>
   );
 }
 
-export default DishesTable
+export default DishesTable;
