@@ -10,18 +10,19 @@ import { PanelContent } from '../../components/contents/panel.content';
 import AddIcon from '@mui/icons-material/Add';
 import { Switch } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
     const { addAlert } = useAlerts();
     const cardsRepository = new CardsRepositoryImpl();
 
     const fetchCards = async () => {
         try {
             const fetchedCards = await cardsRepository.getAll();
-            // Tri par date de création (plus récente en premier)
             const sortedCards = fetchedCards.sort((a, b) => 
                 new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
@@ -64,6 +65,11 @@ export default function CardsPage() {
         }
     };
 
+    const handleViewCard = (card: CardDto) => {
+        setSelectedCard(card);
+        // TODO: Ouvrir le formulaire de modification
+    };
+
     const activeCard = cards?.find(card => card.isActive);
     const inactiveCards = cards?.filter(card => !card.isActive) ?? [];
 
@@ -80,7 +86,6 @@ export default function CardsPage() {
                     </div>
                 ) : (
                     <div className='flex flex-col gap-8'>
-                        {/* Section carte active */}
                         <section>
                             <h2 className="text-xl font-semibold mb-4">Carte actuellement utilisée</h2>
                             <AnimatePresence mode="wait">
@@ -96,6 +101,7 @@ export default function CardsPage() {
                                             <CardItem 
                                                 card={activeCard} 
                                                 onToggleActive={handleToggleActive}
+                                                onView={handleViewCard}
                                                 isActive={true}
                                             />
                                         </PanelContent>
@@ -114,11 +120,9 @@ export default function CardsPage() {
                             </AnimatePresence>
                         </section>
 
-                        {/* Section cartes inactives */}
                         <section>
                             <h2 className="text-xl font-semibold mb-4">Toutes les cartes</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {/* Bouton Ajouter */}
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
@@ -128,7 +132,6 @@ export default function CardsPage() {
                                     <AddIcon className="w-8 h-8 text-gray-400" />
                                 </motion.button>
 
-                                {/* Liste des cartes inactives */}
                                 <AnimatePresence>
                                     {inactiveCards.map(card => (
                                         <motion.div
@@ -143,6 +146,7 @@ export default function CardsPage() {
                                                 <CardItem 
                                                     card={card} 
                                                     onToggleActive={handleToggleActive}
+                                                    onView={handleViewCard}
                                                     isActive={false}
                                                 />
                                             </PanelContent>
@@ -167,10 +171,11 @@ export default function CardsPage() {
 interface CardItemProps {
     card: CardDto;
     onToggleActive: (card: CardDto) => void;
+    onView: (card: CardDto) => void;
     isActive: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, isActive }) => {
+const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isActive }) => {
     const formattedDate = new Date(card.createdAt).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
@@ -178,17 +183,22 @@ const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, isActive }) =
     });
 
     return (
-        <div className={`p-4 flex flex-col h-48 transition-all duration-300 ${isActive ? 'bg-blue-50' : ''}`}>
+        <div className={`p-4 flex flex-col h-48 transition-all duration-300 relative group ${isActive ? 'bg-blue-50' : ''}`}>
+            <button
+                onClick={() => onView(card)}
+                className="absolute right-4 top-4 p-2 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-50"
+            >
+                <VisibilityIcon className="text-gray-600" />
+            </button>
+            
             <div className="flex-1">
-                <div className="h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-3 flex items-center justify-center">
-                    <span className="text-gray-400 text-sm">Aperçu de la carte</span>
-                </div>
                 <h3 className="font-semibold text-lg mb-1">{card.name}</h3>
                 <div className="flex justify-between items-center">
                     <p className="text-sm text-gray-600">{card.dishesId.length} plats</p>
                     <p className="text-xs text-gray-500">{formattedDate}</p>
                 </div>
             </div>
+            
             <div className="flex items-center justify-between pt-2 border-t">
                 <span className={`text-sm ${card.isActive ? 'text-blue-600 font-medium' : 'text-gray-600'}`}>
                     {card.isActive ? 'Activée' : 'Désactivée'}
