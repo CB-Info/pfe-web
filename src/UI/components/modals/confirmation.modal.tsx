@@ -19,25 +19,24 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             const modalElement = document.getElementById(modalName) as HTMLDialogElement;
             modalElement?.showModal();
         }
-    }, [isOpen]);
+    }, [isOpen, modalName]);
 
     return (
         <dialog id={modalName} className="modal">
-            <div className="modal-box relative flex">
-                {/* Bouton de fermeture en haut à droite à l'intérieur de la modal-box */}
+            <div className="modal-box p-0 max-w-md">
                 <button
                     onClick={onClose}
-                    className="btn btn-ghost btn-circle absolute top-0 right-0 m-2"
+                    className="absolute right-2 top-2 btn btn-ghost btn-sm btn-circle"
                 >
-                    <CloseIcon />
+                    <CloseIcon fontSize="small" />
                 </button>
-                <div className="flex flex-1 py-8">
+                <div className="p-0">
                     {children}
                 </div>
-                <div className="modal-action">
-                    {/* Autres actions si nécessaire */}
-                </div>
             </div>
+            <form method="dialog" className="modal-backdrop">
+                <button onClick={onClose}>close</button>
+            </form>
         </dialog>
     );
 };
