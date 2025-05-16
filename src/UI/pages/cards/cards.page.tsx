@@ -11,14 +11,20 @@ import AddIcon from '@mui/icons-material/Add';
 import { Switch } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { ConfirmationModal } from '../../components/modals/confirmation.modal';
+import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
+import { Dish } from '../../../data/models/dish.model';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [cardDishes, setCardDishes] = useState<Dish[]>([]);
     const { addAlert } = useAlerts();
     const cardsRepository = new CardsRepositoryImpl();
+    const dishesRepository = new DishesRepositoryImpl();
 
     const fetchCards = async () => {
         try {
@@ -65,9 +71,20 @@ export default function CardsPage() {
         }
     };
 
-    const handleViewCard = (card: CardDto) => {
+    const handleViewCard = async (card: CardDto) => {
         setSelectedCard(card);
-        // TODO: Implémenter l'ouverture du formulaire de modification
+        setIsViewModalOpen(true);
+        try {
+            const allDishes = await dishesRepository.getAll();
+            const cardDishes = allDishes.filter(dish => card.dishesId.includes(dish._id));
+            setCardDishes(cardDishes);
+        } catch (error) {
+            addAlert({
+                severity: 'error',
+                message: "Erreur lors de la récupération des plats",
+                timeout: 3
+            });
+        }
     };
 
     const activeCard = cards.find(card => card.isActive);
@@ -164,6 +181,35 @@ export default function CardsPage() {
                 onClose={() => setIsModalOpen(false)}
                 onCardCreated={handleCardCreated}
             />
+
+            <ConfirmationModal
+                modalName="view-card-modal"
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+            >
+                <div className="p-6">
+                    <h2 className="text-xl font-semibold mb-6">
+                        {selectedCard?.name}
+                    </h2>
+                    <div className="space-y-4">
+                        <div>
+                            <h3 className="font-medium mb-2">Plats de la carte</h3>
+                            {cardDishes.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {cardDishes.map(dish => (
+                                        <li key={dish._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                            <span>{dish.name}</span>
+                                            <span className="text-gray-600">{dish.price} €</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-gray-500 italic">Aucun plat dans cette carte</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </ConfirmationModal>
         </BaseContent>
     );
 }
