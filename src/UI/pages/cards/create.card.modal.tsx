@@ -102,9 +102,12 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
 
         setIsSubmitting(true);
         try {
+            // Transform dish IDs into objects with _id property
+            const dishesIdObjects = Array.from(selectedDishes).map(id => ({ _id: id }));
+            
             const newCard = await cardsRepository.create({
                 name: name.trim(),
-                dishesId: Array.from(selectedDishes),
+                dishesId: dishesIdObjects,
                 isActive: false
             });
             
