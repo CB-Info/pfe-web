@@ -36,7 +36,6 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
         const fetchDishes = async () => {
             try {
                 const fetchedDishes = await dishesRepository.getAll();
-                // Tri alphabétique des plats
                 const sortedDishes = fetchedDishes.sort((a, b) => 
                     a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
                 );
@@ -53,7 +52,6 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
         }
     }, [isOpen]);
 
-    // Filtrage des plats en fonction de la recherche
     const filteredDishes = useMemo(() => {
         if (!searchQuery.trim()) return dishes;
         
@@ -82,12 +80,10 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
 
     const toggleAll = () => {
         if (selectedDishes.size === filteredDishes.length) {
-            // Désélectionne uniquement les plats filtrés
             const newSelection = new Set(selectedDishes);
             filteredDishes.forEach(dish => newSelection.delete(dish._id));
             setSelectedDishes(newSelection);
         } else {
-            // Sélectionne tous les plats filtrés
             const newSelection = new Set(selectedDishes);
             filteredDishes.forEach(dish => newSelection.add(dish._id));
             setSelectedDishes(newSelection);
@@ -106,9 +102,10 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
 
         setIsSubmitting(true);
         try {
+            const dishesArray = Array.from(selectedDishes).map(id => ({ id }));
             const newCard = await cardsRepository.create({
                 name: name.trim(),
-                dishesId: Array.from(selectedDishes),
+                dishesId: dishesArray,
                 isActive: false
             });
             
@@ -122,6 +119,11 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
             handleClose();
         } catch (error) {
             setError("Erreur lors de la création de la carte");
+            addAlert({
+                severity: 'error',
+                message: "Erreur lors de la création de la carte",
+                timeout: 3
+            });
         } finally {
             setIsSubmitting(false);
         }
