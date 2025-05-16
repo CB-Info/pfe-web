@@ -3,6 +3,7 @@ export interface CardDto {
     name: string;
     dishesId: string[];
     isActive: boolean;
+    createdAt: string;
 }
 
 export interface CreateCardDto {
