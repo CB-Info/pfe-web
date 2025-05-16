@@ -86,7 +86,15 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
                         onClose={handleMenuClose}
                     >
                         <MenuItem onClick={handleEditClick}>Modifier</MenuItem>
-                        <MenuItem onClick={handleDeleteClick} className="text-red-500">
+                        <MenuItem 
+                            onClick={handleDeleteClick} 
+                            sx={{
+                                color: '#EF4444',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                                },
+                            }}
+                        >
                             Supprimer
                         </MenuItem>
                     </Menu>
@@ -98,22 +106,22 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
             >
-                <div className="flex flex-col items-center gap-4 px-4">
-                    <h3 className="text-lg font-semibold">Confirmer la suppression</h3>
-                    <p className="text-center">
+                <div className="flex flex-col items-center justify-center min-h-[200px] px-8">
+                    <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
+                    <p className="text-center text-gray-600 mb-8">
                         Êtes-vous sûr de vouloir supprimer ce plat ?
                         <br />
                         Cette action est irréversible.
                     </p>
-                    <div className="flex gap-4 mt-4">
+                    <div className="flex gap-4">
                         <button
-                            className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                            className="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                             onClick={() => setIsDeleteModalOpen(false)}
                         >
                             Annuler
                         </button>
                         <button
-                            className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
+                            className="px-6 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
                             onClick={handleConfirmDelete}
                         >
                             Supprimer
