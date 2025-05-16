@@ -12,32 +12,67 @@ import DishesTable from '../../components/tables/dishes/dish.table';
 import UpdateDishPage from './update.dish.page';
 import CustomButton, { TypeButton, WidthButton } from '../../components/buttons/custom.button';
 import { BaseContent } from '../../components/contents/base.content';
+import { DishCategory } from '../../../data/dto/dish.dto';
 
 export default function HomePage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [dishes, setDishes] = useState<Dish[]>([])
-  const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState(false);
+  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [filteredDishes, setFilteredDishes] = useState<Dish[]>([]);
+  const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('Toutes');
+  const [selectedStatus, setSelectedStatus] = useState<string>('Tous');
   const { addAlert } = useAlerts();
-  const dishRepository = new DishesRepositoryImpl()
+  const dishRepository = new DishesRepositoryImpl();
+
+  const statusOptions = ['Tous', 'Actif', 'Inactif'];
+  const categoryOptions = ['Toutes', ...Object.values(DishCategory)];
 
   const fetchDishes = async () => {
     try {
-      setDishes(await dishRepository.getAll())
+      const allDishes = await dishRepository.getAll();
+      setDishes(allDishes);
+      setFilteredDishes(allDishes);
     } catch (error) {
-      addAlert({ severity: 'error', message: "Erreur lors de la récupération des repas" })
+      addAlert({ severity: 'error', message: "Erreur lors de la récupération des repas" });
     }
-  }
+  };
 
   useEffect(() => {
     const fetch = async () => {
-      setIsLoading(true)
-      await fetchDishes()
-      setIsLoading(false)
+      setIsLoading(true);
+      await fetchDishes();
+      setIsLoading(false);
+    };
+
+    fetch();
+  }, []);
+
+  useEffect(() => {
+    let result = [...dishes];
+
+    // Apply search filter
+    if (searchQuery) {
+      result = result.filter(dish => 
+        dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        dish.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
-    fetch()
-  }, [])
+    // Apply category filter
+    if (selectedCategory !== 'Toutes') {
+      result = result.filter(dish => dish.category === selectedCategory);
+    }
+
+    // Apply status filter
+    if (selectedStatus !== 'Tous') {
+      const isActive = selectedStatus === 'Actif';
+      result = result.filter(dish => dish.isAvailable === isActive);
+    }
+
+    setFilteredDishes(result);
+  }, [searchQuery, selectedCategory, selectedStatus, dishes]);
 
   const handleRowClick = (dish: Dish): void => {
     setSelectedDish(dish);
@@ -49,58 +84,83 @@ export default function HomePage() {
       <div className='flex justify-between px-6 pt-8 items-center'>
         <TitleStyle>Home</TitleStyle>
         <div>
-          <DrawerButton width={360} defaultChildren={<CustomButton
-            type={TypeButton.PRIMARY}
-            onClick={() => { }}
-            width={WidthButton.SMALL}
-            isLoading={false}
+          <DrawerButton 
+            width={360} 
+            defaultChildren={
+              <CustomButton
+                type={TypeButton.PRIMARY}
+                onClick={() => { }}
+                width={WidthButton.SMALL}
+                isLoading={false}
+              >
+                Ajouter un repas
+              </CustomButton>
+            } 
+            drawerId={'add-drawer-dish'}
           >
-            Ajouter un repas
-          </CustomButton>} drawerId={'add-drawer-dish'}>
             <AddDishPage onClickOnConfirm={async () => {
-              setIsLoading(true)
-              await fetchDishes()
-              setIsLoading(false)
+              setIsLoading(true);
+              await fetchDishes();
+              setIsLoading(false);
             }}/>
           </DrawerButton>
         </div>
       </div>
-      {isLoading ?
+      {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
           <CircularProgress />
         </div>
-        : <div className='flex flex-col px-6 py-4 gap-10'>
+      ) : (
+        <div className='flex flex-col px-6 py-4 gap-10'>
           <div className='flex gap-4'>
             <div className='w-72'>
-              <SearchInput label={'Rechercher un plat'} error={false} name={''} value={''} onChange={() => { }} />
+              <SearchInput 
+                label={'Rechercher un plat'} 
+                error={false} 
+                name={'search'} 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)} 
+              />
             </div>
             <div className='w-64'>
-              <TextfieldList valuesToDisplay={[]} onClicked={() => { }} label={'Filtre'} />
+              <TextfieldList 
+                valuesToDisplay={categoryOptions} 
+                onClicked={setSelectedCategory} 
+                label={'Catégorie'} 
+              />
             </div>
             <div className='w-64'>
-              <TextfieldList valuesToDisplay={[]} onClicked={() => { }} label={'Filtre'} />
+              <TextfieldList 
+                valuesToDisplay={statusOptions} 
+                onClicked={setSelectedStatus} 
+                label={'Status'} 
+              />
             </div>
           </div>
           <div>
-            <DishesTable dishes={dishes} setSelectedDish={handleRowClick} />
+            <DishesTable dishes={filteredDishes} setSelectedDish={handleRowClick} />
           </div>
           {isUpdateDrawerOpen && selectedDish && (
-            <UpdateDishDrawer dish={selectedDish} onClose={() => setIsUpdateDrawerOpen(false)} onCloseConfirm={async () => {
-              setIsUpdateDrawerOpen(false)
-              setIsLoading(true)
-              await fetchDishes()
-              setIsLoading(false)
-            }} />
+            <UpdateDishDrawer 
+              dish={selectedDish} 
+              onClose={() => setIsUpdateDrawerOpen(false)} 
+              onCloseConfirm={async () => {
+                setIsUpdateDrawerOpen(false);
+                setIsLoading(true);
+                await fetchDishes();
+                setIsLoading(false);
+              }} 
+            />
           )}
         </div>
-      }
+      )}
     </BaseContent>
-  )
+  );
 }
 
 interface UpdateDishDrawerProps {
   dish: Dish;
-  onClose: () => void
+  onClose: () => void;
   onCloseConfirm: () => void;
 }
 
