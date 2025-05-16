@@ -6,7 +6,6 @@ import { CardsRepositoryImpl } from '../../../network/repositories/cards.reposit
 import { useAlerts } from '../../../contexts/alerts.context';
 import { CircularProgress } from '@mui/material';
 import { PanelContent } from '../../components/contents/panel.content';
-import AddIcon from '@mui/icons-material/Add';
 import { Switch } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -106,22 +105,24 @@ export default function CardsPage() {
             <div className='flex flex-col px-6 py-8 gap-8'>
                 <div className='flex justify-between items-center'>
                     <TitleStyle>Cartes</TitleStyle>
-                    <DrawerButton 
-                        width={360} 
-                        defaultChildren={
-                            <CustomButton
-                                type={TypeButton.PRIMARY}
-                                onClick={() => {}}
-                                width={WidthButton.SMALL}
-                                isLoading={false}
-                            >
-                                Nouvelle carte
-                            </CustomButton>
-                        } 
-                        drawerId={'add-drawer-card'}
-                    >
-                        <CreateCardDrawer onSubmitSuccess={handleCardCreated} />
-                    </DrawerButton>
+                    <div className='flex items-center'>
+                        <DrawerButton 
+                            width={360} 
+                            defaultChildren={
+                                <CustomButton
+                                    type={TypeButton.PRIMARY}
+                                    onClick={() => {}}
+                                    width={WidthButton.SMALL}
+                                    isLoading={false}
+                                >
+                                    Nouvelle carte
+                                </CustomButton>
+                            } 
+                            drawerId={'add-drawer-card'}
+                        >
+                            <CreateCardDrawer onSubmitSuccess={handleCardCreated} />
+                        </DrawerButton>
+                    </div>
                 </div>
 
                 {isLoading ? (
