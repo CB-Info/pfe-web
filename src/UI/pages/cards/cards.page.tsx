@@ -1,3 +1,4 @@
+import { Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
 import TitleStyle from '../../style/title.style';
@@ -14,6 +15,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { Menu } from '@headlessui/react';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
@@ -21,6 +24,8 @@ export default function CardsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [cardDishes, setCardDishes] = useState<Dish[]>([]);
     const { addAlert } = useAlerts();
     const cardsRepository = new CardsRepositoryImpl();
@@ -98,6 +103,28 @@ export default function CardsPage() {
         }
     };
 
+    const handleDeleteCard = async () => {
+        if (!selectedCard) return;
+        
+        try {
+            await cardsRepository.delete(selectedCard._id);
+            setCards(cards.filter(card => card._id !== selectedCard._id));
+            setIsDeleteModalOpen(false);
+            setSelectedCard(null);
+            addAlert({
+                severity: 'success',
+                message: "La carte a été supprimée avec succès",
+                timeout: 3
+            });
+        } catch (error) {
+            addAlert({
+                severity: 'error',
+                message: "Erreur lors de la suppression de la carte",
+                timeout: 3
+            });
+        }
+    };
+
     const activeCard = cards.find(card => card.isActive);
     const inactiveCards = cards.filter(card => !card.isActive);
 
@@ -130,6 +157,14 @@ export default function CardsPage() {
                                                 card={activeCard} 
                                                 onToggleActive={handleToggleActive}
                                                 onView={handleViewCard}
+                                                onEdit={(card) => {
+                                                    setSelectedCard(card);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                                onDelete={(card) => {
+                                                    setSelectedCard(card);
+                                                    setIsDeleteModalOpen(true);
+                                                }}
                                                 isActive={true}
                                             />
                                         </PanelContent>
@@ -175,6 +210,14 @@ export default function CardsPage() {
                                                     card={card} 
                                                     onToggleActive={handleToggleActive}
                                                     onView={handleViewCard}
+                                                    onEdit={(card) => {
+                                                        setSelectedCard(card);
+                                                        setIsEditModalOpen(true);
+                                                    }}
+                                                    onDelete={(card) => {
+                                                        setSelectedCard(card);
+                                                        setIsDeleteModalOpen(true);
+                                                    }}
                                                     isActive={false}
                                                 />
                                             </PanelContent>
@@ -221,6 +264,45 @@ export default function CardsPage() {
                     </div>
                 </div>
             </ConfirmationModal>
+
+            <ConfirmationModal
+                modalName="delete-card-modal"
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+            >
+                <div className="flex flex-col items-center justify-center min-h-[200px] px-8">
+                    <h3 className="text-lg font-semibold mb-4 text-center">Confirmer la suppression</h3>
+                    <p className="text-center text-gray-600 mb-8">
+                        Êtes-vous sûr de vouloir supprimer cette carte ?
+                        <br />
+                        Cette action est irréversible.
+                    </p>
+                    <div className="flex gap-4 w-full justify-center">
+                        <button
+                            className="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                            onClick={() => setIsDeleteModalOpen(false)}
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            className="px-6 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-200 font-medium"
+                            onClick={handleDeleteCard}
+                        >
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            </ConfirmationModal>
+
+            <CreateCardModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setSelectedCard(null);
+                }}
+                onCardCreated={handleCardCreated}
+                editCard={selectedCard}
+            />
         </BaseContent>
     );
 }
@@ -229,10 +311,12 @@ interface CardItemProps {
     card: CardDto;
     onToggleActive: (card: CardDto) => void;
     onView: (card: CardDto) => void;
+    onEdit: (card: CardDto) => void;
+    onDelete: (card: CardDto) => void;
     isActive: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isActive }) => {
+const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, onEdit, onDelete, isActive }) => {
     const formattedDate = new Date(card.dateOfCreation).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
@@ -241,13 +325,44 @@ const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isAct
 
     return (
         <div className={`p-4 flex flex-col h-48 transition-all duration-300 relative group ${isActive ? 'bg-blue-50' : ''}`}>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 gap-2">
                 <button
                     onClick={() => onView(card)}
                     className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 z-10"
                 >
                     <VisibilityIcon className="text-gray-600" />
                 </button>
+                <Menu as="div" className="relative z-10">
+                    <Menu.Button className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200">
+                        <SettingsIcon className="text-gray-600" />
+                    </Menu.Button>
+                    <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={() => onEdit(card)}
+                                    className={`${
+                                        active ? 'bg-gray-100' : ''
+                                    } block w-full text-left px-4 py-2 text-sm text-gray-700`}
+                                >
+                                    Modifier
+                                </button>
+                            )}
+                        </Menu.Item>
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={() => onDelete(card)}
+                                    className={`${
+                                        active ? 'bg-red-50' : ''
+                                    } block w-full text-left px-4 py-2 text-sm text-red-600`}
+                                >
+                                    Supprimer
+                                </button>
+                            )}
+                        </Menu.Item>
+                    </Menu.Items>
+                </Menu>
                 <div className="absolute inset-0 bg-white bg-opacity-50"></div>
             </div>
             
