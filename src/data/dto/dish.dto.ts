@@ -2,7 +2,16 @@ import { IngredientUnity } from "../models/ingredient.model"
 import { IngredientDto } from "./ingredient.dto"
 
 export enum DishCategory {
-    MEAT = "MEAT"
+    STARTERS = "STARTERS",
+    MAIN_DISHES = "MAIN_DISHES",
+    FISH_SEAFOOD = "FISH_SEAFOOD",
+    VEGETARIAN = "VEGETARIAN",
+    PASTA_RICE = "PASTA_RICE",
+    SALADS = "SALADS",
+    SOUPS = "SOUPS",
+    SIDE_DISHES = "SIDE_DISHES",
+    DESSERTS = "DESSERTS",
+    BEVERAGES = "BEVERAGES"
 }
 
 export interface DishDto {
