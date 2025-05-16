@@ -5,7 +5,6 @@ import { CardDto } from '../../../data/dto/card.dto';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
 import { useAlerts } from '../../../contexts/alerts.context';
 import { CircularProgress } from '@mui/material';
-import { CreateCardModal } from './create.card.modal';
 import { PanelContent } from '../../components/contents/panel.content';
 import AddIcon from '@mui/icons-material/Add';
 import { Switch } from '@headlessui/react';
@@ -14,11 +13,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
+import DrawerButton, { ContainerDrawer } from '../../components/drawer';
+import CreateCardDrawer from './create.card.drawer';
+import CustomButton, { TypeButton, WidthButton } from '../../components/buttons/custom.button';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [cardDishes, setCardDishes] = useState<Dish[]>([]);
@@ -50,7 +51,6 @@ export default function CardsPage() {
 
     const handleCardCreated = (newCard: CardDto) => {
         setCards(prevCards => [newCard, ...prevCards]);
-        setIsModalOpen(false);
     };
 
     const handleToggleActive = async (card: CardDto) => {
@@ -106,6 +106,22 @@ export default function CardsPage() {
             <div className='flex flex-col px-6 py-8 gap-8'>
                 <div className='flex justify-between items-center'>
                     <TitleStyle>Cartes</TitleStyle>
+                    <DrawerButton 
+                        width={360} 
+                        defaultChildren={
+                            <CustomButton
+                                type={TypeButton.PRIMARY}
+                                onClick={() => {}}
+                                width={WidthButton.SMALL}
+                                isLoading={false}
+                            >
+                                Nouvelle carte
+                            </CustomButton>
+                        } 
+                        drawerId={'add-drawer-card'}
+                    >
+                        <CreateCardDrawer onSubmitSuccess={handleCardCreated} />
+                    </DrawerButton>
                 </div>
 
                 {isLoading ? (
@@ -151,76 +167,59 @@ export default function CardsPage() {
                         <section>
                             <h2 className="text-xl font-semibold mb-4">Toutes les cartes</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => setIsModalOpen(true)}
-                                    className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 transition-all duration-200 hover:shadow-md"
-                                >
-                                    <AddIcon className="w-8 h-8 text-gray-400" />
-                                </motion.button>
-
-                                <AnimatePresence>
-                                    {inactiveCards.map(card => (
-                                        <motion.div
-                                            key={card._id}
-                                            layout
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <PanelContent>
-                                                <CardItem 
-                                                    card={card} 
-                                                    onToggleActive={handleToggleActive}
-                                                    onView={handleViewCard}
-                                                    isActive={false}
-                                                />
-                                            </PanelContent>
-                                        </motion.div>
-                                    ))}
-                                </AnimatePresence>
+                                {inactiveCards.map(card => (
+                                    <motion.div
+                                        key={card._id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <PanelContent>
+                                            <CardItem 
+                                                card={card} 
+                                                onToggleActive={handleToggleActive}
+                                                onView={handleViewCard}
+                                                isActive={false}
+                                            />
+                                        </PanelContent>
+                                    </motion.div>
+                                ))}
                             </div>
                         </section>
                     </div>
                 )}
-            </div>
 
-            <CreateCardModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onCardCreated={handleCardCreated}
-            />
-
-            <ConfirmationModal
-                modalName="view-card-modal"
-                isOpen={isViewModalOpen}
-                onClose={() => setIsViewModalOpen(false)}
-            >
-                <div className="p-6">
-                    <h2 className="text-xl font-semibold mb-6">
-                        {selectedCard?.name}
-                    </h2>
-                    <div className="space-y-4">
-                        <div>
-                            <h3 className="font-medium mb-2">Plats de la carte</h3>
-                            {cardDishes.length > 0 ? (
-                                <ul className="space-y-2">
-                                    {cardDishes.map(dish => (
-                                        <li key={dish._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                                            <span>{dish.name}</span>
-                                            <span className="text-gray-600">{dish.price} €</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500 italic">Aucun plat dans cette carte</p>
-                            )}
+                <ConfirmationModal
+                    modalName="view-card-modal"
+                    isOpen={isViewModalOpen}
+                    onClose={() => setIsViewModalOpen(false)}
+                >
+                    <div className="p-6">
+                        <h2 className="text-xl font-semibold mb-6">
+                            {selectedCard?.name}
+                        </h2>
+                        <div className="space-y-4">
+                            <div>
+                                <h3 className="font-medium mb-2">Plats de la carte</h3>
+                                {cardDishes.length > 0 ? (
+                                    <ul className="space-y-2">
+                                        {cardDishes.map(dish => (
+                                            <li key={dish._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                                <span>{dish.name}</span>
+                                                <span className="text-gray-600">{dish.price} €</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-gray-500 italic">Aucun plat dans cette carte</p>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </ConfirmationModal>
+                </ConfirmationModal>
+            </div>
         </BaseContent>
     );
 }
