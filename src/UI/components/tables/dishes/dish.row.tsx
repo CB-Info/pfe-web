@@ -6,6 +6,20 @@ import { useState } from "react";
 import { ConfirmationModal } from "../../modals/confirmation.modal";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import { useAlerts } from "../../../../contexts/alerts.context";
+import { DishCategoryLabels } from "../../../../data/dto/dish.dto";
+
+const categoryColors: Record<string, { bg: string; text: string }> = {
+    STARTERS: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+    MAIN_DISHES: { bg: 'bg-blue-100', text: 'text-blue-800' },
+    FISH_SEAFOOD: { bg: 'bg-cyan-100', text: 'text-cyan-800' },
+    VEGETARIAN: { bg: 'bg-green-100', text: 'text-green-800' },
+    PASTA_RICE: { bg: 'bg-orange-100', text: 'text-orange-800' },
+    SALADS: { bg: 'bg-emerald-100', text: 'text-emerald-800' },
+    SOUPS: { bg: 'bg-amber-100', text: 'text-amber-800' },
+    SIDE_DISHES: { bg: 'bg-purple-100', text: 'text-purple-800' },
+    DESSERTS: { bg: 'bg-pink-100', text: 'text-pink-800' },
+    BEVERAGES: { bg: 'bg-indigo-100', text: 'text-indigo-800' }
+};
 
 export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -54,6 +68,8 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
         setIsDeleteModalOpen(false);
     };
 
+    const categoryColor = categoryColors[row.category];
+
     return (
         <>
             <DishTableRowStyled
@@ -71,7 +87,11 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
                 <DishTableCellStyled align="left">
                     {row.isAvailable ? "Actif" : "Inactif"}
                 </DishTableCellStyled>
-                <DishTableCellStyled align="right">{row.category}</DishTableCellStyled>
+                <DishTableCellStyled align="right">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${categoryColor.bg} ${categoryColor.text}`}>
+                        {DishCategoryLabels[row.category]}
+                    </span>
+                </DishTableCellStyled>
                 <DishTableCellStyled align="right">{row.price} €</DishTableCellStyled>
                 <DishTableCellStyled align="right">
                     <IconButton 
