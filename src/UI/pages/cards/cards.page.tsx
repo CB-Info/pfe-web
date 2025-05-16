@@ -1,3 +1,4 @@
+import { Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
 import TitleStyle from '../../style/title.style';
@@ -14,6 +15,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Menu, MenuItem } from '@mui/material';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
@@ -21,7 +24,10 @@ export default function CardsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [cardDishes, setCardDishes] = useState<Dish[]>([]);
+    const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const { addAlert } = useAlerts();
     const cardsRepository = new CardsRepositoryImpl();
     const dishesRepository = new DishesRepositoryImpl();
@@ -95,6 +101,48 @@ export default function CardsPage() {
                 message: "Erreur lors de la récupération des plats",
                 timeout: 3
             });
+        }
+    };
+
+    const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+        setMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchorEl(null);
+    };
+
+    const handleEditClick = () => {
+        setMenuAnchorEl(null);
+        setIsViewModalOpen(false);
+        setIsEditModalOpen(true);
+    };
+
+    const handleDeleteClick = () => {
+        setMenuAnchorEl(null);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (selectedCard) {
+            try {
+                await cardsRepository.delete(selectedCard._id);
+                addAlert({
+                    severity: 'success',
+                    message: "La carte a été supprimée avec succès",
+                    timeout: 3
+                });
+                await fetchCards();
+                setIsDeleteModalOpen(false);
+                setIsViewModalOpen(false);
+            } catch (error) {
+                addAlert({
+                    severity: 'error',
+                    message: "Erreur lors de la suppression de la carte",
+                    timeout: 3
+                });
+            }
         }
     };
 
@@ -199,9 +247,37 @@ export default function CardsPage() {
                 onClose={() => setIsViewModalOpen(false)}
             >
                 <div className="p-6">
-                    <h2 className="text-xl font-semibold mb-6">
-                        {selectedCard?.name}
-                    </h2>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-semibold">
+                            {selectedCard?.name}
+                        </h2>
+                        <div className="relative">
+                            <button
+                                onClick={handleMenuClick}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                            >
+                                <MoreVertIcon />
+                            </button>
+                            <Menu
+                                anchorEl={menuAnchorEl}
+                                open={Boolean(menuAnchorEl)}
+                                onClose={handleMenuClose}
+                            >
+                                <MenuItem onClick={handleEditClick}>Modifier</MenuItem>
+                                <MenuItem 
+                                    onClick={handleDeleteClick}
+                                    sx={{
+                                        color: '#EF4444',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                                        },
+                                    }}
+                                >
+                                    Supprimer
+                                </MenuItem>
+                            </Menu>
+                        </div>
+                    </div>
                     <div className="space-y-4">
                         <div>
                             <h3 className="font-medium mb-2">Plats de la carte</h3>
@@ -221,6 +297,44 @@ export default function CardsPage() {
                     </div>
                 </div>
             </ConfirmationModal>
+
+            <ConfirmationModal
+                modalName="delete-card-modal"
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+            >
+                <div className="flex flex-col items-center justify-center min-h-[200px] px-8">
+                    <h3 className="text-lg font-semibold mb-4 text-center">Confirmer la suppression</h3>
+                    <p className="text-center text-gray-600 mb-8">
+                        Êtes-vous sûr de vouloir supprimer cette carte ?
+                        <br />
+                        Cette action est irréversible.
+                    </p>
+                    <div className="flex gap-4 w-full justify-center">
+                        <button
+                            className="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                            onClick={() => setIsDeleteModalOpen(false)}
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            className="px-6 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-200 font-medium"
+                            onClick={handleDeleteConfirm}
+                        >
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            </ConfirmationModal>
+
+            {isEditModalOpen && selectedCard && (
+                <CreateCardModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onCardCreated={handleCardCreated}
+                    editCard={selectedCard}
+                />
+            )}
         </BaseContent>
     );
 }
