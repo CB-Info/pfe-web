@@ -67,11 +67,11 @@ export default function CardsPage() {
 
     const handleViewCard = (card: CardDto) => {
         setSelectedCard(card);
-        // TODO: Ouvrir le formulaire de modification
+        // TODO: Implémenter l'ouverture du formulaire de modification
     };
 
-    const activeCard = cards?.find(card => card.isActive);
-    const inactiveCards = cards?.filter(card => !card.isActive) ?? [];
+    const activeCard = cards.find(card => card.isActive);
+    const inactiveCards = cards.filter(card => !card.isActive);
 
     return (
         <BaseContent>
@@ -184,12 +184,15 @@ const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isAct
 
     return (
         <div className={`p-4 flex flex-col h-48 transition-all duration-300 relative group ${isActive ? 'bg-blue-50' : ''}`}>
-            <button
-                onClick={() => onView(card)}
-                className="absolute right-4 top-4 p-2 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-50"
-            >
-                <VisibilityIcon className="text-gray-600" />
-            </button>
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button
+                    onClick={() => onView(card)}
+                    className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 z-10"
+                >
+                    <VisibilityIcon className="text-gray-600" />
+                </button>
+                <div className="absolute inset-0 bg-white bg-opacity-50"></div>
+            </div>
             
             <div className="flex-1">
                 <h3 className="font-semibold text-lg mb-1">{card.name}</h3>
