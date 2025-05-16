@@ -233,13 +233,11 @@ interface CardItemProps {
 }
 
 const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isActive }) => {
-    const formattedDate = card.createdAt 
-        ? new Date(card.createdAt?.replace(' ', 'T')).toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        })
-        : 'Date inconnue';
+    const formattedDate = new Date(card.createdAt).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
 
     return (
         <div className={`p-4 flex flex-col h-48 transition-all duration-300 relative group ${isActive ? 'bg-blue-50' : ''}`}>
