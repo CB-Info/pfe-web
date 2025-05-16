@@ -102,23 +102,9 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
 
         setIsSubmitting(true);
         try {
-            const selectedDishObjects = Array.from(selectedDishes).map(dishId => {
-                const dish = dishes.find(d => d._id === dishId);
-                if (!dish) throw new Error(`Dish with id ${dishId} not found`);
-                
-                return {
-                    name: dish.name,
-                    ingredients: dish.ingredients.map(ing => ing.ingredient.name),
-                    price: dish.price,
-                    description: dish.description,
-                    category: dish.category,
-                    isAvailable: dish.isAvailable
-                };
-            });
-
             const newCard = await cardsRepository.create({
                 name: name.trim(),
-                dishesId: selectedDishObjects,
+                dishesId: Array.from(selectedDishes),
                 isActive: false
             });
             
