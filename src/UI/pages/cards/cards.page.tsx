@@ -8,14 +8,13 @@ import { CircularProgress } from '@mui/material';
 import { CreateCardModal } from './create.card.modal';
 import { PanelContent } from '../../components/contents/panel.content';
 import AddIcon from '@mui/icons-material/Add';
-import { Switch } from '@headlessui/react';
+import { Switch, Menu, Transition } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Menu } from '@headlessui/react';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
