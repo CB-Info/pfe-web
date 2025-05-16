@@ -55,6 +55,17 @@ export default function CardsPage() {
 
     const handleToggleActive = async (card: CardDto) => {
         try {
+            const activeCard = cards.find(c => c.isActive);
+            
+            if (!card.isActive && activeCard) {
+                addAlert({
+                    severity: 'error',
+                    message: `Impossible d'activer la carte "${card.name}". La carte "${activeCard.name}" est déjà active. Veuillez d'abord la désactiver.`,
+                    timeout: 5
+                });
+                return;
+            }
+
             await cardsRepository.updateStatus(card._id, !card.isActive);
             await fetchCards();
             addAlert({
