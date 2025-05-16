@@ -9,6 +9,7 @@ interface TextfieldListProps {
     valuesToDisplay: string[]
     onClicked: (value: string) => void
     label: string
+    defaultValue?: string
 }
 
 const Cell = styled.div(({ theme }) => [
@@ -30,9 +31,9 @@ const Cell = styled.div(({ theme }) => [
     `,
 ]);
 
-export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, onClicked, label }) => {
+export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, onClicked, label, defaultValue }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedValue, setSelectedValue] = useState(valuesToDisplay[0]);
+    const [selectedValue, setSelectedValue] = useState(defaultValue || valuesToDisplay[0]);
 
     const handleCellClick = (value: string) => {
         onClicked(value);
@@ -49,11 +50,9 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({ valuesToDisplay, o
             </div>
             {isOpen && (
                 <Modal onClose={() => setIsOpen(false)} fullWidth>
-                    {valuesToDisplay.map((element, index) => {
-                        return (
-                            <Cell key={index} onClick={() => handleCellClick(element)}>{element}</Cell>
-                        )
-                    })}
+                    {valuesToDisplay.map((element, index) => (
+                        <Cell key={index} onClick={() => handleCellClick(element)}>{element}</Cell>
+                    ))}
                 </Modal>
             )}
         </div>
