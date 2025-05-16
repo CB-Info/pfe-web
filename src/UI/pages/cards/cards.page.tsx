@@ -59,8 +59,8 @@ export default function CardsPage() {
         }
     };
 
-    const activeCard = cards.find(card => card.isActive);
-    const inactiveCards = cards.filter(card => !card.isActive);
+    const activeCard = cards?.find(card => card.isActive);
+    const inactiveCards = cards?.filter(card => !card.isActive) ?? [];
 
     return (
         <BaseContent>
