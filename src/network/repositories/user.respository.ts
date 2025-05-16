@@ -66,6 +66,7 @@ export class UserRepositoryImpl {
 
         if (!response.ok) {
             throw new Error('Échec de la mise à jour de l'utilisateur');
+            )
         }
 
         const updatedUserData: Data<UserDto> = await response.json();
