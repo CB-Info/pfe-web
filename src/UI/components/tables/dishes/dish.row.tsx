@@ -21,6 +21,8 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
     BEVERAGES: { bg: 'bg-indigo-100', text: 'text-indigo-800' }
 };
 
+const defaultCategoryColor = { bg: 'bg-gray-100', text: 'text-gray-800' };
+
 export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -68,7 +70,7 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
         setIsDeleteModalOpen(false);
     };
 
-    const categoryColor = categoryColors[row.category];
+    const categoryColor = categoryColors[row.category] ?? defaultCategoryColor;
 
     return (
         <>
