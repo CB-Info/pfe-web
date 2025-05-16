@@ -72,4 +72,19 @@ export class DishesRepositoryImpl {
             throw new Error("")
         }
     }
+
+    async delete(dishId: string) {
+        try {
+            const token = await FirebaseAuthManager.getInstance().getToken()
+            await fetch(`${this.url}/${dishId}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+        } catch (error) {
+            throw new Error("Erreur lors de la suppression du plat")
+        }
+    }
 }
