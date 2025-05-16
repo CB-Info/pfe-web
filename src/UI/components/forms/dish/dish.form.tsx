@@ -13,7 +13,6 @@ import { DishCategory } from "../../../../data/dto/dish.dto";
 import { toCapitalize } from "../../../../applications/extensions/string+extension";
 import { useAlerts } from "../../../../contexts/alerts.context";
 import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
-
 import { DishFormProps, DishFormMode } from "./dish.form.props";
 
 enum InputError {
@@ -38,7 +37,7 @@ const DishForm: React.FC<DishFormProps> = ({
     mode === DishFormMode.UPDATE && dish ? String(dish.price) : ""
   );
   const [dishCategory, setDishCategory] = useState<DishCategory>(
-    mode === DishFormMode.UPDATE && dish ? dish.category : DishCategory.MEAT
+    mode === DishFormMode.UPDATE && dish ? dish.category : DishCategory.MAIN_DISHES
   );
 
   const defaultIngredients =
@@ -91,16 +90,15 @@ const DishForm: React.FC<DishFormProps> = ({
     setDishDescription("");
     setDishPrice("");
     setIngredientsDish([]);
-    setDishCategory(DishCategory.MEAT);
+    setDishCategory(DishCategory.MAIN_DISHES);
     setInputError(undefined);
     clearAlerts();
   }
 
   function handleOnClickOnCellCategory(category: string) {
-  
-    const upper = category.toUpperCase();
-    if (upper in DishCategory) {
-      setDishCategory(DishCategory[upper as keyof typeof DishCategory]);
+    const formattedCategory = category.toUpperCase().replace(/ /g, '_');
+    if (formattedCategory in DishCategory) {
+      setDishCategory(DishCategory[formattedCategory as keyof typeof DishCategory]);
     }
   }
 
