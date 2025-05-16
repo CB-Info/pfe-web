@@ -88,8 +88,7 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
                 </DishTableCellStyled>
                 <DishTableCellStyled align="left">
                     <div className="flex items-center">
-                        <div className={`h-2.5 w-2.5 rounded-full mr-2 ${row.isAvailable ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                        <span className="text-sm text-gray-600">{row.isAvailable ? 'Actif' : 'Inactif'}</span>
+                        <div className={`h-3 w-3 rounded-full ${row.isAvailable ? 'bg-green-500' : 'bg-red-500'}`}></div>
                     </div>
                 </DishTableCellStyled>
                 <DishTableCellStyled align="right">
