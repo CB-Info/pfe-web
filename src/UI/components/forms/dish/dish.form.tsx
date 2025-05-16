@@ -202,6 +202,7 @@ const DishForm: React.FC<DishFormProps> = ({
                   valuesToDisplay={Object.values(DishCategoryLabels)}
                   onClicked={handleOnClickOnCellCategory}
                   label={"Catégorie"}
+                  defaultValue={DishCategoryLabels[dishCategory]}
                 />
                 <NumberInput
                   name="dishPrice"
