@@ -36,7 +36,7 @@ export function NavBar() {
         <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
             <div className='flex flex-col flex-1'>
                 <div className='flex flex-col flex-1'>
-                    <div className=' flex h-28'></div>
+                    <div className='flex h-28'></div>
                     <div className='flex flex-col flex-1'>
                         <NavBarCell icon={<SpaceDashboardRoundedIcon/>} label={'Dashboard'} path={'/home'}/>
                         <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/home'}/>
@@ -68,6 +68,11 @@ function BottomButtonNavBar() {
         addAlert({ severity: "error", message: "Erreur lors de la déconnexion" })
       }
     };
+
+    const getInitials = (firstname?: string, lastname?: string) => {
+      if (!firstname || !lastname) return '';
+      return `${firstname[0]}${lastname[0]}`.toUpperCase();
+    };
     
     return (
     <Popover className="group relative">
@@ -78,7 +83,9 @@ function BottomButtonNavBar() {
                 open ? 'bg-white bg-opacity-10' : 'bg-slate-700'
               } flex w-full items-center gap-2 rounded-lg p-2 text-sm focus:outline-none text-white hover:bg-white hover:bg-opacity-10`}
             >
-                <div className='h-8 w-8 rounded-full bg-blue-700'></div>
+                <div className='h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium'>
+                    {getInitials(state.currentUser?.firstname, state.currentUser?.lastname)}
+                </div>
                 <span>{state.currentUser?.firstname} {state.currentUser?.lastname}</span>
             </Popover.Button>
             <Transition
