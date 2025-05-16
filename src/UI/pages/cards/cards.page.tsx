@@ -1,4 +1,3 @@
-import { Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
 import TitleStyle from '../../style/title.style';
@@ -35,7 +34,7 @@ export default function CardsPage() {
         try {
             const fetchedCards = await cardsRepository.getAll();
             const sortedCards = fetchedCards.sort((a, b) => 
-                new Date(b.dateOfCreation).getTime() - new Date(a.dateOfCreation).getTime()
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
             setCards(sortedCards);
         } catch (error) {
@@ -239,7 +238,10 @@ export default function CardsPage() {
             <ConfirmationModal
                 modalName="view-card-modal"
                 isOpen={isViewModalOpen}
-                onClose={() => setIsViewModalOpen(false)}
+                onClose={() => {
+                    setIsViewModalOpen(false);
+                    setSelectedCard(null);
+                }}
             >
                 <div className="p-6">
                     <h2 className="text-xl font-semibold mb-6">
@@ -268,7 +270,10 @@ export default function CardsPage() {
             <ConfirmationModal
                 modalName="delete-card-modal"
                 isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
+                onClose={() => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedCard(null);
+                }}
             >
                 <div className="flex flex-col items-center justify-center min-h-[200px] px-8">
                     <h3 className="text-lg font-semibold mb-4 text-center">Confirmer la suppression</h3>
@@ -317,7 +322,7 @@ interface CardItemProps {
 }
 
 const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, onEdit, onDelete, isActive }) => {
-    const formattedDate = new Date(card.dateOfCreation).toLocaleDateString('fr-FR', {
+    const formattedDate = new Date(card.createdAt).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
@@ -325,45 +330,80 @@ const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, onEdi
 
     return (
         <div className={`p-4 flex flex-col h-48 transition-all duration-300 relative group ${isActive ? 'bg-blue-50' : ''}`}>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 gap-2">
-                <button
-                    onClick={() => onView(card)}
-                    className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 z-10"
-                >
-                    <VisibilityIcon className="text-gray-600" />
-                </button>
-                <Menu as="div" className="relative z-10">
-                    <Menu.Button className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200">
-                        <SettingsIcon className="text-gray-600" />
-                    </Menu.Button>
-                    <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <Menu.Item>
-                            {({ active }) => (
-                                <button
-                                    onClick={() => onEdit(card)}
-                                    className={`${
-                                        active ? 'bg-gray-100' : ''
-                                    } block w-full text-left px-4 py-2 text-sm text-gray-700`}
-                                >
-                                    Modifier
-                                </button>
-                            )}
-                        </Menu.Item>
-                        <Menu.Item>
-                            {({ active }) => (
-                                <button
-                                    onClick={() => onDelete(card)}
-                                    className={`${
-                                        active ? 'bg-red-50' : ''
-                                    } block w-full text-left px-4 py-2 text-sm text-red-600`}
-                                >
-                                    Supprimer
-                                </button>
-                            )}
-                        </Menu.Item>
-                    </Menu.Items>
-                </Menu>
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <div className="absolute inset-0 bg-white bg-opacity-50"></div>
+                <div className="flex gap-2 z-10">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onView(card);
+                        }}
+                        className="p-3 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors duration-200"
+                    >
+                        <VisibilityIcon className="text-gray-600" />
+                    </button>
+
+                    <Menu as="div" className="relative">
+                        {({ open }) => (
+                            <>
+                                <Menu.Button
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="p-3 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors duration-200"
+                                >
+                                    <SettingsIcon className="text-gray-600" />
+                                </Menu.Button>
+
+                                <Transition
+                                    show={open}
+                                    enter="transition duration-100 ease-out"
+                                    enterFrom="transform scale-95 opacity-0"
+                                    enterTo="transform scale-100 opacity-100"
+                                    leave="transition duration-75 ease-out"
+                                    leaveFrom="transform scale-100 opacity-100"
+                                    leaveTo="transform scale-95 opacity-0"
+                                >
+                                    <Menu.Items
+                                        static
+                                        className="absolute right-0 mt-2 w-48 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                                    >
+                                        <div className="py-1">
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onEdit(card);
+                                                        }}
+                                                        className={`${
+                                                            active ? 'bg-gray-100' : ''
+                                                        } block w-full text-left px-4 py-2 text-sm text-gray-700`}
+                                                    >
+                                                        Modifier
+                                                    </button>
+                                                )}
+                                            </Menu.Item>
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onDelete(card);
+                                                        }}
+                                                        className={`${
+                                                            active ? 'bg-red-50' : ''
+                                                        } block w-full text-left px-4 py-2 text-sm text-red-600`}
+                                                    >
+                                                        Supprimer
+                                                    </button>
+                                                )}
+                                            </Menu.Item>
+                                        </div>
+                                    </Menu.Items>
+                                </Transition>
+                            </>
+                        )}
+                    </Menu>
+                </div>
             </div>
             
             <div className="flex-1">
