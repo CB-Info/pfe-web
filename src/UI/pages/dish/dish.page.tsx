@@ -12,7 +12,7 @@ import DishesTable from '../../components/tables/dishes/dish.table';
 import UpdateDishPage from './update.dish.page';
 import CustomButton, { TypeButton, WidthButton } from '../../components/buttons/custom.button';
 import { BaseContent } from '../../components/contents/base.content';
-import { DishCategory } from '../../../data/dto/dish.dto';
+import { DishCategory, DishCategoryLabels } from '../../../data/dto/dish.dto';
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ export default function HomePage() {
   const dishRepository = new DishesRepositoryImpl();
 
   const statusOptions = ['Tous', 'Actif', 'Inactif'];
-  const categoryOptions = ['Toutes', ...Object.values(DishCategory)];
+  const categoryOptions = ['Toutes', ...Object.values(DishCategoryLabels)];
 
   const fetchDishes = async () => {
     try {
@@ -62,7 +62,13 @@ export default function HomePage() {
 
     // Apply category filter
     if (selectedCategory !== 'Toutes') {
-      result = result.filter(dish => dish.category === selectedCategory);
+      const categoryKey = Object.entries(DishCategoryLabels).find(
+        ([_, label]) => label === selectedCategory
+      )?.[0] as DishCategory;
+      
+      if (categoryKey) {
+        result = result.filter(dish => dish.category === categoryKey);
+      }
     }
 
     // Apply status filter
