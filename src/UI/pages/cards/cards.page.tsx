@@ -233,7 +233,7 @@ interface CardItemProps {
 }
 
 const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isActive }) => {
-    const formattedDate = new Date(card.createdAt).toLocaleDateString('fr-FR', {
+    const formattedDate = new Date(card.createdAt.replace(' ', 'T')).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
