@@ -10,15 +10,17 @@ import { PanelContent } from '../../components/contents/panel.content';
 import AddIcon from '@mui/icons-material/Add';
 import { Switch } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Eye, Pencil } from 'lucide-react';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
+import { EditCardModal } from './edit.card.modal';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [cardDishes, setCardDishes] = useState<Dish[]>([]);
@@ -50,7 +52,38 @@ export default function CardsPage() {
 
     const handleCardCreated = (newCard: CardDto) => {
         setCards(prevCards => [newCard, ...prevCards]);
-        setIsModalOpen(false);
+        setIsCreateModalOpen(false);
+    };
+
+    const handleCardUpdated = (updatedCard: CardDto) => {
+        setCards(prevCards => prevCards.map(card => 
+            card._id === updatedCard._id ? updatedCard : card
+        ));
+        setIsEditModalOpen(false);
+        addAlert({
+            severity: 'success',
+            message: "La carte a été mise à jour avec succès",
+            timeout: 3
+        });
+    };
+
+    const handleCardDeleted = async (cardId: string) => {
+        try {
+            await cardsRepository.delete(cardId);
+            setCards(prevCards => prevCards.filter(card => card._id !== cardId));
+            setIsEditModalOpen(false);
+            addAlert({
+                severity: 'success',
+                message: "La carte a été supprimée avec succès",
+                timeout: 3
+            });
+        } catch (error) {
+            addAlert({
+                severity: 'error',
+                message: "Erreur lors de la suppression de la carte",
+                timeout: 3
+            });
+        }
     };
 
     const handleToggleActive = async (card: CardDto) => {
@@ -98,6 +131,11 @@ export default function CardsPage() {
         }
     };
 
+    const handleEditCard = (card: CardDto) => {
+        setSelectedCard(card);
+        setIsEditModalOpen(true);
+    };
+
     const activeCard = cards.find(card => card.isActive);
     const inactiveCards = cards.filter(card => !card.isActive);
 
@@ -130,6 +168,7 @@ export default function CardsPage() {
                                                 card={activeCard} 
                                                 onToggleActive={handleToggleActive}
                                                 onView={handleViewCard}
+                                                onEdit={handleEditCard}
                                                 isActive={true}
                                             />
                                         </PanelContent>
@@ -154,7 +193,7 @@ export default function CardsPage() {
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={() => setIsModalOpen(true)}
+                                    onClick={() => setIsCreateModalOpen(true)}
                                     className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 transition-all duration-200 hover:shadow-md"
                                 >
                                     <AddIcon className="w-8 h-8 text-gray-400" />
@@ -175,6 +214,7 @@ export default function CardsPage() {
                                                     card={card} 
                                                     onToggleActive={handleToggleActive}
                                                     onView={handleViewCard}
+                                                    onEdit={handleEditCard}
                                                     isActive={false}
                                                 />
                                             </PanelContent>
@@ -188,39 +228,51 @@ export default function CardsPage() {
             </div>
 
             <CreateCardModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
                 onCardCreated={handleCardCreated}
             />
 
-            <ConfirmationModal
-                modalName="view-card-modal"
-                isOpen={isViewModalOpen}
-                onClose={() => setIsViewModalOpen(false)}
-            >
-                <div className="p-6">
-                    <h2 className="text-xl font-semibold mb-6">
-                        {selectedCard?.name}
-                    </h2>
-                    <div className="space-y-4">
-                        <div>
-                            <h3 className="font-medium mb-2">Plats de la carte</h3>
-                            {cardDishes.length > 0 ? (
-                                <ul className="space-y-2">
-                                    {cardDishes.map(dish => (
-                                        <li key={dish._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                                            <span>{dish.name}</span>
-                                            <span className="text-gray-600">{dish.price} €</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500 italic">Aucun plat dans cette carte</p>
-                            )}
+            {selectedCard && (
+                <>
+                    <EditCardModal
+                        isOpen={isEditModalOpen}
+                        onClose={() => setIsEditModalOpen(false)}
+                        card={selectedCard}
+                        onCardUpdated={handleCardUpdated}
+                        onCardDeleted={handleCardDeleted}
+                    />
+
+                    <ConfirmationModal
+                        modalName="view-card-modal"
+                        isOpen={isViewModalOpen}
+                        onClose={() => setIsViewModalOpen(false)}
+                    >
+                        <div className="p-6">
+                            <h2 className="text-xl font-semibold mb-6">
+                                {selectedCard.name}
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="font-medium mb-2">Plats de la carte</h3>
+                                    {cardDishes.length > 0 ? (
+                                        <ul className="space-y-2">
+                                            {cardDishes.map(dish => (
+                                                <li key={dish._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                                    <span>{dish.name}</span>
+                                                    <span className="text-gray-600">{dish.price} €</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-gray-500 italic">Aucun plat dans cette carte</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </ConfirmationModal>
+                    </ConfirmationModal>
+                </>
+            )}
         </BaseContent>
     );
 }
@@ -229,10 +281,11 @@ interface CardItemProps {
     card: CardDto;
     onToggleActive: (card: CardDto) => void;
     onView: (card: CardDto) => void;
+    onEdit: (card: CardDto) => void;
     isActive: boolean;
 }
 
-const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isActive }) => {
+const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, onEdit, isActive }) => {
     const formattedDate = new Date(card.dateOfCreation).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
@@ -241,12 +294,24 @@ const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, isAct
 
     return (
         <div className={`p-4 flex flex-col h-48 transition-all duration-300 relative group ${isActive ? 'bg-blue-50' : ''}`}>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 gap-2">
                 <button
-                    onClick={() => onView(card)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onView(card);
+                    }}
                     className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 z-10"
                 >
-                    <VisibilityIcon className="text-gray-600" />
+                    <Eye className="w-5 h-5 text-gray-600" />
+                </button>
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(card);
+                    }}
+                    className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 z-10"
+                >
+                    <Pencil className="w-5 h-5 text-gray-600" />
                 </button>
                 <div className="absolute inset-0 bg-white bg-opacity-50"></div>
             </div>
