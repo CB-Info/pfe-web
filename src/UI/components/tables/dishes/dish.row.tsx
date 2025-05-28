@@ -54,17 +54,17 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
     const handleConfirmDelete = async () => {
         try {
             await dishRepository.delete(row._id);
-            addAlert({ 
-                severity: "success", 
-                message: "Le plat a été supprimé avec succès", 
-                timeout: 3 
+            addAlert({
+                severity: "success",
+                message: "Le plat a été supprimé avec succès",
+                timeout: 3
             });
             onDelete();
         } catch (error) {
-            addAlert({ 
-                severity: "error", 
-                message: "Une erreur est survenue lors de la suppression du plat", 
-                timeout: 3 
+            addAlert({
+                severity: "error",
+                message: "Une erreur est survenue lors de la suppression du plat",
+                timeout: 3
             });
         }
         setIsDeleteModalOpen(false);
@@ -87,7 +87,7 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
                     {row.ingredients.map((e) => e.ingredient.name).join(", ")}
                 </DishTableCellStyled>
                 <DishTableCellStyled align="left">
-                    <div className="flex items-center">
+                    <div className="flex items-center pl-4">
                         <div className={`h-3 w-3 rounded-full ${row.isAvailable ? 'bg-green-500' : 'bg-red-500'}`}></div>
                     </div>
                 </DishTableCellStyled>
@@ -98,8 +98,8 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
                 </DishTableCellStyled>
                 <DishTableCellStyled align="right">{row.price} €</DishTableCellStyled>
                 <DishTableCellStyled align="right">
-                    <IconButton 
-                        size='small' 
+                    <IconButton
+                        size='small'
                         onClick={handleMenuClick}
                     >
                         <MoreVertIcon fontSize='small' />
@@ -110,7 +110,7 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
                         onClose={handleMenuClose}
                     >
                         <MenuItem onClick={handleEditClick}>Modifier</MenuItem>
-                        <MenuItem 
+                        <MenuItem
                             onClick={handleDeleteClick}
                             sx={{
                                 color: '#EF4444',
