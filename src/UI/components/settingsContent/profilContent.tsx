@@ -3,20 +3,22 @@ import { useUsersListerDispatchContext, useUsersListerStateContext } from '../..
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 import CustomButton, { TypeButton, WidthButton } from '../buttons/custom.button';
 import { useState } from 'react';
+import { useAlerts } from '../../../contexts/alerts.context';
 
 export const ProfilContent: React.FC = () => {
     const dispatch = useUsersListerDispatchContext();
     const { currentUser } = useUsersListerStateContext();
-    const [isLoadingUpdateUser, setIsLoadingUpdateUser] = useState(false)
-    const [lastName, setLastName] = useState(currentUser?.lastname ?? "")
-    const [firstName, setFirstName] = useState(currentUser?.firstname ?? "")
-    const [email, setEmail] = useState(currentUser?.email ?? "")
+    const [isLoadingUpdateUser, setIsLoadingUpdateUser] = useState(false);
+    const [lastName, setLastName] = useState(currentUser?.lastname ?? "");
+    const [firstName, setFirstName] = useState(currentUser?.firstname ?? "");
+    const [email, setEmail] = useState(currentUser?.email ?? "");
     const userRepository = new UserRepositoryImpl();
+    const { addAlert } = useAlerts();
 
     const handleSubmit = async () => {
-        if (currentUser){
+        if (currentUser) {
             try {
-                setIsLoadingUpdateUser(true)
+                setIsLoadingUpdateUser(true);
                 const userId = currentUser.id;
             
                 const updatedUser = await userRepository.updateUser(userId, {
@@ -25,42 +27,68 @@ export const ProfilContent: React.FC = () => {
                     firstname: firstName,
                     lastname: lastName
                 });
+                
                 dispatch({ type: "UPDATE_USER", payload: updatedUser });
-                setIsLoadingUpdateUser(false)
-              } catch (error) {
-                console.log(error)
-              }
+                addAlert({
+                    severity: 'success',
+                    message: 'Profil mis à jour avec succès',
+                    timeout: 3
+                });
+            } catch (error) {
+                addAlert({
+                    severity: 'error',
+                    message: 'Erreur lors de la mise à jour du profil',
+                    timeout: 3
+                });
+            } finally {
+                setIsLoadingUpdateUser(false);
+            }
         }
-      };
+    };
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="space-y-4">
+        <div className="flex flex-col gap-6">
+            <h2 className="text-xl font-semibold">Informations personnelles</h2>
+            
+            <div className="grid grid-cols-2 gap-4">
                 <TextInput 
                     label="Nom" 
                     name="lastName" 
                     value={lastName} 
                     onChange={(newValue) => setLastName(newValue)} 
-                    $isError={false} 
+                    $isError={false}
+                    $isDisabled={false}
                 />
                 <TextInput 
                     label="Prénom" 
                     name="firstName" 
                     value={firstName} 
                     onChange={(newValue) => setFirstName(newValue)} 
-                    $isError={false} 
-                />
-                <TextInput 
-                    label="Email" 
-                    name="email" 
-                    value={email} 
-                    onChange={(newValue) => setEmail(newValue)} 
-                    $isError={false} 
-                    type="email" 
+                    $isError={false}
+                    $isDisabled={false}
                 />
             </div>
 
-            <CustomButton  type={TypeButton.PRIMARY} onClick={handleSubmit} width={WidthButton.SMALL} isLoading={isLoadingUpdateUser}>Enregistrer</CustomButton>
+            <TextInput 
+                label="Email" 
+                name="email" 
+                value={email} 
+                onChange={(newValue) => setEmail(newValue)} 
+                $isError={false}
+                $isDisabled={false}
+                type="email" 
+            />
+
+            <div className="flex justify-end pt-4">
+                <CustomButton 
+                    type={TypeButton.PRIMARY} 
+                    onClick={handleSubmit} 
+                    width={WidthButton.SMALL} 
+                    isLoading={isLoadingUpdateUser}
+                >
+                    Enregistrer les modifications
+                </CustomButton>
+            </div>
         </div>
     );
 };

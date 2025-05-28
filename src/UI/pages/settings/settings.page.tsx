@@ -3,50 +3,68 @@ import { ProfilContent } from "../../components/settingsContent/profilContent";
 import { PreferencesContent } from "../../components/settingsContent/preferencesContent";
 import { BaseContent } from '../../components/contents/base.content';
 import { PanelContent } from '../../components/contents/panel.content';
+import { User, Settings, Shield } from 'lucide-react';
 
-const tabs = ['Profil', 'Préférences', 'Sécurité'];
+const tabs = [
+  { id: 'profile', label: 'Profil', icon: User },
+  { id: 'preferences', label: 'Préférences', icon: Settings },
+  { id: 'security', label: 'Sécurité', icon: Shield }
+];
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [activeTab, setActiveTab] = useState(tabs[0].id);
 
   return (
     <BaseContent>
-      <div className="w-full h-16">
-      </div>
-      <div className="w-full h-full p-4">
-        <PanelContent>
-          <nav className="flex mb-4 w-1/3">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                className={`flex-1 py-2 px-4 text-sm font-inter font-medium text-center 
-                        ${activeTab === tab ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-400 hover:bg-gray-50'}
-                        focus:outline-blue-500`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
-          <div className="p-4">
-            {activeTab === 'Profil' && (
-          // Profil content
-            <ProfilContent />
-        )}
-            {activeTab === 'Préférences' && (
-          // Préférences content
-          <PreferencesContent />
-        )}
-            {activeTab === 'Sécurité' && (
-          // Sécurité content
-          <div className="w-full h-40 bg-pink-300"></div>
-        )}
+      <div className="flex flex-col h-full p-6 gap-6">
+        <h1 className="text-2xl font-semibold">Paramètres</h1>
+        
+        <div className="flex flex-1 gap-6">
+          {/* Sidebar */}
+          <div className="w-64">
+            <PanelContent>
+              <nav className="p-2">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`
+                        w-full px-4 py-3 mb-1 rounded-lg flex items-center gap-3 transition-colors duration-200
+                        ${activeTab === tab.id 
+                          ? 'bg-blue-50 text-blue-600' 
+                          : 'hover:bg-gray-50 text-gray-700'}
+                      `}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+            </PanelContent>
           </div>
-        </PanelContent>
+
+          {/* Content */}
+          <div className="flex-1">
+            <PanelContent>
+              <div className="p-6">
+                {activeTab === 'profile' && <ProfilContent />}
+                {activeTab === 'preferences' && <PreferencesContent />}
+                {activeTab === 'security' && (
+                  <div className="flex flex-col gap-4">
+                    <h2 className="text-xl font-semibold mb-4">Sécurité</h2>
+                    <p className="text-gray-600">
+                      Les paramètres de sécurité seront bientôt disponibles.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </PanelContent>
+          </div>
+        </div>
       </div>
     </BaseContent>
   );
 }
-
-
-
