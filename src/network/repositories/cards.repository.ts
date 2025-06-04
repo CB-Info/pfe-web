@@ -61,4 +61,19 @@ export class CardsRepositoryImpl {
             throw new Error("Erreur lors de la mise à jour de la carte");
         }
     }
+
+  async delete(cardId: string): Promise<void> {
+        try {
+            const token = await FirebaseAuthManager.getInstance().getToken();
+            await fetch(`${this.url}/${cardId}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+        } catch (error) {
+            throw new Error("Erreur lors de la suppression de la carte");
+        }
+    }
 }
