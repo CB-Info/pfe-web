@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useMemo } from "react";
 import BorderContainer from "../../../style/border.container.style";
 import { TextInput } from "../../../components/input/textInput";
 import TextfieldList from "../../../components/input/textfield.list";
@@ -62,7 +62,7 @@ const DishForm: React.FC<DishFormProps> = ({
     undefined
   );
 
-  const dishesRepository = new DishesRepositoryImpl();
+  const dishesRepository = useMemo(() => new DishesRepositoryImpl(), []);
   const { addAlert, clearAlerts } = useAlerts();
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const DishForm: React.FC<DishFormProps> = ({
     };
 
     fetchAllIngredientsData();
-  }, [addAlert, dishesRepository]);
+  }, []);
 
   function resetForm() {
     setDishName("");
