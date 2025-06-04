@@ -32,7 +32,7 @@ export default function CardsPage() {
         try {
             const fetchedCards = await cardsRepository.getAll();
             const sortedCards = fetchedCards.sort((a, b) => 
-                new Date(b.dateOfCreation).getTime() - new Date(a.dateOfCreation).getTime()
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
             setCards(sortedCards);
         } catch (error) {
@@ -286,7 +286,7 @@ interface CardItemProps {
 }
 
 const CardItem: React.FC<CardItemProps> = ({ card, onToggleActive, onView, onEdit, isActive }) => {
-    const formattedDate = new Date(card.dateOfCreation).toLocaleDateString('fr-FR', {
+    const formattedDate = new Date(card.createdAt).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
