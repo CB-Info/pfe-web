@@ -22,15 +22,15 @@ export function NavBar() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-              const user = await userRepository.getMe()
-              dispatch({ type: "UPDATE_USER", payload: user })
+                const user = await userRepository.getMe()
+                dispatch({ type: "UPDATE_USER", payload: user })
             } catch (error) {
-              addAlert({ severity: 'error', message: "Erreur lors de la récupération de l'utilisateur" })
+                addAlert({ severity: 'error', message: "Erreur lors de la récupération de l'utilisateur" })
             }
-          }
+        }
 
         fetchUser()
-    }, [state.currentUser])
+    }, [])
 
     return (
         <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
