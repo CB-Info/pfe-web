@@ -46,6 +46,34 @@ export class CardsRepositoryImpl {
         }
     }
 
+  async update(card: CardDto): Promise<CardDto> {
+        try {
+            const token = await FirebaseAuthManager.getInstance().getToken();
+            const response = await fetch(`${this.url}/${card._id}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: card.name,
+                    dishesId: card.dishesId,
+                    isActive: card.isActive
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur lors de la mise à jour de la carte");
+            }
+
+            const data: Data<CardDto> = await response.json();
+            return data.data;
+        } catch (error) {
+            throw new Error("Erreur lors de la mise à jour de la carte");
+        }
+    }
+
+
     async updateStatus(cardId: string, isActive: boolean): Promise<void> {
         try {
             const token = await FirebaseAuthManager.getInstance().getToken();
