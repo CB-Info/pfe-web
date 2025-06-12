@@ -24,7 +24,7 @@ export const IngredientsModalHome: React.FC<IngredientModalHome> = ({ ingredient
         if (state.suggestIngredients.length == 0) {
             dispatch({ type: 'UPDATE_SUGGEST_INGREDIENTS', payload: ingredientsDisplay })
         }
-    }, [])
+    }, [dispatch, ingredientsDisplay, state.suggestIngredients.length])
 
     useEffect(() => {
         if (state.searchIngredientInput != "") {
@@ -47,7 +47,7 @@ export const IngredientsModalHome: React.FC<IngredientModalHome> = ({ ingredient
             return () => clearTimeout(timerId);
         }
 
-    }, [state.searchIngredientInput]);
+    }, [state.searchIngredientInput, ingredientRepositoryImpl, setIngredientsDisplay]);
 
 
 
