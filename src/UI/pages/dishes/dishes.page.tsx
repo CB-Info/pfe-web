@@ -48,7 +48,7 @@ export default function DishesPage() {
     };
 
     fetch();
-  }, []);
+  }, [dishRepository]);
 
   useEffect(() => {
     let result = [...dishes];

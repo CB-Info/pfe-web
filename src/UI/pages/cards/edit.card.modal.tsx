@@ -3,7 +3,6 @@ import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { TextInput } from '../../components/input/textInput';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
 import { Dish } from '../../../data/models/dish.model';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CircularProgress } from '@mui/material';
@@ -33,7 +32,6 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [error, setError] = useState('');
     
-    const { addAlert } = useAlerts();
     const dishesRepository = new DishesRepositoryImpl();
     const cardsRepository = new CardsRepositoryImpl();
 
