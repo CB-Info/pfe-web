@@ -3,7 +3,7 @@ import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { TextInput } from '../../components/input/textInput';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/alerts.hook';
 import { Dish } from '../../../data/models/dish.model';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CircularProgress } from '@mui/material';

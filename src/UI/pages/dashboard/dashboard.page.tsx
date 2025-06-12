@@ -4,7 +4,7 @@ import { PanelContent } from '../../components/contents/panel.content';
 import TitleStyle from '../../style/title.style';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/alerts.hook';
 import { Dish } from '../../../data/models/dish.model';
 import { CircularProgress } from '@mui/material';
 import { 

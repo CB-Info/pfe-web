@@ -3,7 +3,7 @@ import { BaseContent } from '../../components/contents/base.content';
 import TitleStyle from '../../style/title.style';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/alerts.hook';
 import { CircularProgress } from '@mui/material';
 import { CreateCardModal } from './create.card.modal';
 import { PanelContent } from '../../components/contents/panel.content';

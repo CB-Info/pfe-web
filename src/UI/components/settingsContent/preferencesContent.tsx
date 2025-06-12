@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '../../../contexts/theme.context';
+import { useTheme } from '../../../hooks/theme.hook';
 import { Moon, Sun } from 'lucide-react';
 
 export const PreferencesContent: React.FC = () => {

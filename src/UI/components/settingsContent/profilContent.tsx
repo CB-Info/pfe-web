@@ -3,7 +3,7 @@ import { useUsersListerDispatchContext, useUsersListerStateContext } from '../..
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 import CustomButton, { TypeButton, WidthButton } from '../buttons/custom.button';
 import { useState } from 'react';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/alerts.hook';
 
 export const ProfilContent: React.FC = () => {
     const dispatch = useUsersListerDispatchContext();
