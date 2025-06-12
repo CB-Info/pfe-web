@@ -27,7 +27,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
     const [name, setName] = useState(card.name);
     const [dishes, setDishes] = useState<Dish[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedDishes, setSelectedDishes] = useState<Set<string>>(new Set(card.dishesId));
+    const [selectedDishes, setSelectedDishes] = useState<Set<string>>(new Set());
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -37,24 +37,38 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
     const dishesRepository = new DishesRepositoryImpl();
     const cardsRepository = new CardsRepositoryImpl();
 
+    // Reset state when card prop changes or modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setName(card.name);
+            setSelectedDishes(new Set(card.dishesId));
+            setSearchQuery('');
+            setError('');
+            console.log('EditCardModal: Initializing with card dishesId:', card.dishesId);
+        }
+    }, [isOpen, card]);
+
     useEffect(() => {
         const fetchDishes = async () => {
+            if (!isOpen) return;
+            
             try {
+                setIsLoading(true);
                 const fetchedDishes = await dishesRepository.getAll();
                 const sortedDishes = fetchedDishes.sort((a, b) => 
                     a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
                 );
                 setDishes(sortedDishes);
+                console.log('EditCardModal: Fetched dishes:', sortedDishes.map(d => ({ id: d._id, name: d.name })));
             } catch (error) {
                 setError("Erreur lors de la récupération des plats");
+                console.error('EditCardModal: Error fetching dishes:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        if (isOpen) {
-            fetchDishes();
-        }
+        fetchDishes();
     }, [isOpen]);
 
     const filteredDishes = dishes.filter(dish =>
@@ -73,10 +87,13 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
         const newSelection = new Set(selectedDishes);
         if (newSelection.has(dishId)) {
             newSelection.delete(dishId);
+            console.log('EditCardModal: Removed dish:', dishId);
         } else {
             newSelection.add(dishId);
+            console.log('EditCardModal: Added dish:', dishId);
         }
         setSelectedDishes(newSelection);
+        console.log('EditCardModal: Current selection:', Array.from(newSelection));
     };
 
     const toggleAll = () => {
@@ -107,13 +124,16 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                 _id: card._id,
                 name: name.trim(),
                 dishesId: Array.from(selectedDishes),
-                isActive: card.isActive
+                isActive: card.isActive,
+                dateOfCreation: card.dateOfCreation
             });
             
+            console.log('EditCardModal: Card updated successfully:', updatedCard);
             onCardUpdated(updatedCard);
             handleClose();
         } catch (error) {
             setError("Erreur lors de la mise à jour de la carte");
+            console.error('EditCardModal: Error updating card:', error);
         } finally {
             setIsSubmitting(false);
         }
@@ -167,7 +187,9 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                                 />
 
                                 <div className="flex justify-between items-center">
-                                    <h3 className="font-medium">Sélection des plats</h3>
+                                    <h3 className="font-medium">
+                                        Sélection des plats ({selectedDishes.size} sélectionné{selectedDishes.size > 1 ? 's' : ''})
+                                    </h3>
                                     <button
                                         onClick={toggleAll}
                                         className="text-sm text-blue-600 hover:text-blue-700"
@@ -187,20 +209,27 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                                 </div>
                             ) : (
                                 <div className="max-h-64 overflow-y-auto border rounded-lg divide-y mt-2">
-                                    {filteredDishes.map(dish => (
-                                        <label
-                                            key={dish._id}
-                                            className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedDishes.has(dish._id)}
-                                                onChange={() => toggleDish(dish._id)}
-                                                className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                            />
-                                            <span className="ml-3">{dish.name}</span>
-                                        </label>
-                                    ))}
+                                    {filteredDishes.map(dish => {
+                                        const isSelected = selectedDishes.has(dish._id);
+                                        return (
+                                            <label
+                                                key={dish._id}
+                                                className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={() => toggleDish(dish._id)}
+                                                    className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                                />
+                                                <span className="ml-3">{dish.name}</span>
+                                                {/* Debug info - remove in production */}
+                                                <span className="ml-auto text-xs text-gray-400">
+                                                    {isSelected ? '✓' : '○'}
+                                                </span>
+                                            </label>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

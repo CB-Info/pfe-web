@@ -35,6 +35,7 @@ export default function CardsPage() {
                 new Date(b.dateOfCreation).getTime() - new Date(a.dateOfCreation).getTime()
             );
             setCards(sortedCards);
+            console.log('CardsPage: Fetched cards:', sortedCards);
         } catch (error) {
             addAlert({
                 severity: 'error',
@@ -55,16 +56,27 @@ export default function CardsPage() {
         setIsCreateModalOpen(false);
     };
 
-    const handleCardUpdated = (updatedCard: CardDto) => {
+    const handleCardUpdated = async (updatedCard: CardDto) => {
+        // Update the cards list with the new data
         setCards(prevCards => prevCards.map(card => 
             card._id === updatedCard._id ? updatedCard : card
         ));
+        
+        // Update selectedCard if it's the one being edited
+        if (selectedCard && selectedCard._id === updatedCard._id) {
+            setSelectedCard(updatedCard);
+            console.log('CardsPage: Updated selectedCard with new data:', updatedCard);
+        }
+        
         setIsEditModalOpen(false);
         addAlert({
             severity: 'success',
             message: "La carte a été mise à jour avec succès",
             timeout: 3
         });
+        
+        // Refresh cards from server to ensure data consistency
+        await fetchCards();
     };
 
     const handleCardDeleted = async (cardId: string) => {
@@ -72,6 +84,7 @@ export default function CardsPage() {
             await cardsRepository.delete(cardId);
             setCards(prevCards => prevCards.filter(card => card._id !== cardId));
             setIsEditModalOpen(false);
+            setSelectedCard(null);
             addAlert({
                 severity: 'success',
                 message: "La carte a été supprimée avec succès",
@@ -131,8 +144,21 @@ export default function CardsPage() {
         }
     };
 
-    const handleEditCard = (card: CardDto) => {
-        setSelectedCard(card);
+    const handleEditCard = async (card: CardDto) => {
+        // Fetch the latest card data before opening edit modal
+        try {
+            const latestCards = await cardsRepository.getAll();
+            const latestCard = latestCards.find(c => c._id === card._id);
+            if (latestCard) {
+                setSelectedCard(latestCard);
+                console.log('CardsPage: Opening edit modal with latest card data:', latestCard);
+            } else {
+                setSelectedCard(card);
+            }
+        } catch (error) {
+            console.error('CardsPage: Error fetching latest card data:', error);
+            setSelectedCard(card);
+        }
         setIsEditModalOpen(true);
     };
 
