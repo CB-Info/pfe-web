@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
 import TitleStyle from '../../style/title.style';
 import { CardDto } from '../../../data/dto/card.dto';
@@ -28,10 +28,10 @@ export default function CardsPage() {
     const cardsRepository = new CardsRepositoryImpl();
     const dishesRepository = new DishesRepositoryImpl();
 
-    const fetchCards = async () => {
+    const fetchCards = useCallback(async () => {
         try {
             const fetchedCards = await cardsRepository.getAll();
-            const sortedCards = fetchedCards.sort((a, b) => 
+            const sortedCards = fetchedCards.sort((a, b) =>
                 new Date(b.dateOfCreation).getTime() - new Date(a.dateOfCreation).getTime()
             );
             setCards(sortedCards);
@@ -44,11 +44,11 @@ export default function CardsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [cardsRepository, addAlert]);
 
     useEffect(() => {
         fetchCards();
-    }, []);
+    }, [fetchCards]);
 
     const handleCardCreated = (newCard: CardDto) => {
         setCards(prevCards => [newCard, ...prevCards]);
