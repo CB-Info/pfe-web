@@ -8,11 +8,11 @@ import { useAlerts } from '../../../contexts/alerts.context';
 import { Dish } from '../../../data/models/dish.model';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CircularProgress } from '@mui/material';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  ShoppingCart, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  ShoppingCart,
   DollarSign,
   Clock,
   ChefHat,
@@ -36,7 +36,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentDishes, setRecentDishes] = useState<Dish[]>([]);
   const { addAlert } = useAlerts();
-  
+
   const dishesRepository = new DishesRepositoryImpl();
   const cardsRepository = new CardsRepositoryImpl();
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Fetch dishes and cards data
         const [dishes, cards, topIngredients] = await Promise.all([
           dishesRepository.getAll(),
@@ -55,10 +55,10 @@ export default function DashboardPage() {
         // Calculate statistics
         const availableDishes = dishes.filter(dish => dish.isAvailable).length;
         const activeCards = cards.filter(card => card.isActive).length;
-        
+
         // Calculate average price
-        const averagePrice = dishes.length > 0 
-          ? dishes.reduce((sum, dish) => sum + dish.price, 0) / dishes.length 
+        const averagePrice = dishes.length > 0
+          ? dishes.reduce((sum, dish) => sum + dish.price, 0) / dishes.length
           : 0;
 
         // Get category distribution
@@ -252,10 +252,10 @@ export default function DashboardPage() {
                       <span className="text-sm font-medium text-gray-700">{item.category}</span>
                       <div className="flex items-center gap-2">
                         <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                            style={{ 
-                              width: `${stats.totalDishes ? (item.count / stats.totalDishes) * 100 : 0}%` 
+                            style={{
+                              width: `${stats.totalDishes ? (item.count / stats.totalDishes) * 100 : 0}%`
                             }}
                           />
                         </div>
@@ -315,8 +315,8 @@ export default function DashboardPage() {
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-medium text-gray-900 truncate">{dish.name}</h4>
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        dish.isAvailable 
-                          ? 'bg-green-100 text-green-800' 
+                        dish.isAvailable
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
                       }`}>
                         {dish.isAvailable ? 'Disponible' : 'Indisponible'}

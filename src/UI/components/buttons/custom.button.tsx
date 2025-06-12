@@ -64,8 +64,7 @@ const PrimaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: width 
       background-color: ${theme.blue500};
       opacity: ${isDisabled ? 0.6 : 1};
       cursor: ${isDisabled || isLoading ? "default" : "pointer"};
-      ${(isDisabled) => isDisabled ? '' : `&:hover { background-color: ${theme.blue600}; }`}
-      ${(isLoading) => isLoading ? '' : `&:hover { background-color: ${theme.blue600}; }`}
+      ${!isDisabled && !isLoading ? `&:hover { background-color: ${theme.blue600}; }` : ''}
     `,
 ]);
 
@@ -123,9 +122,9 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button"
             return (
                 <PrimaryButton
                     type={inputType}
-                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
-                    $width={width} 
-                    $isDisabled={isDisabled} 
+                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}}
+                    $width={width}
+                    $isDisabled={isDisabled}
                     $isLoading={isLoading}>
                 {isLoading ? <CircularProgress size={20}/> : children}
                 </PrimaryButton>
@@ -133,11 +132,11 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button"
 
         case TypeButton.SECONDARY:
             return (
-                <SecondaryButton 
+                <SecondaryButton
                     type={inputType}
-                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
-                    $width={width} 
-                    $isDisabled={isDisabled} 
+                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}}
+                    $width={width}
+                    $isDisabled={isDisabled}
                     $isLoading={isLoading}>
                 {isLoading ? <CircularProgress size={20}/> : children}
                 </SecondaryButton>
@@ -147,9 +146,9 @@ export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button"
             return (
                 <TextButton
                     type={inputType}
-                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}} 
+                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}}
                     $width={width}
-                    $isDisabled={isDisabled} 
+                    $isDisabled={isDisabled}
                     $isLoading={isLoading}>
                 {isLoading ? <CircularProgress size={20}/> : children}
                 </TextButton>
