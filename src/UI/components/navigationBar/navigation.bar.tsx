@@ -17,7 +17,6 @@ export function NavBar() {
     const userRepository = new UserRepositoryImpl()
     const { addAlert } = useAlerts();
     const dispatch = useUsersListerDispatchContext();
-    const state = useUsersListerStateContext();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -30,7 +29,7 @@ export function NavBar() {
         }
 
         fetchUser()
-    }, [])
+    }, [userRepository, dispatch, addAlert])
 
     return (
         <div className="w-[260px] h-full bg-slate-700 flex flex-col px-3 pb-2">
