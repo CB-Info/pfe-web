@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from "react";
+import { createPortal } from "react-dom";
 import CloseIcon from '@mui/icons-material/Close';
 
 interface ConfirmationModalProps {
@@ -42,10 +43,10 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         }
     };
 
-    return (
-        <dialog 
-            id={modalName} 
-            className="modal" 
+    const dialog = (
+        <dialog
+            id={modalName}
+            className="modal"
             onClick={handleBackdropClick}
         >
             <div className="modal-box p-0 max-w-md" onClick={e => e.stopPropagation()}>
@@ -61,4 +62,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             </div>
         </dialog>
     );
+
+    return createPortal(dialog, document.body);
 };

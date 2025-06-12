@@ -119,21 +119,16 @@ const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish, onDe
           )}
           </TableBody>
           <TableFooter>
-          <TableRow>
-              <TableCell colSpan={6}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <TablePagination
-                    sx={{ borderBottom: 0 }}
-                    rowsPerPageOptions={[10]}
-                    colSpan={3}
-                    count={reversedDishes.length}
-                    rowsPerPage={10}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </Box>
-              </TableCell>
+            <TableRow>
+              <TablePagination
+                sx={{ borderBottom: 0, ml: 'auto' }}
+                rowsPerPageOptions={[10]}
+                count={reversedDishes.length}
+                rowsPerPage={10}
+                page={page}
+                onPageChange={handleChangePage}
+                ActionsComponent={TablePaginationActions}
+              />
             </TableRow>
           </TableFooter>
         </Table>
