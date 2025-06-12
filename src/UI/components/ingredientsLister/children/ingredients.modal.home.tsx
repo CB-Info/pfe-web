@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect } from "react"
-import { Modal, PositionModal } from "../../modals/modal"
+import { Modal } from "../../modals/modal"
+import { PositionModal } from "../../modals/modal.types"
 import ModalInput from "../../../style/modal.input.style"
 import { Ingredient } from "../../../../data/models/ingredient.model"
 import { NavigationModal, useIngredientsListerDispatchContext, useIngredientsListerStateContext } from "../ingredients.lister.reducer"

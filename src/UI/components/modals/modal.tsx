@@ -1,9 +1,5 @@
 import { ReactNode } from "react"
-
-export enum PositionModal {
-    TOP,
-    BOTTOM
-}
+import { PositionModal } from "./modal.types"
 
 interface ModalProps {
     position?: PositionModal
