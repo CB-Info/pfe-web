@@ -1,7 +1,7 @@
 import DrawerButton, { ContainerDrawer } from '../../components/drawer';
 import TitleStyle from '../../style/title.style';
 import AddDishPage from './add.dish.page';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { CircularProgress } from '@mui/material';
 import { SearchInput } from '../../components/input/searchInput';
 import TextfieldList from '../../components/input/textfield.list';
@@ -30,7 +30,7 @@ export default function DishesPage() {
   const statusOptions = ['Tous', 'Actif', 'Inactif'];
   const categoryOptions = ['Toutes', ...Object.values(DishCategoryLabels)];
 
-  const fetchDishes = async () => {
+  const fetchDishes = useCallback(async () => {
     try {
       const allDishes = await dishRepository.getAll();
       setDishes(allDishes);
@@ -38,7 +38,7 @@ export default function DishesPage() {
     } catch (error) {
       addAlert({ severity: 'error', message: "Erreur lors de la récupération des repas" });
     }
-  };
+  }, [dishRepository, addAlert]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -48,7 +48,7 @@ export default function DishesPage() {
     };
 
     fetch();
-  }, [dishRepository]);
+  }, [fetchDishes]);
 
   useEffect(() => {
     let result = [...dishes];
