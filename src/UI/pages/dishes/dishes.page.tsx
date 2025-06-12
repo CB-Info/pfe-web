@@ -13,8 +13,9 @@ import UpdateDishPage from './update.dish.page';
 import CustomButton, { TypeButton, WidthButton } from '../../components/buttons/custom.button';
 import { BaseContent } from '../../components/contents/base.content';
 import { DishCategory, DishCategoryLabels } from '../../../data/dto/dish.dto';
+import { PanelContent } from '../../components/contents/panel.content';
 
-export default function HomePage() {
+export default function DishesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [filteredDishes, setFilteredDishes] = useState<Dish[]>([]);
@@ -91,9 +92,9 @@ export default function HomePage() {
 
   return (
     <BaseContent>
-      <div className='flex justify-between px-6 pt-8 items-center'>
-        <TitleStyle>Home</TitleStyle>
-        <div>
+      <div className='flex flex-col px-6 py-8 gap-8'>
+        <div className='flex justify-between items-center'>
+          <TitleStyle>Gestion des plats</TitleStyle>
           <DrawerButton 
             width={360} 
             defaultChildren={
@@ -103,7 +104,7 @@ export default function HomePage() {
                 width={WidthButton.SMALL}
                 isLoading={false}
               >
-                Ajouter un repas
+                Ajouter un plat
               </CustomButton>
             } 
             drawerId={'add-drawer-dish'}
@@ -115,59 +116,112 @@ export default function HomePage() {
             }}/>
           </DrawerButton>
         </div>
+
+        {isLoading ? (
+          <div className="flex flex-1 items-center justify-center">
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className='flex flex-col gap-6'>
+            {/* Filters Section */}
+            <PanelContent>
+              <div className='p-6'>
+                <h3 className="text-lg font-semibold mb-4">Filtres</h3>
+                <div className='flex gap-4 flex-wrap'>
+                  <div className='w-72'>
+                    <SearchInput 
+                      label={'Rechercher un plat'} 
+                      error={false} 
+                      name={'search'} 
+                      value={searchQuery} 
+                      onChange={(e) => setSearchQuery(e.target.value)} 
+                    />
+                  </div>
+                  <div className='w-64'>
+                    <TextfieldList 
+                      valuesToDisplay={categoryOptions} 
+                      onClicked={setSelectedCategory} 
+                      label={'Catégorie'} 
+                      defaultValue={selectedCategory}
+                    />
+                  </div>
+                  <div className='w-64'>
+                    <TextfieldList 
+                      valuesToDisplay={statusOptions} 
+                      onClicked={setSelectedStatus} 
+                      label={'Status'} 
+                      defaultValue={selectedStatus}
+                    />
+                  </div>
+                </div>
+              </div>
+            </PanelContent>
+
+            {/* Statistics Section */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-blue-600">{dishes.length}</div>
+                  <div className="text-sm text-gray-600">Total des plats</div>
+                </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-green-600">
+                    {dishes.filter(dish => dish.isAvailable).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Plats disponibles</div>
+                </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-red-600">
+                    {dishes.filter(dish => !dish.isAvailable).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Plats indisponibles</div>
+                </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {new Set(dishes.map(dish => dish.category)).size}
+                  </div>
+                  <div className="text-sm text-gray-600">Catégories</div>
+                </div>
+              </PanelContent>
+            </div>
+
+            {/* Results Section */}
+            <PanelContent>
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">
+                    Résultats ({filteredDishes.length} plat{filteredDishes.length > 1 ? 's' : ''})
+                  </h3>
+                </div>
+                <DishesTable 
+                  dishes={filteredDishes} 
+                  setSelectedDish={handleRowClick} 
+                  onDelete={handleDelete}
+                />
+              </div>
+            </PanelContent>
+          </div>
+        )}
+
+        {isUpdateDrawerOpen && selectedDish && (
+          <UpdateDishDrawer 
+            dish={selectedDish} 
+            onClose={() => setIsUpdateDrawerOpen(false)} 
+            onCloseConfirm={async () => {
+              setIsUpdateDrawerOpen(false);
+              setIsLoading(true);
+              await fetchDishes();
+              setIsLoading(false);
+            }} 
+          />
+        )}
       </div>
-      {isLoading ? (
-        <div className="flex flex-1 items-center justify-center">
-          <CircularProgress />
-        </div>
-      ) : (
-        <div className='flex flex-col px-6 py-4 gap-10'>
-          <div className='flex gap-4'>
-            <div className='w-72'>
-              <SearchInput 
-                label={'Rechercher un plat'} 
-                error={false} 
-                name={'search'} 
-                value={searchQuery} 
-                onChange={(e) => setSearchQuery(e.target.value)} 
-              />
-            </div>
-            <div className='w-64'>
-              <TextfieldList 
-                valuesToDisplay={categoryOptions} 
-                onClicked={setSelectedCategory} 
-                label={'Catégorie'} 
-              />
-            </div>
-            <div className='w-64'>
-              <TextfieldList 
-                valuesToDisplay={statusOptions} 
-                onClicked={setSelectedStatus} 
-                label={'Status'} 
-              />
-            </div>
-          </div>
-          <div>
-            <DishesTable 
-              dishes={filteredDishes} 
-              setSelectedDish={handleRowClick} 
-              onDelete={handleDelete}
-            />
-          </div>
-          {isUpdateDrawerOpen && selectedDish && (
-            <UpdateDishDrawer 
-              dish={selectedDish} 
-              onClose={() => setIsUpdateDrawerOpen(false)} 
-              onCloseConfirm={async () => {
-                setIsUpdateDrawerOpen(false);
-                setIsLoading(true);
-                await fetchDishes();
-                setIsLoading(false);
-              }} 
-            />
-          )}
-        </div>
-      )}
     </BaseContent>
   );
 }

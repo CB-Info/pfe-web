@@ -38,10 +38,10 @@ export function NavBar() {
                 <div className='flex flex-col flex-1'>
                     <div className='flex h-28'></div>
                     <div className='flex flex-col flex-1'>
-                        <NavBarCell icon={<SpaceDashboardRoundedIcon/>} label={'Dashboard'} path={'/home'}/>
-                        <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/home'}/>
+                        <NavBarCell icon={<SpaceDashboardRoundedIcon/>} label={'Dashboard'} path={'/dashboard'}/>
+                        <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/stock'}/>
                         <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/cards'}/>
-                        <NavBarCell icon={<LocalDiningRoundedIcon/>} label={'Dishes'} path={'/home'}/>
+                        <NavBarCell icon={<LocalDiningRoundedIcon/>} label={'Dishes'} path={'/dishes'}/>
                     </div>
                 </div>
                 <div className='flex w-full items-center'>

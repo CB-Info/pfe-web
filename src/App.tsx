@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { NavBar } from './UI/components/navigationBar/navigation.bar';
-import HomePage from './UI/pages/dish/dish.page';
+import DashboardPage from './UI/pages/dashboard/dashboard.page';
+import DishesPage from './UI/pages/dishes/dishes.page';
 import CardsPage from './UI/pages/cards/cards.page';
 import { lightTheme, darkTheme } from './applications/theme/theme';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
@@ -19,9 +20,13 @@ const ThemedApp = () => {
           <div className="h-screen w-screen flex">
             <NavBar />
             <Routes>
-              <Route path="/home" element={<HomePage />} />
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/dishes" element={<DishesPage />} />
               <Route path="/cards" element={<CardsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              {/* Redirect old /home route to dashboard */}
+              <Route path="/home" element={<DashboardPage />} />
             </Routes>
           </div>
         </AuthProvider>
