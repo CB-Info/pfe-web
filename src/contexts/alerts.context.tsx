@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode, FC } from "react";
+import { createContext, useState, ReactNode, FC, useCallback } from "react";
 import { Alert, AlertsWrapper } from "../UI/components/alert/alert";
 
 // Définition du type de l'alerte
@@ -22,15 +22,15 @@ export const AlertsContext = createContext<AlertsContextType | undefined>(undefi
 const AlertsProvider: FC<{children: ReactNode}> = ({ children }) => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
 
-  const addAlert = (alert: Omit<AlertType, 'id'>): string => {
+  const addAlert = useCallback((alert: Omit<AlertType, 'id'>): string => {
     const id = Math.random().toString(36).slice(2, 9) + new Date().getTime().toString(36);
     setAlerts((prev) => [{ ...alert, id: id }, ...prev]);
     return id;
-  }
+  }, []);
 
-  const dismissAlert = (id: string): void => {
+  const dismissAlert = useCallback((id: string): void => {
     setAlerts((prev) => prev.filter((alert) => alert.id !== id));
-  }
+  }, []);
 
   return (
     <AlertsContext.Provider value={{ alerts, addAlert, dismissAlert }}>

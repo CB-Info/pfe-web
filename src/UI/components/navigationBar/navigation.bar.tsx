@@ -7,14 +7,14 @@ import LocalDiningRoundedIcon from '@mui/icons-material/LocalDiningRounded';
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
 import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../reducers/auth.reducer';
 import { useAlerts } from '../../../hooks/alerts.hook';
 import FirebaseAuthManager from '../../../network/authentication/firebase.auth.manager';
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 
 export function NavBar() {
-    const userRepository = new UserRepositoryImpl()
+    const userRepository = useMemo(() => new UserRepositoryImpl(), [])
     const { addAlert } = useAlerts();
     const dispatch = useUsersListerDispatchContext();
 
