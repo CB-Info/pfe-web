@@ -1,7 +1,7 @@
 import DrawerButton, { ContainerDrawer } from '../../components/drawer';
 import TitleStyle from '../../style/title.style';
 import AddDishPage from './add.dish.page';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { CircularProgress } from '@mui/material';
 import { SearchInput } from '../../components/input/searchInput';
 import TextfieldList from '../../components/input/textfield.list';
@@ -25,7 +25,7 @@ export default function DishesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('Toutes');
   const [selectedStatus, setSelectedStatus] = useState<string>('Tous');
   const { addAlert } = useAlerts();
-  const dishRepository = new DishesRepositoryImpl();
+  const dishRepository = useMemo(() => new DishesRepositoryImpl(), []);
 
   const statusOptions = ['Tous', 'Actif', 'Inactif'];
   const categoryOptions = ['Toutes', ...Object.values(DishCategoryLabels)];
@@ -48,7 +48,7 @@ export default function DishesPage() {
     };
 
     fetch();
-  }, [fetchDishes]);
+  }, [fetchDishes, dishRepository]);
 
   useEffect(() => {
     let result = [...dishes];
