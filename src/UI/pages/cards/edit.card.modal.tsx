@@ -105,7 +105,8 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                 _id: card._id,
                 name: name.trim(),
                 dishesId: Array.from(selectedDishes),
-                isActive: card.isActive
+                isActive: card.isActive,
+                dateOfCreation: card.dateOfCreation
             });
             
             onCardUpdated(updatedCard);
