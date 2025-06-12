@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
 import { PanelContent } from '../../components/contents/panel.content';
 import TitleStyle from '../../style/title.style';
@@ -34,8 +34,8 @@ export default function DashboardPage() {
   const [recentDishes, setRecentDishes] = useState<Dish[]>([]);
   const { addAlert } = useAlerts();
   
-  const dishesRepository = new DishesRepositoryImpl();
-  const cardsRepository = new CardsRepositoryImpl();
+  const dishesRepository = useMemo(() => new DishesRepositoryImpl(), []);
+  const cardsRepository = useMemo(() => new CardsRepositoryImpl(), []);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
