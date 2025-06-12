@@ -64,7 +64,7 @@ export default function DishesPage() {
     // Apply category filter
     if (selectedCategory !== 'Toutes') {
       const categoryKey = Object.entries(DishCategoryLabels).find(
-        ([_, label]) => label === selectedCategory
+        ([, label]) => label === selectedCategory
       )?.[0] as DishCategory;
       
       if (categoryKey) {
