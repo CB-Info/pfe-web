@@ -68,7 +68,6 @@ function BottomButtonNavBar() {
         addAlert({ severity: "error", message: "Erreur lors de la déconnexion" })
       }
     };
-
     const getInitials = (firstname?: string, lastname?: string) => {
       if (!firstname || !lastname) return '';
       return `${firstname[0]}${lastname[0]}`.toUpperCase();

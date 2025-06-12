@@ -72,7 +72,7 @@ export class DishesRepositoryImpl {
             throw new Error("")
         }
     }
-
+  
     async delete(dishId: string) {
         try {
             const token = await FirebaseAuthManager.getInstance().getToken()
