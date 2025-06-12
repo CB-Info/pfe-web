@@ -44,6 +44,12 @@ export default function HomePage() {
     setIsUpdateDrawerOpen(true);
   };
 
+  const handleDelete = async () => {
+    setIsLoading(true);
+    await fetchDishes();
+    setIsLoading(false);
+  };
+
   return (
     <BaseContent>
       <div className='flex justify-between px-6 pt-8 items-center'>
@@ -82,7 +88,7 @@ export default function HomePage() {
             </div>
           </div>
           <div>
-            <DishesTable dishes={dishes} setSelectedDish={handleRowClick} />
+            <DishesTable dishes={dishes} setSelectedDish={handleRowClick} onDelete={handleDelete} />
           </div>
           {isUpdateDrawerOpen && selectedDish && (
             <UpdateDishDrawer dish={selectedDish} onClose={() => setIsUpdateDrawerOpen(false)} onCloseConfirm={async () => {
