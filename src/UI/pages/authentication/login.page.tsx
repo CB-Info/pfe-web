@@ -36,10 +36,10 @@ export default function LoginPage() {
           </div>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <TextInput name='email' label='Email' type='email' value={emailInput} onChange={(newValue) => setEmailInput(newValue)} $isError={false} />
+              <TextInput name='email' label='Email' type='email' value={emailInput} onChange={(newValue) => setEmailInput(newValue)} $isError={false} $isDisabled={false} />
             </div>
             <div className="mb-6">
-              <TextInput name='password' label='Mot de passe' type='password' value={passwordInput} onChange={(newValue) => setPasswordInput(newValue)} $isError={false} />
+              <TextInput name='password' label='Mot de passe' type='password' value={passwordInput} onChange={(newValue) => setPasswordInput(newValue)} $isError={false} $isDisabled={false} />
               {/* <div className='flex justify-between pt-2'>
                 <div className="flex items-center gap-1">
                   <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 border border-blue-500 cursor-pointer rounded " />
