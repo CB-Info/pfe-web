@@ -3,7 +3,7 @@ import { TextInput } from "../../components/input/textInput";
 import TitleStyle from "../../style/title.style";
 import CustomButton, { TypeButton, WidthButton } from "../../components/buttons/custom.button";
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/alerts.hook';
 import { BaseContent } from '../../components/contents/base.content';
 
 

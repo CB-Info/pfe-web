@@ -6,7 +6,7 @@ import { CircularProgress } from '@mui/material';
 import { SearchInput } from '../../components/input/searchInput';
 import TextfieldList from '../../components/input/textfield.list';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/alerts.hook';
 import { Dish } from '../../../data/models/dish.model';
 import DishesTable from '../../components/tables/dishes/dish.table';
 import UpdateDishPage from './update.dish.page';

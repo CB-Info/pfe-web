@@ -10,7 +10,7 @@ import { NumberInput } from "../../../components/input/number.input";
 import { CircularProgress } from "@mui/material";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import { DishCategory, DishCategoryLabels } from "../../../../data/dto/dish.dto";
-import { useAlerts } from "../../../../contexts/alerts.context";
+import { useAlerts } from "../../../../hooks/alerts.hook";
 import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
 import { DishFormProps, DishFormMode } from "./dish.form.props";
 
