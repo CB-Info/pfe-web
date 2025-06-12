@@ -55,7 +55,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
         if (isOpen) {
             fetchDishes();
         }
-    }, [isOpen]);
+    }, [isOpen, dishesRepository]);
 
     const filteredDishes = dishes.filter(dish =>
         !searchQuery.trim() || dish.name.toLowerCase().includes(searchQuery.toLowerCase())

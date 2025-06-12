@@ -51,7 +51,7 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
         if (isOpen) {
             fetchDishes();
         }
-    }, [isOpen]);
+    }, [isOpen, dishesRepository]);
 
     // Filtrage des plats en fonction de la recherche
     const filteredDishes = useMemo(() => {
