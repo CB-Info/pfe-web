@@ -110,7 +110,7 @@ export default function DashboardPage() {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [dishesRepository]);
 
   if (isLoading) {
     return (
