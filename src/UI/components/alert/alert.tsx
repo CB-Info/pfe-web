@@ -32,6 +32,7 @@ const Alert: React.FC<AlertProps> = ({ message = null, severity = 'info', timeou
     (typeof message === 'string' && message.trim().length === 0);
 
   return !isMessageEmpty ? (
+        
     <div className={classNames[severity] + " rounded-b px-4 py-3 mb-4 shadow-md pointer-events-auto"} role="alert">
       <div className="flex">
         <div className="py-1">
