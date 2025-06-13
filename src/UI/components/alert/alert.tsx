@@ -17,8 +17,7 @@ const Alert: React.FC<AlertProps> = ({ message = '', severity = 'info', timeout 
       }, timeout * 1000);
       return () => clearTimeout(timer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [timeout, handleDismiss]);
 
   const dismissAlert = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
