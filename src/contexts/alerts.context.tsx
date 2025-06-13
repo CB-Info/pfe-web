@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 // Définition du type de l'alerte
 export interface AlertType {
   id?: string;
+  groupId?: string;
   message: ReactNode;
   severity?: 'info' | 'warning' | 'error' | 'success';
   timeout?: number;
@@ -56,6 +57,17 @@ const removePersistedAlert = (id: string): void => {
   savePersistedAlerts(updated);
 };
 
+const updatePersistedAlert = (groupId: string, updatedData: AlertType): void => {
+  const stored = loadPersistedAlerts();
+  const idx = stored.findIndex(a => a.groupId === groupId);
+  if (idx !== -1) {
+    stored[idx] = { ...stored[idx], ...updatedData };
+  } else {
+    stored.push(updatedData);
+  }
+  savePersistedAlerts(stored);
+};
+
 const AlertsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
   const [queue, setQueue] = useState<AlertType[]>([]);
@@ -72,9 +84,43 @@ const AlertsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   const addAlert = (alert: Omit<AlertType, 'id'>): string => {
-    const id = crypto.randomUUID();
     const timeout = alert.timeout ?? defaultDurations[alert.severity ?? 'info'];
     const priority = alert.priority ?? 0;
+
+    if (alert.groupId) {
+      const existingAlert = alerts.find(a => a.groupId === alert.groupId) ||
+        queue.find(a => a.groupId === alert.groupId);
+
+      if (existingAlert) {
+        const updated: AlertType = {
+          ...existingAlert,
+          ...alert,
+          id: existingAlert.id,
+          timeout,
+          priority,
+        };
+
+        if (existingAlert.persist && !updated.persist) {
+          removePersistedAlert(existingAlert.id!);
+        } else if (updated.persist) {
+          updatePersistedAlert(updated.groupId!, updated);
+        }
+
+        if (alerts.some(a => a.id === existingAlert.id)) {
+          setAlerts(prev => prev.map(a => a.id === existingAlert.id ? updated : a));
+        } else {
+          setQueue(prev => {
+            const q = prev.map(a => a.id === existingAlert.id ? updated : a);
+            q.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+            return q;
+          });
+        }
+
+        return existingAlert.id!;
+      }
+    }
+
+    const id = crypto.randomUUID();
     const newAlert: AlertType = { ...alert, id, timeout, priority };
 
     if (newAlert.persist) {
@@ -82,9 +128,9 @@ const AlertsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
 
     if (alerts.length < MAX_VISIBLE_ALERTS) {
-      setAlerts((prev) => [newAlert, ...prev]);
+      setAlerts(prev => [newAlert, ...prev]);
     } else {
-      setQueue((prev) => {
+      setQueue(prev => {
         const q = [...prev, newAlert];
         q.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
         return q;
