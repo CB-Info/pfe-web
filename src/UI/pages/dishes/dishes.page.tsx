@@ -55,7 +55,7 @@ export default function DishesPage() {
 
     // Apply search filter
     if (searchQuery) {
-      result = result.filter(dish => 
+      result = result.filter(dish =>
         dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         dish.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -64,9 +64,9 @@ export default function DishesPage() {
     // Apply category filter
     if (selectedCategory !== 'Toutes') {
       const categoryKey = Object.entries(DishCategoryLabels).find(
-        ([_, label]) => label === selectedCategory
+        ([, label]) => label === selectedCategory
       )?.[0] as DishCategory;
-      
+
       if (categoryKey) {
         result = result.filter(dish => dish.category === categoryKey);
       }
@@ -95,8 +95,8 @@ export default function DishesPage() {
       <div className='flex flex-col px-6 py-8 gap-8'>
         <div className='flex justify-between items-center'>
           <TitleStyle>Gestion des plats</TitleStyle>
-          <DrawerButton 
-            width={360} 
+          <DrawerButton
+            width={360}
             defaultChildren={
               <CustomButton
                 type={TypeButton.PRIMARY}
@@ -106,7 +106,7 @@ export default function DishesPage() {
               >
                 Ajouter un plat
               </CustomButton>
-            } 
+            }
             drawerId={'add-drawer-dish'}
           >
             <AddDishPage onClickOnConfirm={async () => {
@@ -129,27 +129,27 @@ export default function DishesPage() {
                 <h3 className="text-lg font-semibold mb-4">Filtres</h3>
                 <div className='flex gap-4 flex-wrap'>
                   <div className='w-72'>
-                    <SearchInput 
-                      label={'Rechercher un plat'} 
-                      error={false} 
-                      name={'search'} 
-                      value={searchQuery} 
-                      onChange={(e) => setSearchQuery(e.target.value)} 
+                    <SearchInput
+                      label={'Rechercher un plat'}
+                      error={false}
+                      name={'search'}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
                   <div className='w-64'>
-                    <TextfieldList 
-                      valuesToDisplay={categoryOptions} 
-                      onClicked={setSelectedCategory} 
-                      label={'Catégorie'} 
+                    <TextfieldList
+                      valuesToDisplay={categoryOptions}
+                      onClicked={setSelectedCategory}
+                      label={'Catégorie'}
                       defaultValue={selectedCategory}
                     />
                   </div>
                   <div className='w-64'>
-                    <TextfieldList 
-                      valuesToDisplay={statusOptions} 
-                      onClicked={setSelectedStatus} 
-                      label={'Status'} 
+                    <TextfieldList
+                      valuesToDisplay={statusOptions}
+                      onClicked={setSelectedStatus}
+                      label={'Status'}
                       defaultValue={selectedStatus}
                     />
                   </div>
@@ -199,9 +199,9 @@ export default function DishesPage() {
                     Résultats ({filteredDishes.length} plat{filteredDishes.length > 1 ? 's' : ''})
                   </h3>
                 </div>
-                <DishesTable 
-                  dishes={filteredDishes} 
-                  setSelectedDish={handleRowClick} 
+                <DishesTable
+                  dishes={filteredDishes}
+                  setSelectedDish={handleRowClick}
                   onDelete={handleDelete}
                 />
               </div>
@@ -210,15 +210,15 @@ export default function DishesPage() {
         )}
 
         {isUpdateDrawerOpen && selectedDish && (
-          <UpdateDishDrawer 
-            dish={selectedDish} 
-            onClose={() => setIsUpdateDrawerOpen(false)} 
+          <UpdateDishDrawer
+            dish={selectedDish}
+            onClose={() => setIsUpdateDrawerOpen(false)}
             onCloseConfirm={async () => {
               setIsUpdateDrawerOpen(false);
               setIsLoading(true);
               await fetchDishes();
               setIsLoading(false);
-            }} 
+            }}
           />
         )}
       </div>

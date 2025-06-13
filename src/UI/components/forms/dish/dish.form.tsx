@@ -96,7 +96,7 @@ const DishForm: React.FC<DishFormProps> = ({
 
   function handleOnClickOnCellCategory(categoryLabel: string) {
     const category = Object.entries(DishCategoryLabels).find(
-      ([_, label]) => label === categoryLabel
+      ([, label]) => label === categoryLabel
     );
     if (category) {
       setDishCategory(category[0] as DishCategory);

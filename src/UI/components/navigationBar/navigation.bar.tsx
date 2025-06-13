@@ -17,7 +17,6 @@ export function NavBar() {
     const userRepository = new UserRepositoryImpl()
     const { addAlert } = useAlerts();
     const dispatch = useUsersListerDispatchContext();
-    const state = useUsersListerStateContext();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -73,7 +72,7 @@ function BottomButtonNavBar() {
       if (!firstname || !lastname) return '';
       return `${firstname[0]}${lastname[0]}`.toUpperCase();
     };
-    
+
     return (
     <Popover className="group relative">
         {({ open }) => (

@@ -6,15 +6,12 @@ import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repos
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
 import { useAlerts } from '../../../contexts/alerts.context';
 import { Dish } from '../../../data/models/dish.model';
-import { CardDto } from '../../../data/dto/card.dto';
 import { CircularProgress } from '@mui/material';
 import {
   TrendingUp,
   TrendingDown,
-  Users,
   ShoppingCart,
   DollarSign,
-  Clock,
   ChefHat,
   Star
 } from 'lucide-react';
@@ -247,7 +244,7 @@ export default function DashboardPage() {
               <div className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Répartition par catégorie</h3>
                 <div className="space-y-4">
-                  {stats?.categoryDistribution.map((item, index) => (
+                  {stats?.categoryDistribution.map((item) => (
                     <div key={item.category} className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-700">{item.category}</span>
                       <div className="flex items-center gap-2">

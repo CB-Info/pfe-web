@@ -32,8 +32,8 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [error, setError] = useState('');
-    
-    const { addAlert } = useAlerts();
+
+    useAlerts();
     const dishesRepository = new DishesRepositoryImpl();
     const cardsRepository = new CardsRepositoryImpl();
 
@@ -41,7 +41,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
         const fetchDishes = async () => {
             try {
                 const fetchedDishes = await dishesRepository.getAll();
-                const sortedDishes = fetchedDishes.sort((a, b) => 
+                const sortedDishes = fetchedDishes.sort((a, b) =>
                     a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
                 );
                 setDishes(sortedDishes);
@@ -109,7 +109,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                 dishesId: Array.from(selectedDishes),
                 isActive: card.isActive
             });
-            
+
             onCardUpdated(updatedCard);
             handleClose();
         } catch (error) {
@@ -141,7 +141,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
             >
                 <div className="p-6">
                     <h2 className="text-xl font-semibold mb-6">Modifier la carte</h2>
-                    
+
                     <div className="space-y-6">
                         <TextInput
                             name="cardName"
