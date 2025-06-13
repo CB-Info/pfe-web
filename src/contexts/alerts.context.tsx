@@ -18,13 +18,21 @@ interface AlertsContextType {
 
 const AlertsContext = createContext<AlertsContextType | undefined>(undefined);
 
+const defaultDurations: Record<'info' | 'warning' | 'error' | 'success', number> = {
+  info: 5,
+  warning: 5,
+  error: 7,
+  success: 5,
+};
+
 // Composant AlertsProvider
 const AlertsProvider: FC<{children: ReactNode}> = ({ children }) => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
 
   const addAlert = (alert: Omit<AlertType, 'id'>): string => {
-    const id = Math.random().toString(36).slice(2, 9) + new Date().getTime().toString(36);
-    setAlerts((prev) => [{ ...alert, id: id }, ...prev]);
+    const id = crypto.randomUUID();
+    const timeout = alert.timeout ?? defaultDurations[alert.severity ?? 'info'];
+    setAlerts((prev) => [{ ...alert, id: id, timeout }, ...prev]);
     return id;
   }
 
