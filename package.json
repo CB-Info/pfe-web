@@ -20,6 +20,8 @@
     "axios": "^1.6.7",
     "daisyui": "^4.7.0",
     "firebase": "^10.9.0",
+    "framer-motion": "^11.0.3",
+    "lucide-react": "^0.350.0",
     "postcss-import": "^16.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

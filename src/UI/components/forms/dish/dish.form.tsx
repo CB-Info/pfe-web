@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useMemo } from "react";
 import BorderContainer from "../../../style/border.container.style";
 import { TextInput } from "../../../components/input/textInput";
 import TextfieldList from "../../../components/input/textfield.list";
@@ -9,11 +9,9 @@ import { Ingredient } from "../../../../data/models/ingredient.model";
 import { NumberInput } from "../../../components/input/number.input";
 import { CircularProgress } from "@mui/material";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
-import { DishCategory } from "../../../../data/dto/dish.dto";
-import { toCapitalize } from "../../../../applications/extensions/string+extension";
+import { DishCategory, DishCategoryLabels } from "../../../../data/dto/dish.dto";
 import { useAlerts } from "../../../../contexts/alerts.context";
 import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
-
 import { DishFormProps, DishFormMode } from "./dish.form.props";
 
 enum InputError {
@@ -38,7 +36,7 @@ const DishForm: React.FC<DishFormProps> = ({
     mode === DishFormMode.UPDATE && dish ? String(dish.price) : ""
   );
   const [dishCategory, setDishCategory] = useState<DishCategory>(
-    mode === DishFormMode.UPDATE && dish ? dish.category : DishCategory.MEAT
+    mode === DishFormMode.UPDATE && dish ? dish.category : DishCategory.MAIN_DISHES
   );
 
   const defaultIngredients =
@@ -64,7 +62,7 @@ const DishForm: React.FC<DishFormProps> = ({
     undefined
   );
 
-  const dishesRepository = new DishesRepositoryImpl();
+  const dishesRepository = useMemo(() => new DishesRepositoryImpl(), []);
   const { addAlert, clearAlerts } = useAlerts();
 
   useEffect(() => {
@@ -84,23 +82,24 @@ const DishForm: React.FC<DishFormProps> = ({
     };
 
     fetchAllIngredientsData();
-  }, [addAlert, dishesRepository]);
+  }, []);
 
   function resetForm() {
     setDishName("");
     setDishDescription("");
     setDishPrice("");
     setIngredientsDish([]);
-    setDishCategory(DishCategory.MEAT);
+    setDishCategory(DishCategory.MAIN_DISHES);
     setInputError(undefined);
     clearAlerts();
   }
 
-  function handleOnClickOnCellCategory(category: string) {
-  
-    const upper = category.toUpperCase();
-    if (upper in DishCategory) {
-      setDishCategory(DishCategory[upper as keyof typeof DishCategory]);
+  function handleOnClickOnCellCategory(categoryLabel: string) {
+    const category = Object.entries(DishCategoryLabels).find(
+      ([, label]) => label === categoryLabel
+    );
+    if (category) {
+      setDishCategory(category[0] as DishCategory);
     }
   }
 
@@ -200,11 +199,10 @@ const DishForm: React.FC<DishFormProps> = ({
                   $isDisabled={false}
                 />
                 <TextfieldList
-                  valuesToDisplay={Object.values(DishCategory).map((cat) =>
-                    toCapitalize(cat)
-                  )}
+                  valuesToDisplay={Object.values(DishCategoryLabels)}
                   onClicked={handleOnClickOnCellCategory}
                   label={"Catégorie"}
+                  defaultValue={DishCategoryLabels[dishCategory]}
                 />
                 <NumberInput
                   name="dishPrice"

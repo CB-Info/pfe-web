@@ -1,3 +1,7 @@
 export function toCapitalize(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    // Replace underscores with spaces and capitalize each word
+    return str
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
 }

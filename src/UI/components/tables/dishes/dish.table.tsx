@@ -70,11 +70,14 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish }) => {
+const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish, onDelete }) => {
   const [page, setPage] = React.useState(0);
-  const rowsPerPage = 10
+  const rowsPerPage = 10;
+  
+  const reversedDishes = [...dishes].reverse();
+  
   const emptyRows =
-  page > 0 ? Math.max(0, (1 + page) * rowsPerPage - dishes.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reversedDishes.length) : 0;
 
   const handleChangePage = (
     _event: React.MouseEvent<HTMLButtonElement> | null,
@@ -99,10 +102,15 @@ const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish }) =>
           </TableHead>
           <TableBody>
           {(rowsPerPage > 0
-            ? dishes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : dishes
+            ? reversedDishes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : reversedDishes
           ).map((dish) => (
-            <DishRow key={dish._id} row={dish} onClick={setSelectedDish}/>
+            <DishRow 
+              key={dish._id} 
+              row={dish} 
+              onClick={setSelectedDish}
+              onDelete={onDelete}
+            />
           ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
@@ -118,7 +126,7 @@ const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish }) =>
                     sx={{ borderBottom: 0 }}
                     rowsPerPageOptions={[10]}
                     colSpan={3}
-                    count={dishes.length}
+                    count={reversedDishes.length}
                     rowsPerPage={10}
                     page={page}
                     onPageChange={handleChangePage}
@@ -134,4 +142,4 @@ const DishesTable: React.FC<DishesTableProps> = ({ dishes, setSelectedDish }) =>
   );
 }
 
-export default DishesTable
+export default DishesTable;

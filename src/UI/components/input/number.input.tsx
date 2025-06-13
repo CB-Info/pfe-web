@@ -48,27 +48,21 @@ const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ t
 export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, label, type = "number", $isError, $isDisabled, value, onChange }) => {
 
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value
-
-    if (value != "0") {
-      onChange(e.target.value)
-    } else {
-      onChange("")
-    }
+    onChange(e.target.value);
   }
 
   return (
     <div className='flex flex-col'>
         <LabelStyle>{label}</LabelStyle>
       <div className='flex'>
-        <BaseInput 
-          name={name} 
-          type={type} 
-          value={value} 
-          disabled={$isDisabled} 
+        <BaseInput
+          name={name}
+          type={type}
+          value={value}
+          disabled={$isDisabled}
           $isDisabled={$isDisabled}
-          onChange={handleOnChange} 
-          $isError={$isError} 
+          onChange={handleOnChange}
+          $isError={$isError}
         />
         <div className="p-2.5 h-full text-sm font-medium text-slate-400 bg-slate-100 rounded-e-lg border border-primary-color focus:outline-none">
           <EuroRoundedIcon className="opacity-70" />
