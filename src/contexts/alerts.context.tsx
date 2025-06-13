@@ -1,13 +1,14 @@
-import { createContext, useContext, useRef, useState, ReactNode, FC } from "react";
+import { createContext, useContext, useRef, useState, useEffect, ReactNode, FC } from "react";
 import { Alert, AlertsWrapper } from "../UI/components/alert/alert";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Définition du type de l'alerte
-interface AlertType {
+export interface AlertType {
   id?: string;
   message: ReactNode;
   severity?: 'info' | 'warning' | 'error' | 'success';
   timeout?: number;
+  priority?: number;
 }
 
 // Définition du type pour le contexte
@@ -27,19 +28,43 @@ const defaultDurations: Record<'info' | 'warning' | 'error' | 'success', number>
 };
 
 // Composant AlertsProvider
-const AlertsProvider: FC<{children: ReactNode}> = ({ children }) => {
+const MAX_VISIBLE_ALERTS = 3;
+
+const AlertsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
+  const [queue, setQueue] = useState<AlertType[]>([]);
 
   const addAlert = (alert: Omit<AlertType, 'id'>): string => {
     const id = crypto.randomUUID();
     const timeout = alert.timeout ?? defaultDurations[alert.severity ?? 'info'];
-    setAlerts((prev) => [{ ...alert, id: id, timeout }, ...prev]);
+    const priority = alert.priority ?? 0;
+    const newAlert = { ...alert, id, timeout, priority };
+
+    if (alerts.length < MAX_VISIBLE_ALERTS) {
+      setAlerts((prev) => [newAlert, ...prev]);
+    } else {
+      setQueue((prev) => {
+        const q = [...prev, newAlert];
+        q.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+        return q;
+      });
+    }
+
     return id;
-  }
+  };
 
   const dismissAlert = (id: string): void => {
     setAlerts((prev) => prev.filter((alert) => alert.id !== id));
-  }
+  };
+
+  // When space is available, move alerts from the queue
+  useEffect(() => {
+    if (alerts.length < MAX_VISIBLE_ALERTS && queue.length > 0) {
+      const [next, ...rest] = queue;
+      setQueue(rest);
+      setAlerts((prev) => [next, ...prev]);
+    }
+  }, [alerts, queue]);
 
   return (
     <AlertsContext.Provider value={{ alerts, addAlert, dismissAlert }}>
