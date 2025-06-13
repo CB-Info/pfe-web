@@ -73,11 +73,11 @@ describe('AlertsProvider persistence', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'first' }));
-    let alertEl = screen.getByRole('alert');
+    let alertEl = screen.getAllByRole('alert')[1];
     expect(within(alertEl).getByText('first')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'second' }));
-    alertEl = screen.getByRole('alert');
+    alertEl = screen.getAllByRole('alert')[1];
     expect(within(alertEl).queryByText('first')).toBeNull();
     expect(within(alertEl).getByText('second')).toBeInTheDocument();
   });

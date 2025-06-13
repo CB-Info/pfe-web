@@ -85,6 +85,8 @@ describe('AlertsWrapper Component', () => {
       </AlertsWrapper>
     );
 
+    const wrapper = screen.getByRole('alert');
+    expect(wrapper).toHaveAttribute('aria-live', 'assertive');
     expect(screen.getByTestId('test-child')).toBeInTheDocument();
     expect(screen.getByText('Test Child')).toBeInTheDocument();
   });
