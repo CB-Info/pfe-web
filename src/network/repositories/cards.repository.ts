@@ -3,7 +3,7 @@ import FirebaseAuthManager from "../authentication/firebase.auth.manager";
 import { Data } from "./ingredients.repository";
 
 export class CardsRepositoryImpl {
-  private url: string = "http://localhost:3000/cards";
+  private url: string = "https://pfe-api-fbyd.onrender.com/cards";
 
   async getAll(): Promise<CardDto[]> {
     try {

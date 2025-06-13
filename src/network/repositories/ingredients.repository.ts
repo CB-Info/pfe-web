@@ -8,7 +8,7 @@ export interface Data<T> {
 }
 
 export class IngredientRepositoryImpl {
-  private url: string = "http://localhost:3000/ingredients";
+  private url: string = "https://pfe-api-fbyd.onrender.com/ingredients";
 
   async createOne(newIngredient: IngredientDto): Promise<Ingredient> {
     try {
