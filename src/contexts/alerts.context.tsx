@@ -4,7 +4,7 @@ import { Alert, AlertsWrapper } from "../UI/components/alert/alert";
 // Définition du type de l'alerte
 interface AlertType {
   id?: string;
-  message: string;
+  message: ReactNode;
   severity?: 'info' | 'warning' | 'error' | 'success';
   timeout?: number;
 }

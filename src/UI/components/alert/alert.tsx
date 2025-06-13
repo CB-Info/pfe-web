@@ -3,13 +3,13 @@ import { classNames, svgFillColors, svgPaths } from "./severity-styles";
 
 // Définition des types pour les props de Alert
 interface AlertProps {
-  message?: string;
+  message?: ReactNode;
   severity?: 'info' | 'warning' | 'error' | 'success'; // Supposons que ce sont vos seules valeurs possibles pour severity
   timeout?: number;
   handleDismiss?: () => void;
 }
 
-const Alert: React.FC<AlertProps> = ({ message = '', severity = 'info', timeout = 0, handleDismiss = null }) => {
+const Alert: React.FC<AlertProps> = ({ message = null, severity = 'info', timeout = 0, handleDismiss = null }) => {
   useEffect(() => {
     if (timeout > 0 && handleDismiss) {
       const timer = setTimeout(() => {
@@ -26,7 +26,12 @@ const Alert: React.FC<AlertProps> = ({ message = '', severity = 'info', timeout 
     }
   };
 
-  return message?.length ? (
+  const isMessageEmpty =
+    message === null ||
+    message === undefined ||
+    (typeof message === 'string' && message.trim().length === 0);
+
+  return !isMessageEmpty ? (
     <div className={classNames[severity] + " rounded-b px-4 py-3 mb-4 shadow-md pointer-events-auto"} role="alert">
       <div className="flex">
         <div className="py-1">

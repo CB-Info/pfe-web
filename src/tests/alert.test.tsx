@@ -3,15 +3,17 @@ import { Alert, AlertsWrapper } from '../UI/components/alert/alert';
 import { describe, test, expect, vi } from 'vitest';
 
 describe('Alert Component', () => {
-  test('renders alert with message and severity', () => {
+  test('renders alert with JSX message and severity', () => {
     render(
       <Alert
-        message="Test message"
+        message={<span data-testid="jsx-msg"><strong>Test</strong> message</span>}
         severity="info"
       />
     );
 
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+    const msgEl = screen.getByTestId('jsx-msg');
+    expect(msgEl).toBeInTheDocument();
+    expect(msgEl.textContent).toBe('Test message');
     expect(screen.getByText('INFO')).toBeInTheDocument();
   });
 
