@@ -1,5 +1,6 @@
 import { createContext, useContext, useRef, useState, ReactNode, FC } from "react";
 import { Alert, AlertsWrapper } from "../UI/components/alert/alert";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Définition du type de l'alerte
 interface AlertType {
@@ -43,9 +44,18 @@ const AlertsProvider: FC<{children: ReactNode}> = ({ children }) => {
   return (
     <AlertsContext.Provider value={{ alerts, addAlert, dismissAlert }}>
       <AlertsWrapper>
-        {alerts.map((alert) => (
-          <Alert key={alert.id} {...alert} handleDismiss={() => dismissAlert(alert.id!)} />
-        ))}
+        <AnimatePresence initial={false}>
+          {alerts.map((alert) => (
+            <motion.div
+              key={alert.id}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+            >
+              <Alert {...alert} handleDismiss={() => dismissAlert(alert.id!)} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </AlertsWrapper>
       {children}
     </AlertsContext.Provider>
