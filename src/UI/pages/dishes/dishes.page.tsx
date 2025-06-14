@@ -1,19 +1,22 @@
-import DrawerButton, { ContainerDrawer } from '../../components/drawer';
-import TitleStyle from '../../style/title.style';
-import AddDishPage from './add.dish.page';
-import { useEffect, useState } from 'react';
-import { CircularProgress } from '@mui/material';
-import { SearchInput } from '../../components/input/searchInput';
-import TextfieldList from '../../components/input/textfield.list';
-import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
-import { Dish } from '../../../data/models/dish.model';
-import DishesTable from '../../components/tables/dishes/dish.table';
-import UpdateDishPage from './update.dish.page';
-import CustomButton, { TypeButton, WidthButton } from '../../components/buttons/custom.button';
-import { BaseContent } from '../../components/contents/base.content';
-import { DishCategory, DishCategoryLabels } from '../../../data/dto/dish.dto';
-import { PanelContent } from '../../components/contents/panel.content';
+import DrawerButton, { ContainerDrawer } from "../../components/drawer";
+import TitleStyle from "../../style/title.style";
+import AddDishPage from "./add.dish.page";
+import { useEffect, useState, useMemo } from "react";
+import { CircularProgress } from "@mui/material";
+import { SearchInput } from "../../components/input/searchInput";
+import TextfieldList from "../../components/input/textfield.list";
+import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
+import { useAlerts } from "../../../contexts/alerts.context";
+import { Dish } from "../../../data/models/dish.model";
+import DishesTable from "../../components/tables/dishes/dish.table";
+import UpdateDishPage from "./update.dish.page";
+import CustomButton, {
+  TypeButton,
+  WidthButton,
+} from "../../components/buttons/custom.button";
+import { BaseContent } from "../../components/contents/base.content";
+import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
+import { PanelContent } from "../../components/contents/panel.content";
 
 export default function DishesPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,14 +24,36 @@ export default function DishesPage() {
   const [filteredDishes, setFilteredDishes] = useState<Dish[]>([]);
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('Toutes');
-  const [selectedStatus, setSelectedStatus] = useState<string>('Tous');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<
+    DishCategory | "Toutes"
+  >("Toutes");
+  const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
+  const sortOptions = [
+    "Nom (Ascendant)",
+    "Nom (Descendant)",
+    "Prix (Ascendant)",
+    "Prix (Descendant)",
+  ];
+  const [selectedSort, setSelectedSort] = useState<string>(sortOptions[0]);
   const { addAlert } = useAlerts();
   const dishRepository = new DishesRepositoryImpl();
 
-  const statusOptions = ['Tous', 'Actif', 'Inactif'];
-  const categoryOptions = ['Toutes', ...Object.values(DishCategoryLabels)];
+  const statusOptions = ["Tous", "Actif", "Inactif"];
+  const categoryOptions = ["Toutes", ...Object.values(DishCategoryLabels)];
+
+  const handleCategoryChange = (label: string) => {
+    if (label === "Toutes") {
+      setSelectedCategory("Toutes");
+    } else {
+      const entry = Object.entries(DishCategoryLabels).find(
+        ([, l]) => l === label
+      );
+      if (entry) {
+        setSelectedCategory(entry[0] as DishCategory);
+      }
+    }
+  };
 
   const fetchDishes = async () => {
     try {
@@ -36,7 +61,10 @@ export default function DishesPage() {
       setDishes(allDishes);
       setFilteredDishes(allDishes);
     } catch (error) {
-      addAlert({ severity: 'error', message: "Erreur lors de la récupération des repas" });
+      addAlert({
+        severity: "error",
+        message: "Erreur lors de la récupération des repas",
+      });
     }
   };
 
@@ -55,31 +83,46 @@ export default function DishesPage() {
 
     // Apply search filter
     if (searchQuery) {
-      result = result.filter(dish =>
-        dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        dish.description.toLowerCase().includes(searchQuery.toLowerCase())
+      result = result.filter(
+        (dish) =>
+          dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          dish.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     // Apply category filter
-    if (selectedCategory !== 'Toutes') {
-      const categoryKey = Object.entries(DishCategoryLabels).find(
-        ([, label]) => label === selectedCategory
-      )?.[0] as DishCategory;
-
-      if (categoryKey) {
-        result = result.filter(dish => dish.category === categoryKey);
-      }
+    if (selectedCategory !== "Toutes") {
+      result = result.filter((dish) => dish.category === selectedCategory);
     }
 
     // Apply status filter
-    if (selectedStatus !== 'Tous') {
-      const isActive = selectedStatus === 'Actif';
-      result = result.filter(dish => dish.isAvailable === isActive);
+    if (selectedStatus !== "Tous") {
+      const isActive = selectedStatus === "Actif";
+      result = result.filter((dish) => dish.isAvailable === isActive);
     }
 
     setFilteredDishes(result);
   }, [searchQuery, selectedCategory, selectedStatus, dishes]);
+
+  const sortedDishes = useMemo(() => {
+    const copy = [...filteredDishes];
+    switch (selectedSort) {
+      case "Nom (Ascendant)":
+        return copy.sort((a, b) =>
+          a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+        );
+      case "Nom (Descendant)":
+        return copy.sort((a, b) =>
+          b.name.localeCompare(a.name, undefined, { sensitivity: "base" })
+        );
+      case "Prix (Ascendant)":
+        return copy.sort((a, b) => a.price - b.price);
+      case "Prix (Descendant)":
+        return copy.sort((a, b) => b.price - a.price);
+      default:
+        return copy;
+    }
+  }, [filteredDishes, selectedSort]);
 
   const handleRowClick = (dish: Dish): void => {
     setSelectedDish(dish);
@@ -92,28 +135,30 @@ export default function DishesPage() {
 
   return (
     <BaseContent>
-      <div className='flex flex-col px-6 py-8 gap-8'>
-        <div className='flex justify-between items-center'>
+      <div className="flex flex-col px-6 py-8 gap-8">
+        <div className="flex justify-between items-center">
           <TitleStyle>Gestion des plats</TitleStyle>
           <DrawerButton
             width={360}
             defaultChildren={
               <CustomButton
                 type={TypeButton.PRIMARY}
-                onClick={() => { }}
+                onClick={() => {}}
                 width={WidthButton.SMALL}
                 isLoading={false}
               >
                 Ajouter un plat
               </CustomButton>
             }
-            drawerId={'add-drawer-dish'}
+            drawerId={"add-drawer-dish"}
           >
-            <AddDishPage onClickOnConfirm={async () => {
-              setIsLoading(true);
-              await fetchDishes();
-              setIsLoading(false);
-            }}/>
+            <AddDishPage
+              onClickOnConfirm={async () => {
+                setIsLoading(true);
+                await fetchDishes();
+                setIsLoading(false);
+              }}
+            />
           </DrawerButton>
         </div>
 
@@ -122,34 +167,38 @@ export default function DishesPage() {
             <CircularProgress />
           </div>
         ) : (
-          <div className='flex flex-col gap-6'>
+          <div className="flex flex-col gap-6">
             {/* Filters Section */}
             <PanelContent>
-              <div className='p-6'>
+              <div className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Filtres</h3>
-                <div className='flex gap-4 flex-wrap'>
-                  <div className='w-72'>
+                <div className="flex gap-4 flex-wrap">
+                  <div className="w-72">
                     <SearchInput
-                      label={'Rechercher un plat'}
+                      label={"Rechercher un plat"}
                       error={false}
-                      name={'search'}
+                      name={"search"}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
-                  <div className='w-64'>
+                  <div className="w-64">
                     <TextfieldList
                       valuesToDisplay={categoryOptions}
-                      onClicked={setSelectedCategory}
-                      label={'Catégorie'}
-                      defaultValue={selectedCategory}
+                      onClicked={handleCategoryChange}
+                      label={"Catégorie"}
+                      defaultValue={
+                        selectedCategory === "Toutes"
+                          ? "Toutes"
+                          : DishCategoryLabels[selectedCategory]
+                      }
                     />
                   </div>
-                  <div className='w-64'>
+                  <div className="w-64">
                     <TextfieldList
                       valuesToDisplay={statusOptions}
                       onClicked={setSelectedStatus}
-                      label={'Status'}
+                      label={"Status"}
                       defaultValue={selectedStatus}
                     />
                   </div>
@@ -161,14 +210,16 @@ export default function DishesPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <PanelContent>
                 <div className="p-4">
-                  <div className="text-2xl font-bold text-blue-600">{dishes.length}</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {dishes.length}
+                  </div>
                   <div className="text-sm text-gray-600">Total des plats</div>
                 </div>
               </PanelContent>
               <PanelContent>
                 <div className="p-4">
                   <div className="text-2xl font-bold text-green-600">
-                    {dishes.filter(dish => dish.isAvailable).length}
+                    {dishes.filter((dish) => dish.isAvailable).length}
                   </div>
                   <div className="text-sm text-gray-600">Plats disponibles</div>
                 </div>
@@ -176,15 +227,17 @@ export default function DishesPage() {
               <PanelContent>
                 <div className="p-4">
                   <div className="text-2xl font-bold text-red-600">
-                    {dishes.filter(dish => !dish.isAvailable).length}
+                    {dishes.filter((dish) => !dish.isAvailable).length}
                   </div>
-                  <div className="text-sm text-gray-600">Plats indisponibles</div>
+                  <div className="text-sm text-gray-600">
+                    Plats indisponibles
+                  </div>
                 </div>
               </PanelContent>
               <PanelContent>
                 <div className="p-4">
                   <div className="text-2xl font-bold text-purple-600">
-                    {new Set(dishes.map(dish => dish.category)).size}
+                    {new Set(dishes.map((dish) => dish.category)).size}
                   </div>
                   <div className="text-sm text-gray-600">Catégories</div>
                 </div>
@@ -196,11 +249,19 @@ export default function DishesPage() {
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold">
-                    Résultats ({filteredDishes.length} plat{filteredDishes.length > 1 ? 's' : ''})
+                    Résultats ({filteredDishes.length} plat
+                    {filteredDishes.length > 1 ? "s" : ""})
                   </h3>
+                  <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={sortOptions}
+                      onClicked={setSelectedSort}
+                      defaultValue={selectedSort}
+                    />
+                  </div>
                 </div>
                 <DishesTable
-                  dishes={filteredDishes}
+                  dishes={sortedDishes}
                   setSelectedDish={handleRowClick}
                   onDelete={handleDelete}
                 />
@@ -232,12 +293,26 @@ interface UpdateDishDrawerProps {
   onCloseConfirm: () => void;
 }
 
-const UpdateDishDrawer: React.FC<UpdateDishDrawerProps> = ({ dish, onCloseConfirm, onClose }) => {
+const UpdateDishDrawer: React.FC<UpdateDishDrawerProps> = ({
+  dish,
+  onCloseConfirm,
+  onClose,
+}) => {
   return (
     <div className="drawer drawer-end">
-      <input id="update-dish-drawer" type="checkbox" className="drawer-toggle" checked={true} onChange={() => { }} />
+      <input
+        id="update-dish-drawer"
+        type="checkbox"
+        className="drawer-toggle"
+        checked={true}
+        onChange={() => {}}
+      />
       <div className="drawer-side z-50">
-        <label htmlFor="update-dish-drawer" className="drawer-overlay" onClick={onClose}></label>
+        <label
+          htmlFor="update-dish-drawer"
+          className="drawer-overlay"
+          onClick={onClose}
+        ></label>
         <ContainerDrawer width={360}>
           <UpdateDishPage dish={dish} onClickOnConfirm={onCloseConfirm} />
         </ContainerDrawer>
