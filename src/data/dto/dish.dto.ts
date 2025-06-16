@@ -34,6 +34,7 @@ export interface DishDto {
   price: number;
   description: string;
   category: DishCategory;
+  dateOfCreation: string;
   timeCook?: number;
   isAvailable: boolean;
 }
