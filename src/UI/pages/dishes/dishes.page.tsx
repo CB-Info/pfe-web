@@ -8,6 +8,8 @@ import TextfieldList from "../../components/input/textfield.list";
 import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
 import { useAlerts } from "../../../contexts/alerts.context";
 import { Dish } from "../../../data/models/dish.model";
+import { sortDishes, DishSortOption } from "./utils/sortDishes";
+import { filterDishes } from "./utils/filterDishes";
 import DishesTable from "../../components/tables/dishes/dish.table";
 import UpdateDishPage from "./update.dish.page";
 import CustomButton, {
@@ -29,13 +31,17 @@ export default function DishesPage() {
     DishCategory | "Toutes"
   >("Toutes");
   const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
-  const sortOptions = [
+  const sortOptions: DishSortOption[] = [
+    "Date de création (Descendant)",
+    "Date de création (Ascendant)",
     "Nom (Ascendant)",
     "Nom (Descendant)",
     "Prix (Ascendant)",
     "Prix (Descendant)",
   ];
-  const [selectedSort, setSelectedSort] = useState<string>(sortOptions[0]);
+  const [selectedSort, setSelectedSort] = useState<DishSortOption>(
+    sortOptions[0]
+  );
   const { addAlert } = useAlerts();
   const dishRepository = new DishesRepositoryImpl();
 
@@ -79,50 +85,19 @@ export default function DishesPage() {
   }, []);
 
   useEffect(() => {
-    let result = [...dishes];
-
-    // Apply search filter
-    if (searchQuery) {
-      result = result.filter(
-        (dish) =>
-          dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          dish.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Apply category filter
-    if (selectedCategory !== "Toutes") {
-      result = result.filter((dish) => dish.category === selectedCategory);
-    }
-
-    // Apply status filter
-    if (selectedStatus !== "Tous") {
-      const isActive = selectedStatus === "Actif";
-      result = result.filter((dish) => dish.isAvailable === isActive);
-    }
-
-    setFilteredDishes(result);
+    setFilteredDishes(
+      filterDishes(dishes, {
+        searchQuery,
+        selectedCategory,
+        selectedStatus,
+      })
+    );
   }, [searchQuery, selectedCategory, selectedStatus, dishes]);
 
-  const sortedDishes = useMemo(() => {
-    const copy = [...filteredDishes];
-    switch (selectedSort) {
-      case "Nom (Ascendant)":
-        return copy.sort((a, b) =>
-          a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
-        );
-      case "Nom (Descendant)":
-        return copy.sort((a, b) =>
-          b.name.localeCompare(a.name, undefined, { sensitivity: "base" })
-        );
-      case "Prix (Ascendant)":
-        return copy.sort((a, b) => a.price - b.price);
-      case "Prix (Descendant)":
-        return copy.sort((a, b) => b.price - a.price);
-      default:
-        return copy;
-    }
-  }, [filteredDishes, selectedSort]);
+  const sortedDishes = useMemo(
+    () => sortDishes(filteredDishes, selectedSort),
+    [filteredDishes, selectedSort]
+  );
 
   const handleRowClick = (dish: Dish): void => {
     setSelectedDish(dish);

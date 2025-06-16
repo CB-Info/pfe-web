@@ -8,6 +8,7 @@ export class Dish {
   price: number;
   description: string;
   category: DishCategory;
+  dateOfCreation: string;
   timeCook?: number;
   isAvailable: boolean;
 
@@ -18,6 +19,7 @@ export class Dish {
     price: number,
     description: string,
     category: DishCategory,
+    dateOfCreation: string,
     isAvailable: boolean,
     timeCook?: number
   ) {
@@ -27,6 +29,7 @@ export class Dish {
     this.price = price;
     this.description = description;
     this.category = category;
+    this.dateOfCreation = dateOfCreation;
     this.timeCook = timeCook;
     this.isAvailable = isAvailable;
   }
@@ -46,6 +49,7 @@ export class Dish {
       dto.price,
       dto.description,
       dto.category,
+      dto.dateOfCreation,
       dto.isAvailable,
       dto.timeCook
     );
