@@ -1,49 +1,55 @@
-import { CircularProgress } from '@mui/material';
-import { ReactNode } from 'react';
-import styled, { css } from "styled-components"
-import tw from 'twin.macro'
+import { CircularProgress } from "@mui/material";
+import { ReactNode } from "react";
+import styled, { css } from "styled-components";
+import tw from "twin.macro";
 
 export enum TypeButton {
-    "PRIMARY",
-    "SECONDARY",
-    "TEXT"
+  "PRIMARY",
+  "SECONDARY",
+  "TEXT",
 }
 
 export enum WidthButton {
-    "LARGE",
-    "MEDIUM",
-    "SMALL"
+  "LARGE",
+  "MEDIUM",
+  "SMALL",
 }
 
 interface CustomButtonProps {
-    inputType?: "submit" | "reset" | "button"| undefined
-    type: TypeButton
-    children: ReactNode
-    onClick: () => void
-    width: WidthButton
-    isLoading: boolean
-    isDisabled?: boolean
+  inputType?: "submit" | "reset" | "button" | undefined;
+  type: TypeButton;
+  children: ReactNode;
+  onClick: () => void;
+  width: WidthButton;
+  isLoading: boolean;
+  isDisabled?: boolean;
+  ariaLabel?: string;
 }
-
 
 const getSize = (width: WidthButton) => {
-    switch (width) {
-        case WidthButton.LARGE:
-            return tw`min-w-[180px] h-[60px]`;
-        case WidthButton.MEDIUM:
-            return tw`min-w-[150px] h-[48px]`;
-        case WidthButton.SMALL:
-            return tw`min-w-[60px] h-[40px]`;
-    }
-}
+  switch (width) {
+    case WidthButton.LARGE:
+      return tw`min-w-[180px] h-[60px]`;
+    case WidthButton.MEDIUM:
+      return tw`min-w-[150px] h-[48px]`;
+    case WidthButton.SMALL:
+      return tw`min-w-[60px] h-[40px]`;
+  }
+};
 
 interface PrimaryButtonProps {
-    $width: WidthButton;
-    $isDisabled: boolean
-    $isLoading: boolean
+  $width: WidthButton;
+  $isDisabled: boolean;
+  $isLoading: boolean;
 }
 
-const PrimaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = WidthButton.MEDIUM, $isDisabled: isDisabled, $isLoading: isLoading }) => [
+const PrimaryButton = styled.button<PrimaryButtonProps>(
+  ({
+    theme,
+    $width: width = WidthButton.MEDIUM,
+    $isDisabled: isDisabled,
+    $isLoading: isLoading,
+  }) => [
     tw`
         flex
         rounded-2xl
@@ -57,6 +63,11 @@ const PrimaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: width 
         items-center
         gap-1
         shadow-md
+        focus:outline-none
+        focus:ring-2
+        focus:ring-offset-2
+        focus:ring-blue-500
+        active:scale-95
     `,
     css`
       ${getSize(width)}
@@ -64,11 +75,20 @@ const PrimaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: width 
       background-color: ${theme.blue500};
       opacity: ${isDisabled ? 0.6 : 1};
       cursor: ${isDisabled || isLoading ? "default" : "pointer"};
-      ${!isDisabled && !isLoading ? `&:hover { background-color: ${theme.blue600}; }` : ''}
+      ${!isDisabled && !isLoading
+        ? `&:hover { background-color: ${theme.blue600}; }`
+        : ""}
     `,
-]);
+  ]
+);
 
-const SecondaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = WidthButton.MEDIUM, $isDisabled: isDisabled, $isLoading: isLoading }) => [
+const SecondaryButton = styled.button<PrimaryButtonProps>(
+  ({
+    theme,
+    $width: width = WidthButton.MEDIUM,
+    $isDisabled: isDisabled,
+    $isLoading: isLoading,
+  }) => [
     tw`
         flex
         rounded-2xl
@@ -82,6 +102,11 @@ const SecondaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: widt
         items-center
         gap-1
         shadow-md
+        focus:outline-none
+        focus:ring-2
+        focus:ring-offset-2
+        focus:ring-blue-500
+        active:scale-95
     `,
     css`
       ${getSize(width)}
@@ -91,9 +116,16 @@ const SecondaryButton = styled.button<PrimaryButtonProps>(({ theme, $width: widt
       opacity: ${isDisabled ? 0.6 : 1};
       cursor: ${isDisabled || isLoading ? "default" : "pointer"};
     `,
-]);
+  ]
+);
 
-const TextButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = WidthButton.MEDIUM, $isDisabled: isDisabled, $isLoading: isLoading }) => [
+const TextButton = styled.button<PrimaryButtonProps>(
+  ({
+    theme,
+    $width: width = WidthButton.MEDIUM,
+    $isDisabled: isDisabled,
+    $isLoading: isLoading,
+  }) => [
     tw`
         flex
         rounded-2xl
@@ -106,6 +138,11 @@ const TextButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = W
         justify-center
         items-center
         gap-1
+        focus:outline-none
+        focus:ring-2
+        focus:ring-offset-2
+        focus:ring-blue-500
+        active:scale-95
     `,
     css`
       ${getSize(width)}
@@ -114,46 +151,80 @@ const TextButton = styled.button<PrimaryButtonProps>(({ theme, $width: width = W
       cursor: ${isDisabled || isLoading ? "default" : "pointer"};
       text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     `,
-]);
+  ]
+);
 
-export const CustomButton: React.FC<CustomButtonProps> = ({ inputType = "button", type, width = WidthButton.MEDIUM, children, onClick, isLoading = false, isDisabled = false }) => {
-    switch (type) {
-        case TypeButton.PRIMARY:
-            return (
-                <PrimaryButton
-                    type={inputType}
-                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}}
-                    $width={width}
-                    $isDisabled={isDisabled}
-                    $isLoading={isLoading}>
-                {isLoading ? <CircularProgress size={20}/> : children}
-                </PrimaryButton>
-            )
+export const CustomButton: React.FC<CustomButtonProps> = ({
+  inputType = "button",
+  type,
+  width = WidthButton.MEDIUM,
+  children,
+  onClick,
+  isLoading = false,
+  isDisabled = false,
+  ariaLabel,
+}) => {
+  switch (type) {
+    case TypeButton.PRIMARY:
+      return (
+        <PrimaryButton
+          type={inputType}
+          onClick={
+            isDisabled || isLoading
+              ? () => {}
+              : () => {
+                  onClick();
+                }
+          }
+          $width={width}
+          $isDisabled={isDisabled}
+          $isLoading={isLoading}
+          aria-label={ariaLabel}
+        >
+          {isLoading ? <CircularProgress size={20} /> : children}
+        </PrimaryButton>
+      );
 
-        case TypeButton.SECONDARY:
-            return (
-                <SecondaryButton
-                    type={inputType}
-                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}}
-                    $width={width}
-                    $isDisabled={isDisabled}
-                    $isLoading={isLoading}>
-                {isLoading ? <CircularProgress size={20}/> : children}
-                </SecondaryButton>
-            )
+    case TypeButton.SECONDARY:
+      return (
+        <SecondaryButton
+          type={inputType}
+          onClick={
+            isDisabled || isLoading
+              ? () => {}
+              : () => {
+                  onClick();
+                }
+          }
+          $width={width}
+          $isDisabled={isDisabled}
+          $isLoading={isLoading}
+          aria-label={ariaLabel}
+        >
+          {isLoading ? <CircularProgress size={20} /> : children}
+        </SecondaryButton>
+      );
 
-        case TypeButton.TEXT:
-            return (
-                <TextButton
-                    type={inputType}
-                    onClick={isDisabled || isLoading ? () => {}  : () => {onClick()}}
-                    $width={width}
-                    $isDisabled={isDisabled}
-                    $isLoading={isLoading}>
-                {isLoading ? <CircularProgress size={20}/> : children}
-                </TextButton>
-            )
-    }
-}
+    case TypeButton.TEXT:
+      return (
+        <TextButton
+          type={inputType}
+          onClick={
+            isDisabled || isLoading
+              ? () => {}
+              : () => {
+                  onClick();
+                }
+          }
+          $width={width}
+          $isDisabled={isDisabled}
+          $isLoading={isLoading}
+          aria-label={ariaLabel}
+        >
+          {isLoading ? <CircularProgress size={20} /> : children}
+        </TextButton>
+      );
+  }
+};
 
-export default CustomButton
+export default CustomButton;

@@ -105,7 +105,12 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
         </DishTableCellStyled>
         <DishTableCellStyled align="right">{row.price} €</DishTableCellStyled>
         <DishTableCellStyled align="right">
-          <IconButton size="small" onClick={handleMenuClick}>
+          <IconButton
+            size="small"
+            onClick={handleMenuClick}
+            aria-label="Options"
+            className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:bg-gray-200"
+          >
             <MoreVertIcon fontSize="small" />
           </IconButton>
           <Menu
