@@ -314,7 +314,6 @@ export default function DishesPage() {
         {isUpdateDrawerOpen && selectedDish && (
           <UpdateDishDrawer
             dish={selectedDish}
-            onClose={() => setIsUpdateDrawerOpen(false)}
             onCloseConfirm={handleDishCreated}
           />
         )}
