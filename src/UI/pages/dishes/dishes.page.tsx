@@ -1,7 +1,8 @@
-import { useEffect, useState, useMemo } from "react";
-import { BaseContent } from "../../components/contents/base.content";
-import { PanelContent } from "../../components/contents/panel.content";
+import DrawerButton, { ContainerDrawer } from "../../components/drawer";
 import TitleStyle from "../../style/title.style";
+import AddDishPage from "./add.dish.page";
+import { useEffect, useState, useMemo } from "react";
+import { CircularProgress } from "@mui/material";
 import { SearchInput } from "../../components/input/searchInput";
 import TextfieldList from "../../components/input/textfield.list";
 import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
@@ -10,52 +11,56 @@ import { Dish } from "../../../data/models/dish.model";
 import { sortDishes, DishSortOption } from "./utils/sortDishes";
 import { filterDishes } from "./utils/filterDishes";
 import DishesTable from "../../components/tables/dishes/dish.table";
-import { DishFormDrawer } from "./components/dish-form-drawer";
-import { DishFormMode } from "../../components/forms/dish/dish.form.props";
+import UpdateDishPage from "./update.dish.page";
+import CustomButton, {
+  TypeButton,
+  WidthButton,
+} from "../../components/buttons/custom.button";
+import { BaseContent } from "../../components/contents/base.content";
 import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Plus, 
-  Filter, 
-  RotateCcw,
-  Eye,
-  EyeOff
-} from "lucide-react";
-
-const SORT_OPTIONS: DishSortOption[] = [
-  "Date de création (Descendant)",
-  "Date de création (Ascendant)",
-  "Nom (Ascendant)",
-  "Nom (Descendant)",
-  "Prix (Ascendant)",
-  "Prix (Descendant)",
-];
-
-const STATUS_OPTIONS = ["Tous", "Actif", "Inactif"];
-const CATEGORY_OPTIONS = ["Toutes", ...Object.values(DishCategoryLabels)];
+import { PanelContent } from "../../components/contents/panel.content";
 
 export default function DishesPage() {
-  // State management
+  const [isLoading, setIsLoading] = useState(false);
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [filteredDishes, setFilteredDishes] = useState<Dish[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // Form state
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
-  const [isFormDrawerOpen, setIsFormDrawerOpen] = useState(false);
-  const [formMode, setFormMode] = useState<DishFormMode>(DishFormMode.CREATE);
-  
-  // Filter state
+  const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<DishCategory | "Toutes">("Toutes");
+  const [selectedCategory, setSelectedCategory] = useState<
+    DishCategory | "Toutes"
+  >("Toutes");
   const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
-  const [selectedSort, setSelectedSort] = useState<DishSortOption>(SORT_OPTIONS[0]);
-  const [showFilters, setShowFilters] = useState(false);
-
+  const sortOptions: DishSortOption[] = [
+    "Date de création (Descendant)",
+    "Date de création (Ascendant)",
+    "Nom (Ascendant)",
+    "Nom (Descendant)",
+    "Prix (Ascendant)",
+    "Prix (Descendant)",
+  ];
+  const [selectedSort, setSelectedSort] = useState<DishSortOption>(
+    sortOptions[0]
+  );
   const { addAlert } = useAlerts();
   const dishRepository = new DishesRepositoryImpl();
 
-  // Fetch dishes data
+  const statusOptions = ["Tous", "Actif", "Inactif"];
+  const categoryOptions = ["Toutes", ...Object.values(DishCategoryLabels)];
+
+  const handleCategoryChange = (label: string) => {
+    if (label === "Toutes") {
+      setSelectedCategory("Toutes");
+    } else {
+      const entry = Object.entries(DishCategoryLabels).find(
+        ([, l]) => l === label
+      );
+      if (entry) {
+        setSelectedCategory(entry[0] as DishCategory);
+      }
+    }
+  };
+
   const fetchDishes = async () => {
     try {
       const allDishes = await dishRepository.getAll();
@@ -63,310 +68,229 @@ export default function DishesPage() {
     } catch (error) {
       addAlert({
         severity: "error",
-        message: "Erreur lors de la récupération des plats",
-        timeout: 5
+        message: "Erreur lors de la récupération des repas",
       });
     }
   };
 
-  // Initial data load
   useEffect(() => {
-    const loadData = async () => {
+    const fetch = async () => {
       setIsLoading(true);
       await fetchDishes();
       setIsLoading(false);
     };
-    loadData();
+
+    fetch();
   }, []);
 
-  // Apply filters and sorting
   useEffect(() => {
-    const filtered = filterDishes(dishes, {
-      searchQuery,
-      selectedCategory,
-      selectedStatus,
-    });
-    setFilteredDishes(filtered);
+    setFilteredDishes(
+      filterDishes(dishes, {
+        searchQuery,
+        selectedCategory,
+        selectedStatus,
+      })
+    );
   }, [searchQuery, selectedCategory, selectedStatus, dishes]);
 
-  // Memoized sorted dishes
   const sortedDishes = useMemo(
     () => sortDishes(filteredDishes, selectedSort),
     [filteredDishes, selectedSort]
   );
 
-  // Statistics calculations
-  const stats = useMemo(() => {
-    const total = dishes.length;
-    const available = dishes.filter(dish => dish.isAvailable).length;
-    const unavailable = total - available;
-    
-    return { total, available, unavailable };
-  }, [dishes]);
-
-  // Event handlers
-  const handleCategoryChange = (label: string) => {
-    if (label === "Toutes") {
-      setSelectedCategory("Toutes");
-    } else {
-      const entry = Object.entries(DishCategoryLabels).find(([, l]) => l === label);
-      if (entry) {
-        setSelectedCategory(entry[0] as DishCategory);
-      }
-    }
-  };
-
-  const handleCreateDish = () => {
-    setFormMode(DishFormMode.CREATE);
-    setSelectedDish(undefined);
-    setIsFormDrawerOpen(true);
-  };
-
-  const handleEditDish = (dish: Dish) => {
-    setFormMode(DishFormMode.UPDATE);
+  const handleRowClick = (dish: Dish): void => {
     setSelectedDish(dish);
-    setIsFormDrawerOpen(true);
-  };
-
-  const handleFormSuccess = async () => {
-    setIsFormDrawerOpen(false);
-    setIsLoading(true);
-    await fetchDishes();
-    setIsLoading(false);
+    setIsUpdateDrawerOpen(true);
   };
 
   const handleDelete = async () => {
     await fetchDishes();
   };
 
-  const resetFilters = () => {
-    setSearchQuery("");
-    setSelectedCategory("Toutes");
-    setSelectedStatus("Tous");
-    setSelectedSort(SORT_OPTIONS[0]);
-  };
-
-  const hasActiveFilters = searchQuery || selectedCategory !== "Toutes" || selectedStatus !== "Tous";
-
   return (
     <BaseContent>
-      <div className="flex flex-col h-full overflow-hidden">
-        {/* Header Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex-shrink-0 px-6 py-6 border-b border-gray-200 bg-white"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <TitleStyle>Gestion des plats</TitleStyle>
-              <p className="text-gray-600 text-sm mt-1">
-                Gérez votre menu et organisez vos plats par catégorie
-              </p>
-            </div>
-            
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleCreateDish}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm font-medium"
-            >
-              <Plus className="w-4 h-4" />
-              Nouveau plat
-            </motion.button>
-          </div>
-        </motion.div>
-
-        {/* Filters Section */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="flex-shrink-0 px-6 py-4 bg-gray-50 border-b border-gray-200"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors duration-200"
-            >
-              <Filter className="w-4 h-4" />
-              <span className="font-medium">Filtres et recherche</span>
-              {hasActiveFilters && (
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                  Actifs
-                </span>
-              )}
-            </button>
-
-            <div className="flex items-center gap-4">
-              {hasActiveFilters && (
-                <button
-                  onClick={resetFilters}
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Réinitialiser
-                </button>
-              )}
-              
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">{sortedDishes.length}</span> plat{sortedDishes.length > 1 ? 's' : ''} affiché{sortedDishes.length > 1 ? 's' : ''}
-              </div>
-            </div>
-          </div>
-
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
+      <div className="flex flex-col px-6 py-8 gap-8">
+        <div className="flex justify-between items-center">
+          <TitleStyle>Gestion des plats</TitleStyle>
+          <DrawerButton
+            width={360}
+            defaultChildren={
+              <CustomButton
+                type={TypeButton.PRIMARY}
+                onClick={() => {}}
+                width={WidthButton.SMALL}
+                isLoading={false}
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-                  <SearchInput
-                    label="Rechercher un plat"
-                    error={false}
-                    name="search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  
-                  <TextfieldList
-                    valuesToDisplay={CATEGORY_OPTIONS}
-                    onClicked={handleCategoryChange}
-                    label="Catégorie"
-                    defaultValue={
-                      selectedCategory === "Toutes"
-                        ? "Toutes"
-                        : DishCategoryLabels[selectedCategory]
-                    }
-                  />
-                  
-                  <TextfieldList
-                    valuesToDisplay={STATUS_OPTIONS}
-                    onClicked={setSelectedStatus}
-                    label="Statut"
-                    defaultValue={selectedStatus}
-                  />
-                  
-                  <TextfieldList
-                    valuesToDisplay={SORT_OPTIONS}
-                    onClicked={setSelectedSort}
-                    label="Trier par"
-                    defaultValue={selectedSort}
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+                Ajouter un plat
+              </CustomButton>
+            }
+            drawerId={"add-drawer-dish"}
+          >
+            <AddDishPage
+              onClickOnConfirm={async () => {
+                setIsLoading(true);
+                await fetchDishes();
+                setIsLoading(false);
+              }}
+            />
+          </DrawerButton>
+        </div>
 
-        {/* Content Section - Scrollable */}
-        <div className="flex-1 overflow-y-auto">
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mb-4"
-              />
-              <p className="text-gray-600 font-medium">Chargement des plats...</p>
-            </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="p-6"
-            >
-              <PanelContent>
-                <div className="flex flex-col h-full">
-                  <div className="flex-shrink-0 p-6 border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        Liste des plats
-                      </h3>
-                      
-                      {sortedDishes.length > 0 && (
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span>{stats.available} disponibles</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                            <span>{stats.unavailable} indisponibles</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+        {isLoading ? (
+          <div className="flex flex-1 items-center justify-center">
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {/* Filters Section */}
+            <PanelContent>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Filtres</h3>
+                <div className="flex gap-4 flex-wrap">
+                  <div className="w-72">
+                    <SearchInput
+                      label={"Rechercher un plat"}
+                      error={false}
+                      name={"search"}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                   </div>
-                  
-                  <div className="flex-1 min-h-0">
-                    {sortedDishes.length > 0 ? (
-                      <DishesTable
-                        dishes={sortedDishes}
-                        setSelectedDish={handleEditDish}
-                        onDelete={handleDelete}
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                        <motion.div
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="text-6xl mb-4"
-                        >
-                          🍽️
-                        </motion.div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                          {hasActiveFilters ? "Aucun plat trouvé" : "Aucun plat créé"}
-                        </h3>
-                        <p className="text-gray-600 mb-6 max-w-md">
-                          {hasActiveFilters 
-                            ? "Essayez de modifier vos critères de recherche ou de filtrage"
-                            : "Commencez par créer votre premier plat pour construire votre menu"
-                          }
-                        </p>
-                        
-                        <div className="flex gap-3">
-                          {hasActiveFilters && (
-                            <button
-                              onClick={resetFilters}
-                              className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                              Réinitialiser les filtres
-                            </button>
-                          )}
-                          
-                          <button
-                            onClick={handleCreateDish}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
-                          >
-                            <Plus className="w-4 h-4" />
-                            Créer un plat
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                  <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={categoryOptions}
+                      onClicked={handleCategoryChange}
+                      label={"Catégorie"}
+                      defaultValue={
+                        selectedCategory === "Toutes"
+                          ? "Toutes"
+                          : DishCategoryLabels[selectedCategory]
+                      }
+                    />
+                  </div>
+                  <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={statusOptions}
+                      onClicked={setSelectedStatus}
+                      label={"Status"}
+                      defaultValue={selectedStatus}
+                    />
+                  </div>
+                </div>
+              </div>
+            </PanelContent>
+
+            {/* Statistics Section */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {dishes.length}
+                  </div>
+                  <div className="text-sm text-gray-600">Total des plats</div>
+                </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-green-600">
+                    {dishes.filter((dish) => dish.isAvailable).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Plats disponibles</div>
+                </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-red-600">
+                    {dishes.filter((dish) => !dish.isAvailable).length}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Plats indisponibles
                   </div>
                 </div>
               </PanelContent>
-            </motion.div>
-          )}
-        </div>
-      </div>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {new Set(dishes.map((dish) => dish.category)).size}
+                  </div>
+                  <div className="text-sm text-gray-600">Catégories</div>
+                </div>
+              </PanelContent>
+            </div>
 
-      {/* Form Drawer */}
-      <DishFormDrawer
-        isOpen={isFormDrawerOpen}
-        onClose={() => setIsFormDrawerOpen(false)}
-        mode={formMode}
-        dish={selectedDish}
-        onSuccess={handleFormSuccess}
-      />
+            {/* Results Section */}
+            <PanelContent>
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">
+                    Résultats ({filteredDishes.length} plat
+                    {filteredDishes.length > 1 ? "s" : ""})
+                  </h3>
+                  <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={sortOptions}
+                      onClicked={setSelectedSort}
+                      defaultValue={selectedSort}
+                    />
+                  </div>
+                </div>
+                <DishesTable
+                  dishes={sortedDishes}
+                  setSelectedDish={handleRowClick}
+                  onDelete={handleDelete}
+                />
+              </div>
+            </PanelContent>
+          </div>
+        )}
+
+        {isUpdateDrawerOpen && selectedDish && (
+          <UpdateDishDrawer
+            dish={selectedDish}
+            onClose={() => setIsUpdateDrawerOpen(false)}
+            onCloseConfirm={async () => {
+              setIsUpdateDrawerOpen(false);
+              setIsLoading(true);
+              await fetchDishes();
+              setIsLoading(false);
+            }}
+          />
+        )}
+      </div>
     </BaseContent>
   );
 }
+
+interface UpdateDishDrawerProps {
+  dish: Dish;
+  onClose: () => void;
+  onCloseConfirm: () => void;
+}
+
+const UpdateDishDrawer: React.FC<UpdateDishDrawerProps> = ({
+  dish,
+  onCloseConfirm,
+  onClose,
+}) => {
+  return (
+    <div className="drawer drawer-end">
+      <input
+        id="update-dish-drawer"
+        type="checkbox"
+        className="drawer-toggle"
+        checked={true}
+        onChange={() => {}}
+      />
+      <div className="drawer-side z-50">
+        <label
+          htmlFor="update-dish-drawer"
+          className="drawer-overlay"
+          onClick={onClose}
+        ></label>
+        <ContainerDrawer width={360}>
+          <UpdateDishPage dish={dish} onClickOnConfirm={onCloseConfirm} />
+        </ContainerDrawer>
+      </div>
+    </div>
+  );
+};

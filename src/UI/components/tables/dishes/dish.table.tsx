@@ -1,6 +1,7 @@
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableRow,
   Paper,
@@ -9,7 +10,6 @@ import {
   TableFooter,
   TablePagination,
   useTheme,
-  CircularProgress,
 } from "@mui/material";
 import React from "react";
 import LastPageIcon from "@mui/icons-material/LastPage";
@@ -19,7 +19,6 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { DishRow } from "./dish.row";
 import { DishTableCellStyled, DishTableStyled } from "./dish.styled";
 import { DishesTableProps, TablePaginationActionsProps } from "./dish.props";
-import { motion, AnimatePresence } from "framer-motion";
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
@@ -113,109 +112,59 @@ const DishesTable: React.FC<DishesTableProps> = ({
     setPage(newPage);
   };
 
-  const paginatedDishes = rowsPerPage > 0
-    ? displayedDishes.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      )
-    : displayedDishes;
-
-  if (dishes.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 bg-white rounded-lg border border-gray-200">
-        <div className="text-6xl mb-4">🍽️</div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Aucun plat trouvé
-        </h3>
-        <p className="text-gray-600 text-center">
-          Aucun plat ne correspond à vos critères de recherche
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <Paper 
-      elevation={0} 
-      sx={{ 
-        borderRadius: "12px", 
-        overflow: "hidden",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column"
-      }}
-    >
-      <DishTableStyled sx={{ height: "100%" }}>
-        <Table sx={{ minWidth: 700, height: "100%" }} aria-label="dishes table">
+    <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "hidden" }}>
+      <DishTableStyled>
+        <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <DishTableCellStyled>Plat</DishTableCellStyled>
-              <DishTableCellStyled align="left">Ingrédients</DishTableCellStyled>
-              <DishTableCellStyled align="left">Statut</DishTableCellStyled>
+              <DishTableCellStyled>Nom</DishTableCellStyled>
+              <DishTableCellStyled align="left">
+                Ingrédients
+              </DishTableCellStyled>
+              <DishTableCellStyled align="left">Status</DishTableCellStyled>
               <DishTableCellStyled align="right">Catégorie</DishTableCellStyled>
               <DishTableCellStyled align="right">Prix</DishTableCellStyled>
-              <DishTableCellStyled align="right">Actions</DishTableCellStyled>
+              <DishTableCellStyled align="right" />
             </TableRow>
           </TableHead>
-          
-          <TableBody sx={{ flex: 1 }}>
-            <AnimatePresence>
-              {paginatedDishes.map((dish, index) => (
-                <motion.tr
-                  key={dish._id}
-                  component={TableRow}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.2, delay: index * 0.05 }}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors duration-200"
-                  onClick={() => setSelectedDish(dish)}
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: 'rgba(59, 130, 246, 0.04)',
-                      transform: 'translateY(-1px)',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    },
-                    transition: 'all 0.2s ease-in-out',
-                  }}
-                >
-                  <DishRow
-                    row={dish}
-                    onClick={setSelectedDish}
-                    onDelete={onDelete}
-                  />
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-            
+          <TableBody>
+            {(rowsPerPage > 0
+              ? displayedDishes.slice(
+                  page * rowsPerPage,
+                  page * rowsPerPage + rowsPerPage
+                )
+              : displayedDishes
+            ).map((dish) => (
+              <DishRow
+                key={dish._id}
+                row={dish}
+                onClick={setSelectedDish}
+                onDelete={onDelete}
+              />
+            ))}
             {emptyRows > 0 && (
-              <TableRow style={{ height: 73 * emptyRows }}>
-                <DishTableCellStyled colSpan={6} />
+              <TableRow style={{ height: 53 * emptyRows }}>
+                <TableCell colSpan={6} />
               </TableRow>
             )}
           </TableBody>
-          
           <TableFooter>
             <TableRow>
-              <DishTableCellStyled colSpan={6}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", py: 1 }}>
-                  <div className="text-sm text-gray-600">
-                    Affichage de {page * rowsPerPage + 1} à {Math.min((page + 1) * rowsPerPage, displayedDishes.length)} sur {displayedDishes.length} plats
-                  </div>
+              <TableCell colSpan={6}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <TablePagination
                     sx={{ borderBottom: 0 }}
                     rowsPerPageOptions={[10]}
-                    component="div"
+                    colSpan={3}
                     count={displayedDishes.length}
-                    rowsPerPage={rowsPerPage}
+                    rowsPerPage={10}
                     page={page}
                     onPageChange={handleChangePage}
                     ActionsComponent={TablePaginationActions}
-                    labelDisplayedRows={() => ''}
-                    labelRowsPerPage=""
                   />
                 </Box>
-              </DishTableCellStyled>
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>
