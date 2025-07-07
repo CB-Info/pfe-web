@@ -230,10 +230,7 @@ export default function PasswordResetPage({ onBackToLogin }: PasswordResetPagePr
               </div>
 
               {/* Submit Button */}
-              <motion.div
-                whileTap={{ scale: 0.98 }}
-                className="w-full"
-              >
+              <div className="w-full">
                 <button
                   type="submit"
                   disabled={isLoading || !!emailError || !emailInput.trim()}
@@ -258,7 +255,7 @@ export default function PasswordResetPage({ onBackToLogin }: PasswordResetPagePr
                     </div>
                   )}
                 </button>
-              </motion.div>
+              </div>
 
               {/* Back to Login */}
               <button
