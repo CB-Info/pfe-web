@@ -1,8 +1,8 @@
-import { TableCell, tableCellClasses, TableContainer, TableRow } from "@mui/material";
+import { TableCell, tableCellClasses, TableContainer } from "@mui/material";
 import { styled } from '@mui/material/styles';
 
 export const DishTableStyled = styled(TableContainer)(({ theme }) => ({
-    borderRadius: '16px',
+    borderRadius: '12px',
     backgroundColor: 'white',
     border: `1px solid ${theme.palette.divider}`,
     height: '100%',
@@ -13,36 +13,38 @@ export const DishTableStyled = styled(TableContainer)(({ theme }) => ({
         display: 'flex',
         flexDirection: 'column'
     },
+    '& .MuiTableHead-root': {
+        flexShrink: 0
+    },
     '& .MuiTableBody-root': {
         flex: 1,
         overflowY: 'auto'
+    },
+    '& .MuiTableFooter-root': {
+        flexShrink: 0,
+        borderTop: `1px solid ${theme.palette.divider}`,
+        backgroundColor: theme.palette.grey[50]
     }
-}));
-
-export const DishTableRowStyled = styled(TableRow)(({ theme }) => ({
-    '&:hover': {
-        backgroundColor: theme.palette.action.selected,
-        cursor: 'pointer',
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        transition: 'all 0.2s ease-in-out'
-    },
-    '&:last-child td, &:last-child th': {
-        border: 0,
-    },
-    transition: 'all 0.2s ease-in-out',
-    borderRadius: '8px',
-    margin: '2px 0'
 }));
 
 export const DishTableCellStyled = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         color: theme.palette.text.primary,
+        fontWeight: 600,
+        fontSize: '0.875rem',
+        backgroundColor: theme.palette.grey[50],
+        borderBottom: `2px solid ${theme.palette.divider}`,
+        padding: '16px'
     },
     [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
+        fontSize: '0.875rem',
         color: theme.palette.text.primary,
         padding: '16px',
-        borderBottom: '1px solid #f3f4f6'
+        borderBottom: `1px solid ${theme.palette.grey[200]}`,
+        verticalAlign: 'top'
     },
+    [`&.${tableCellClasses.footer}`]: {
+        borderBottom: 'none',
+        padding: '12px 16px'
+    }
 }));

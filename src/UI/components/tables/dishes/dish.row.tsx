@@ -7,7 +7,6 @@ import { ConfirmationModal } from "../../modals/confirmation.modal";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import { useAlerts } from "../../../../contexts/alerts.context";
 import { DishCategoryLabels } from "../../../../data/dto/dish.dto";
-import { motion } from "framer-motion";
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
   STARTERS: { bg: "bg-yellow-100", text: "text-yellow-800" },
@@ -76,101 +75,138 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
 
   return (
     <>
-      <>
-        <DishTableCellStyled component="th" scope="row">
-          <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${row.isAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="font-medium text-gray-900">{row.name}</span>
+      {/* Dish Name with Status Indicator */}
+      <DishTableCellStyled component="th" scope="row">
+        <div className="flex items-center gap-3">
+          <div 
+            className={`w-3 h-3 rounded-full flex-shrink-0 ${
+              row.isAvailable ? 'bg-green-500' : 'bg-red-500'
+            }`} 
+          />
+          <div className="min-w-0 flex-1">
+            <div className="font-semibold text-gray-900 truncate">
+              {row.name}
+            </div>
+            <div className="text-xs text-gray-500 truncate">
+              {row.description.length > 50 
+                ? `${row.description.substring(0, 50)}...` 
+                : row.description
+              }
+            </div>
           </div>
-        </DishTableCellStyled>
-        
-        <DishTableCellStyled align="left">
-          <div className="flex flex-wrap gap-1">
-            {row.ingredients.slice(0, 3).map((ingredient, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-              >
-                {ingredient.ingredient.name}
-              </span>
-            ))}
-            {row.ingredients.length > 3 && (
-              <span className="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded-full">
-                +{row.ingredients.length - 3}
-              </span>
-            )}
-          </div>
-        </DishTableCellStyled>
-        
-        <DishTableCellStyled align="left">
-          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-            row.isAvailable 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
-          }`}>
-            {row.isAvailable ? 'Disponible' : 'Indisponible'}
-          </span>
-        </DishTableCellStyled>
-        
-        <DishTableCellStyled align="right">
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${categoryColor.bg} ${categoryColor.text}`}
-          >
-            {DishCategoryLabels[row.category]}
-          </span>
-        </DishTableCellStyled>
-        
-        <DishTableCellStyled align="right">
-          <span className="text-lg font-semibold text-gray-900">{row.price}€</span>
-        </DishTableCellStyled>
-        
-        <DishTableCellStyled align="right">
-          <IconButton
-            size="small"
-            onClick={handleMenuClick}
-            aria-label="Options"
-            className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:bg-gray-200"
-          >
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem onClick={handleEditClick}>Modifier</MenuItem>
-            <MenuItem
-              onClick={handleDeleteClick}
-              sx={{
-                color: "#EF4444",
-                "&:hover": {
-                  backgroundColor: "rgba(239, 68, 68, 0.08)",
-                },
-              }}
-            >
-              Supprimer
-            </MenuItem>
-          </Menu>
-        </DishTableCellStyled>
-      </>
+        </div>
+      </DishTableCellStyled>
 
+      {/* Ingredients */}
+      <DishTableCellStyled align="left">
+        <div className="flex flex-wrap gap-1 max-w-xs">
+          {row.ingredients.slice(0, 3).map((ingredient, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full border border-gray-200"
+            >
+              {ingredient.ingredient.name}
+            </span>
+          ))}
+          {row.ingredients.length > 3 && (
+            <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full border border-blue-200 font-medium">
+              +{row.ingredients.length - 3}
+            </span>
+          )}
+        </div>
+      </DishTableCellStyled>
+
+      {/* Status */}
+      <DishTableCellStyled align="left">
+        <span 
+          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+            row.isAvailable 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}
+        >
+          {row.isAvailable ? 'Disponible' : 'Indisponible'}
+        </span>
+      </DishTableCellStyled>
+
+      {/* Category */}
+      <DishTableCellStyled align="right">
+        <span
+          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${categoryColor.bg} ${categoryColor.text}`}
+        >
+          {DishCategoryLabels[row.category]}
+        </span>
+      </DishTableCellStyled>
+
+      {/* Price */}
+      <DishTableCellStyled align="right">
+        <div className="text-right">
+          <span className="text-lg font-bold text-gray-900">{row.price}€</span>
+        </div>
+      </DishTableCellStyled>
+
+      {/* Actions */}
+      <DishTableCellStyled align="right">
+        <IconButton
+          size="small"
+          onClick={handleMenuClick}
+          aria-label="Options"
+          className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          sx={{
+            '&:hover': {
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            }
+          }}
+        >
+          <MoreVertIcon fontSize="small" />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <MenuItem onClick={handleEditClick}>
+            Modifier
+          </MenuItem>
+          <MenuItem
+            onClick={handleDeleteClick}
+            sx={{
+              color: "#EF4444",
+              "&:hover": {
+                backgroundColor: "rgba(239, 68, 68, 0.08)",
+              },
+            }}
+          >
+            Supprimer
+          </MenuItem>
+        </Menu>
+      </DishTableCellStyled>
+
+      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         modalName={deleteModalId}
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
       >
         <div className="flex flex-col items-center justify-center min-h-[200px] px-8">
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            Confirmer la suppression
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold mb-2 text-center text-gray-900">
+            Supprimer le plat
           </h3>
-          <p className="text-center text-gray-600 mb-8">
-            Êtes-vous sûr de vouloir supprimer ce plat ?
+          <p className="text-center text-gray-600 mb-6">
+            Êtes-vous sûr de vouloir supprimer <strong>"{row.name}"</strong> ?
             <br />
-            Cette action est irréversible.
+            <span className="text-sm text-red-600">Cette action est irréversible.</span>
           </p>
-          <div className="flex gap-4 w-full justify-center">
+          <div className="flex gap-3 w-full justify-center">
             <button
-              className="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+              className="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
               onClick={() => setIsDeleteModalOpen(false)}
             >
               Annuler
