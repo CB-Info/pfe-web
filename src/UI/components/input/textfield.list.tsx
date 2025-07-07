@@ -49,6 +49,8 @@ const DropdownButton = styled.div<{ $isOpen?: boolean }>(({ theme, $isOpen = fal
     transition-all
     duration-200
     select-none
+   relative
+   z-10
   `,
   css`
     border-color: ${$isOpen ? theme.blue500 : theme.borderColor};
@@ -128,7 +130,7 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({
   };
 
   return (
-    <div className="flex flex-col w-full relative" ref={containerRef}>
+    <div className="flex flex-col w-full relative z-20" ref={containerRef}>
       {label && <LabelStyle>{label}</LabelStyle>}
       
       <DropdownButton 
@@ -160,7 +162,7 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({
           onClose={() => setIsOpen(false)} 
           fullWidth
         >
-          <div role="listbox" aria-label={label}>
+          <div role="listbox" aria-label={label} className="relative z-[10001]">
             {valuesToDisplay.map((element, index) => (
               <Cell 
                 key={index} 

@@ -197,7 +197,7 @@ export default function DishesPage() {
           ) : (
             <div className="flex flex-col h-full">
               {/* Filters Bar */}
-              <div className="bg-white border-b border-gray-200 px-6 py-4">
+              <div className="bg-white border-b border-gray-200 px-6 py-4 relative z-30">
                 <div className="flex flex-row items-center gap-3">
                   {/* Search */}
                   <div className="flex-1 min-w-0">
@@ -249,9 +249,9 @@ export default function DishesPage() {
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="mt-4 pt-4 border-t border-gray-200 overflow-hidden"
+                      className="mt-4 pt-4 border-t border-gray-200 overflow-visible relative z-40"
                     >
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
                         <TextfieldList
                           valuesToDisplay={categoryOptions}
                           onClicked={handleCategoryChange}
@@ -283,7 +283,7 @@ export default function DishesPage() {
               </div>
 
               {/* Table Section */}
-              <div className="flex-1 overflow-hidden bg-gray-50">
+              <div className="flex-1 overflow-hidden bg-gray-50 relative z-10">
                 <div className="h-full p-6">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
