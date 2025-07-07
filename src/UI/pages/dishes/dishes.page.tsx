@@ -18,6 +18,9 @@ import { FiltersDropdown, DishSortOption } from "../../components/dishes/filters
 import { DishesStats } from "../../components/dishes/dishes-stats.component";
 import { Plus } from "lucide-react";
 import { FilterSortPanel } from "./components/filter-sort-panel";
+import { motion } from "framer-motion";
+import { dishRepository } from "../../../network/repositories/dishes.repository";
+import { useAlerts } from "../../../contexts/alerts.context";
 
 // Custom hook for debouncing
 function useDebounce<T>(value: T, delay: number): T {
@@ -35,9 +38,9 @@ function useDebounce<T>(value: T, delay: number): T {
 
   return debouncedValue;
 }
-import { motion } from "framer-motion";
 
 export default function DishesPage() {
+  const { addAlert } = useAlerts();
   const [isLoading, setIsLoading] = useState(false);
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
@@ -46,11 +49,13 @@ export default function DishesPage() {
   // Search state with debouncing
   const [searchQueryInput, setSearchQueryInput] = useState("");
   const debouncedSearchQuery = useDebounce(searchQueryInput, 300);
-  const handleCategoryChange = useCallback((label: string) => {
-    const [selectedCategory, setSelectedCategory] = useState<DishCategory>("Toutes");
-    const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
-    const [selectedSort, setSelectedSort] = useState<DishSortOption>("Date de création (Descendant)");
   
+  // Filter and sort state
+  const [selectedCategory, setSelectedCategory] = useState<DishCategory>("Toutes");
+  const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
+  const [selectedSort, setSelectedSort] = useState<DishSortOption>("Date de création (Descendant)");
+
+  const handleCategoryChange = useCallback((label: string) => {
     const entry = Object.entries(DishCategoryLabels).find(
         ([, l]) => l === label
     );
@@ -65,13 +70,6 @@ export default function DishesPage() {
     setSelectedStatus("Tous");
     setSelectedSort("Date de création (Descendant)");
   }, []);
-
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setSelectedCategory("Toutes");
-    setSelectedStatus("Tous");
-    setSelectedSort("Date de création (Descendant)");
-  };
 
   const fetchDishes = async () => {
     try {
@@ -160,68 +158,73 @@ export default function DishesPage() {
                 }}
               />
             </Drawer>
-            {/* Filter and Sort Panel */}
-            <FilterSortPanel
-              searchQuery={searchQueryInput}
-              onSearchChange={setSearchQueryInput}
-              selectedCategory={selectedCategory}
-              onCategoryChange={handleCategoryChange}
-              selectedStatus={selectedStatus}
-              onStatusChange={setSelectedStatus}
-              selectedSort={selectedSort}
-              onSortChange={setSelectedSort}
-              onResetFilters={handleResetFilters}
-              totalResults={dishes.length}
-              filteredResults={filteredAndSortedDishes.length}
-            />
           </div>
-              <div className="flex-1 overflow-hidden px-6 py-4">
-                <div className="h-full bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="h-full flex flex-col">
-                    {/* Table Header */}
-                    <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-gray-50">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Liste des plats
-                        </h3>
-                        <div className="text-sm text-gray-600">
-                          {filteredDishes.length} sur {dishes.length} plat{dishes.length > 1 ? 's' : ''}
-                        </div>
-                      </div>
-                    </div>
-                    {dishStats.unavailable}
 
-                    {/* Table Content */}
-                    <div className="flex-1 overflow-hidden">
-                      <div className="h-full overflow-y-auto">
-                        <DishesTable
-                          dishes={sortedDishes}
-                          setSelectedDish={handleRowClick}
-                          onDelete={handleDelete}
-                        />
-                      </div>
-                    </div>
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold">
-                    Résultats ({filteredAndSortedDishes.length} plat
-                    {filteredAndSortedDishes.length > 1 ? "s" : ""})
+          {/* Filter and Sort Panel */}
+          <FilterSortPanel
+            searchQuery={searchQueryInput}
+            onSearchChange={setSearchQueryInput}
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            selectedStatus={selectedStatus}
+            onStatusChange={setSelectedStatus}
+            selectedSort={selectedSort}
+            onSortChange={setSelectedSort}
+            onResetFilters={handleResetFilters}
+            totalResults={dishes.length}
+            filteredResults={filteredAndSortedDishes.length}
+          />
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-hidden px-6 py-4">
+          <div className="h-full bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="h-full flex flex-col">
+              {/* Table Header */}
+              <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Liste des plats
                   </h3>
+                  <div className="text-sm text-gray-600">
+                    {filteredAndSortedDishes.length} sur {dishes.length} plat{dishes.length > 1 ? 's' : ''}
+                  </div>
                 </div>
-                <UpdateDishDrawer
-                  dish={selectedDish}
-                  onClose={() => setIsUpdateDrawerOpen(false)}
-                  dishes={filteredAndSortedDishes}
-                  onCloseConfirm={async () => {
-                    setIsUpdateDrawerOpen(false);
-                    setIsLoading(true);
-                    await fetchDishes();
-                    setIsLoading(false);
-                  }}
-                />
+              </div>
+
+              {/* Table Content */}
+              <div className="flex-1 overflow-hidden">
+                <div className="h-full overflow-y-auto">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-full">
+                      <CircularProgress />
+                    </div>
+                  ) : (
+                    <DishesTable
+                      dishes={filteredAndSortedDishes}
+                      setSelectedDish={handleRowClick}
+                      onDelete={handleDelete}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Update Dish Drawer */}
+        {isUpdateDrawerOpen && selectedDish && (
+          <UpdateDishDrawer
+            dish={selectedDish}
+            onClose={() => setIsUpdateDrawerOpen(false)}
+            onCloseConfirm={async () => {
+              setIsUpdateDrawerOpen(false);
+              setIsLoading(true);
+              await fetchDishes();
+              setIsLoading(false);
+            }}
+          />
+        )}
       </div>
     </BaseContent>
   );
