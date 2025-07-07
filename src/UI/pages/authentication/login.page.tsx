@@ -17,7 +17,6 @@ export default function LoginPage() {
   const [emailError, setEmailError] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
 
   const { addAlert } = useAlerts();
   const userRepository = new UserRepositoryImpl()
@@ -86,9 +85,6 @@ export default function LoginPage() {
     
     try {
       await userRepository.login(emailInput, passwordInput);
-      if (rememberMe) {
-        localStorage.setItem('rememberLogin', 'true');
-      }
     } catch (error) {
       addAlert({ 
         severity: "error", 
@@ -284,18 +280,9 @@ export default function LoginPage() {
                 </AnimatePresence>
               </div>
 
-              {/* Remember Me & Forgot Password */}
+              {/* Forgot Password */}
               <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    disabled={isLoading}
-                  />
-                  <span className="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
-                </label>
+                <div></div>
                 <button
                   type="button"
                   onClick={() => setShowPasswordReset(true)}
