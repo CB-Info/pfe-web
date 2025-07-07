@@ -1,12 +1,13 @@
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { DishTableCellStyled, DishTableRowStyled } from "./dish.styled";
+import { DishTableCellStyled } from "./dish.styled";
 import { DishRowProps } from "./dish.props";
 import { useState } from "react";
 import { ConfirmationModal } from "../../modals/confirmation.modal";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import { useAlerts } from "../../../../contexts/alerts.context";
 import { DishCategoryLabels } from "../../../../data/dto/dish.dto";
+import { motion } from "framer-motion";
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
   STARTERS: { bg: "bg-yellow-100", text: "text-yellow-800" },
@@ -75,27 +76,42 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
 
   return (
     <>
-      <DishTableRowStyled
-        key={row.name}
-        hover
-        onClick={() => onClick(row)}
-        className="relative"
-      >
+      <>
         <DishTableCellStyled component="th" scope="row">
-          {row.name}
-        </DishTableCellStyled>
-        <DishTableCellStyled align="left">
-          {row.ingredients.map((e) => e.ingredient.name).join(", ")}
-        </DishTableCellStyled>
-        <DishTableCellStyled align="left">
-          <div className="flex items-center pl-4">
-            <div
-              className={`h-3 w-3 rounded-full ${
-                row.isAvailable ? "bg-green-500" : "bg-red-500"
-              }`}
-            ></div>
+          <div className="flex items-center gap-3">
+            <div className={`w-3 h-3 rounded-full ${row.isAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className="font-medium text-gray-900">{row.name}</span>
           </div>
         </DishTableCellStyled>
+        
+        <DishTableCellStyled align="left">
+          <div className="flex flex-wrap gap-1">
+            {row.ingredients.slice(0, 3).map((ingredient, index) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+              >
+                {ingredient.ingredient.name}
+              </span>
+            ))}
+            {row.ingredients.length > 3 && (
+              <span className="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded-full">
+                +{row.ingredients.length - 3}
+              </span>
+            )}
+          </div>
+        </DishTableCellStyled>
+        
+        <DishTableCellStyled align="left">
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+            row.isAvailable 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-red-100 text-red-800'
+          }`}>
+            {row.isAvailable ? 'Disponible' : 'Indisponible'}
+          </span>
+        </DishTableCellStyled>
+        
         <DishTableCellStyled align="right">
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${categoryColor.bg} ${categoryColor.text}`}
@@ -103,7 +119,11 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
             {DishCategoryLabels[row.category]}
           </span>
         </DishTableCellStyled>
-        <DishTableCellStyled align="right">{row.price} €</DishTableCellStyled>
+        
+        <DishTableCellStyled align="right">
+          <span className="text-lg font-semibold text-gray-900">{row.price}€</span>
+        </DishTableCellStyled>
+        
         <DishTableCellStyled align="right">
           <IconButton
             size="small"
@@ -132,7 +152,7 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
             </MenuItem>
           </Menu>
         </DishTableCellStyled>
-      </DishTableRowStyled>
+      </>
 
       <ConfirmationModal
         modalName={deleteModalId}

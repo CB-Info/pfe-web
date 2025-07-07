@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableRow,
   Paper,
@@ -19,6 +18,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { DishRow } from "./dish.row";
 import { DishTableCellStyled, DishTableStyled } from "./dish.styled";
 import { DishesTableProps, TablePaginationActionsProps } from "./dish.props";
+import { motion } from "framer-motion";
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
@@ -113,9 +113,9 @@ const DishesTable: React.FC<DishesTableProps> = ({
   };
 
   return (
-    <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "hidden" }}>
+    <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "hidden", height: "100%" }}>
       <DishTableStyled>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+        <Table sx={{ minWidth: 700, height: "100%" }} aria-label="customized table">
           <TableHead>
             <TableRow>
               <DishTableCellStyled>Nom</DishTableCellStyled>
@@ -136,22 +136,30 @@ const DishesTable: React.FC<DishesTableProps> = ({
                 )
               : displayedDishes
             ).map((dish) => (
-              <DishRow
+              <motion.tr
                 key={dish._id}
-                row={dish}
-                onClick={setSelectedDish}
-                onDelete={onDelete}
-              />
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                component="tr"
+              >
+                <DishRow
+                  row={dish}
+                  onClick={setSelectedDish}
+                  onDelete={onDelete}
+                />
+              </motion.tr>
             ))}
             {emptyRows > 0 && (
               <TableRow style={{ height: 53 * emptyRows }}>
-                <TableCell colSpan={6} />
+                <DishTableCellStyled colSpan={6} />
               </TableRow>
             )}
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={6}>
+              <DishTableCellStyled colSpan={6}>
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <TablePagination
                     sx={{ borderBottom: 0 }}
@@ -164,7 +172,7 @@ const DishesTable: React.FC<DishesTableProps> = ({
                     ActionsComponent={TablePaginationActions}
                   />
                 </Box>
-              </TableCell>
+              </DishTableCellStyled>
             </TableRow>
           </TableFooter>
         </Table>
