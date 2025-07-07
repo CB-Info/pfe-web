@@ -24,11 +24,7 @@ import {
   Plus, 
   Filter, 
   RotateCcw, 
-  TrendingUp, 
-  TrendingDown,
   ChefHat,
-  Eye,
-  EyeOff,
   BarChart3
 } from "lucide-react";
 
@@ -42,7 +38,6 @@ export default function DishesPage() {
   const [selectedCategory, setSelectedCategory] = useState<DishCategory | "Toutes">("Toutes");
   const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
   const [showFilters, setShowFilters] = useState(false);
-  const [showStats, setShowStats] = useState(true);
   
   const sortOptions: DishSortOption[] = [
     "Date de création (Descendant)",
@@ -126,23 +121,8 @@ export default function DishesPage() {
     await fetchDishes();
   };
 
-  // Calculate statistics
-  const stats = useMemo(() => {
-    const total = dishes.length;
-    const available = dishes.filter(dish => dish.isAvailable).length;
-    const unavailable = total - available;
-    const categories = new Set(dishes.map(dish => dish.category)).size;
-    const averagePrice = total > 0 ? dishes.reduce((sum, dish) => sum + dish.price, 0) / total : 0;
-    
-    return {
-      total,
-      available,
-      unavailable,
-      categories,
-      averagePrice,
-      filteredCount: filteredDishes.length
-    };
-  }, [dishes, filteredDishes]);
+  // Calculate filtered count for display
+  const filteredCount = filteredDishes.length;
 
   return (
     <BaseContent>
@@ -153,7 +133,7 @@ export default function DishesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white border-b border-gray-200 px-6 py-6"
         >
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-blue-100 rounded-xl">
                 <ChefHat className="w-6 h-6 text-blue-600" />
@@ -166,133 +146,31 @@ export default function DishesPage() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setShowStats(!showStats)}
-                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
-              >
-                {showStats ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                <span className="text-sm font-medium">
-                  {showStats ? 'Masquer' : 'Afficher'} stats
-                </span>
-              </button>
-              
-              <DrawerButton
-                width={360}
-                defaultChildren={
-                  <CustomButton
-                    type={TypeButton.PRIMARY}
-                    onClick={() => {}}
-                    width={WidthButton.MEDIUM}
-                    isLoading={false}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nouveau plat
-                  </CustomButton>
-                }
-                drawerId={"add-drawer-dish"}
-              >
-                <AddDishPage
-                  onClickOnConfirm={async () => {
-                    setIsLoading(true);
-                    await fetchDishes();
-                    setIsLoading(false);
-                  }}
-                />
-              </DrawerButton>
-            </div>
+            <DrawerButton
+              width={360}
+              defaultChildren={
+                <CustomButton
+                  type={TypeButton.PRIMARY}
+                  onClick={() => {}}
+                  width={WidthButton.MEDIUM}
+                  isLoading={false}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nouveau plat
+                </CustomButton>
+              }
+              drawerId={"add-drawer-dish"}
+            >
+              <AddDishPage
+                onClickOnConfirm={async () => {
+                  setIsLoading(true);
+                  await fetchDishes();
+                  setIsLoading(false);
+                }}
+              />
+            </DrawerButton>
           </div>
         </motion.div>
-
-        {/* Statistics Section */}
-        <AnimatePresence>
-          {showStats && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-gray-50 border-b border-gray-200 px-6 py-4 overflow-hidden"
-            >
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <PanelContent>
-                    <div className="p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-600 mb-1">
-                        {stats.total}
-                      </div>
-                      <div className="text-xs text-gray-600 font-medium">Total</div>
-                    </div>
-                  </PanelContent>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <PanelContent>
-                    <div className="p-4 text-center">
-                      <div className="text-2xl font-bold text-green-600 mb-1">
-                        {stats.available}
-                      </div>
-                      <div className="text-xs text-gray-600 font-medium">Disponibles</div>
-                    </div>
-                  </PanelContent>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <PanelContent>
-                    <div className="p-4 text-center">
-                      <div className="text-2xl font-bold text-red-600 mb-1">
-                        {stats.unavailable}
-                      </div>
-                      <div className="text-xs text-gray-600 font-medium">Indisponibles</div>
-                    </div>
-                  </PanelContent>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <PanelContent>
-                    <div className="p-4 text-center">
-                      <div className="text-2xl font-bold text-purple-600 mb-1">
-                        {stats.categories}
-                      </div>
-                      <div className="text-xs text-gray-600 font-medium">Catégories</div>
-                    </div>
-                  </PanelContent>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <PanelContent>
-                    <div className="p-4 text-center">
-                      <div className="text-2xl font-bold text-orange-600 mb-1">
-                        {stats.averagePrice.toFixed(1)}€
-                      </div>
-                      <div className="text-xs text-gray-600 font-medium">Prix moyen</div>
-                    </div>
-                  </PanelContent>
-                </motion.div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Main Content */}
         <div className="flex-1 overflow-hidden">
@@ -349,7 +227,7 @@ export default function DishesPage() {
                     )}
 
                     <div className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
-                      <span className="font-medium">{stats.filteredCount}</span> résultat{stats.filteredCount > 1 ? 's' : ''}
+                      <span className="font-medium">{filteredCount}</span> résultat{filteredCount > 1 ? 's' : ''}
                     </div>
                   </div>
                 </div>
@@ -415,7 +293,7 @@ export default function DishesPage() {
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                               <BarChart3 className="w-4 h-4" />
                               <span>
-                                {stats.filteredCount} sur {stats.total} plats
+                                {filteredCount} plat{filteredCount > 1 ? 's' : ''}
                               </span>
                             </div>
                           </div>
@@ -423,7 +301,7 @@ export default function DishesPage() {
 
                         {/* Table Content */}
                         <div className="flex-1 overflow-hidden">
-                          {stats.filteredCount === 0 ? (
+                          {filteredCount === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-center p-8">
                               <div className="text-6xl mb-4">🔍</div>
                               <h3 className="text-lg font-medium text-gray-900 mb-2">
