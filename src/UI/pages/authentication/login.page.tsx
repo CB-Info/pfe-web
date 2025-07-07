@@ -41,7 +41,6 @@ export default function LoginPage() {
     return { strength: 3, label: "Correct", color: "text-blue-500" };
   };
 
-  const passwordStrength = getPasswordStrength(passwordInput);
 
   const handleEmailChange = (value: string) => {
     setEmailInput(value);
@@ -239,35 +238,6 @@ export default function LoginPage() {
                   </button>
                 </div>
 
-                {/* Password Strength Indicator */}
-                <AnimatePresence>
-                  {passwordInput && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="space-y-2"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-gray-200 rounded-full h-1.5">
-                          <div
-                            className={`h-1.5 rounded-full transition-all duration-300 ${
-                              passwordStrength.strength === 1 ? 'bg-red-500 w-1/4' :
-                              passwordStrength.strength === 2 ? 'bg-orange-500 w-2/4' :
-                              passwordStrength.strength === 3 ? 'bg-blue-500 w-3/4' :
-                              passwordStrength.strength === 4 ? 'bg-green-500 w-full' : 'w-0'
-                            }`}
-                          />
-                        </div>
-                        {passwordStrength.label && (
-                          <span className={`text-xs font-medium ${passwordStrength.color}`}>
-                            {passwordStrength.label}
-                          </span>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
                 <AnimatePresence>
                   {passwordError && (
