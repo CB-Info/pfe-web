@@ -42,7 +42,6 @@ export class CardsRepositoryImpl {
       return data.data;
     } catch (error) {
       throw new Error("Erreur lors de la création de la carte");
-      console.log(card);
     }
   }
 
