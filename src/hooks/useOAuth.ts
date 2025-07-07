@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { oauthService } from '../services/oauth.service';
+import FirebaseAuthManager from '../network/authentication/firebase.auth.manager';
 import { AuthUser, AuthError } from '../types/auth.types';
 import { useAlerts } from '../contexts/alerts.context';
 
@@ -17,6 +17,7 @@ export const useOAuth = (): UseOAuthReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<AuthError | null>(null);
   const { addAlert } = useAlerts();
+  const oauthService = FirebaseAuthManager.getInstance().getOAuthService();
 
   const signInWithOAuth = useCallback(async (
     providerId: string, 
@@ -52,7 +53,7 @@ export const useOAuth = (): UseOAuthReturn => {
     } finally {
       setIsLoading(false);
     }
-  }, [addAlert]);
+  }, [addAlert, oauthService]);
 
   const linkAccount = useCallback(async (providerId: string): Promise<void> => {
     setIsLoading(true);
@@ -78,7 +79,7 @@ export const useOAuth = (): UseOAuthReturn => {
     } finally {
       setIsLoading(false);
     }
-  }, [addAlert]);
+  }, [addAlert, oauthService]);
 
   const unlinkAccount = useCallback(async (providerId: string): Promise<void> => {
     setIsLoading(true);
@@ -104,11 +105,11 @@ export const useOAuth = (): UseOAuthReturn => {
     } finally {
       setIsLoading(false);
     }
-  }, [addAlert]);
+  }, [addAlert, oauthService]);
 
   const getLinkedProviders = useCallback((): string[] => {
     return oauthService.getLinkedProviders();
-  }, []);
+  }, [oauthService]);
 
   const clearError = useCallback(() => {
     setError(null);

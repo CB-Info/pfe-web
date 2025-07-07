@@ -7,17 +7,21 @@ import {
   getRedirectResult,
   linkWithPopup,
   unlink,
-  User
+  User,
+  Auth
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, Firestore } from 'firebase/firestore';
 import { AuthUser, AuthError } from '../types/auth.types';
 import { OAUTH_CONFIG } from '../config/oauth.config';
 
 export class OAuthService {
-  private auth = getAuth();
-  private db = getFirestore();
+  private auth: Auth;
+  private db: Firestore;
+
+  constructor(auth: Auth, db: Firestore) {
+    this.auth = auth;
+    this.db = db;
+  }
 
   /**
    * Crée un provider OAuth selon le type demandé
@@ -249,5 +253,3 @@ export class OAuthService {
     return errorMessages[errorCode] || 'Une erreur inattendue s\'est produite';
   }
 }
-
-export const oauthService = new OAuthService();
