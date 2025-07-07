@@ -3,11 +3,12 @@ import { ProfilContent } from "../../components/settingsContent/profilContent";
 import { PreferencesContent } from "../../components/settingsContent/preferencesContent";
 import { BaseContent } from '../../components/contents/base.content';
 import { PanelContent } from '../../components/contents/panel.content';
-import { User, Settings, Shield } from 'lucide-react';
+import { User, Settings as SettingsIcon, Shield } from 'lucide-react';
+import { PageHeader } from '../../components/layout/page-header.component';
 
 const tabs = [
   { id: 'profile', label: 'Profil', icon: User },
-  { id: 'preferences', label: 'Préférences', icon: Settings },
+  { id: 'preferences', label: 'Préférences', icon: SettingsIcon },
   { id: 'security', label: 'Sécurité', icon: Shield }
 ];
 
@@ -17,10 +18,11 @@ export default function SettingsPage() {
   return (
     <BaseContent>
       <div className="flex flex-col h-full">
-        {/* Header Section */}
-        <div className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0">
-          <h1 className="text-2xl font-semibold">Paramètres</h1>
-        </div>
+        <PageHeader
+          icon={<SettingsIcon className="w-6 h-6 text-gray-600" />}
+          title="Paramètres"
+          description="Configurez vos préférences et paramètres de compte"
+        />
         
         {/* Main Content - Scrollable */}
         <div className="flex-1 overflow-y-auto bg-gray-50">

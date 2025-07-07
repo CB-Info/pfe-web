@@ -24,9 +24,10 @@ import {
   Plus, 
   Filter, 
   RotateCcw, 
-  ChefHat,
   BarChart3
 } from "lucide-react";
+import { PageHeader } from "../../components/layout/page-header.component";
+import { ChefHat } from "lucide-react";
 
 export default function DishesPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -140,50 +141,19 @@ export default function DishesPage() {
   return (
     <BaseContent>
       <div className="flex flex-col h-full">
-        {/* Header Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white border-b border-gray-200 px-6 py-6"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <ChefHat className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <TitleStyle className="text-2xl">Gestion des plats</TitleStyle>
-                <p className="text-gray-600 text-sm mt-1">
-                  Gérez votre menu et vos plats en toute simplicité
-                </p>
-              </div>
-            </div>
-            
-            <DrawerButton
-              width={360}
-              defaultChildren={
-                <CustomButton
-                  type={TypeButton.PRIMARY}
-                  onClick={() => {}}
-                  width={WidthButton.MEDIUM}
-                  isLoading={false}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nouveau plat
-                </CustomButton>
-              }
-              drawerId={"add-drawer-dish"}
-            >
-              <AddDishPage
-                onClickOnConfirm={async () => {
-                  setIsLoading(true);
-                  await fetchDishes();
-                  setIsLoading(false);
-                }}
-              />
-            </DrawerButton>
-          </div>
-        </motion.div>
+        <PageHeader
+          icon={<ChefHat className="w-6 h-6 text-blue-600" />}
+          title="Gestion des plats"
+          description="Gérez votre menu et vos plats en toute simplicité"
+          showCreateButton={true}
+          onCreateClick={() => {
+            const drawerCheckbox = document.getElementById("add-drawer-dish") as HTMLInputElement;
+            if (drawerCheckbox) {
+              drawerCheckbox.checked = true;
+            }
+          }}
+          createButtonLabel="Nouveau plat"
+        />
 
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
@@ -360,6 +330,21 @@ export default function DishesPage() {
             </div>
           )}
         </div>
+
+        {/* Hidden Drawer for Create Dish */}
+        <DrawerButton
+          width={360}
+          defaultChildren={<div style={{ display: 'none' }} />}
+          drawerId={"add-drawer-dish"}
+        >
+          <AddDishPage
+            onClickOnConfirm={async () => {
+              setIsLoading(true);
+              await fetchDishes();
+              setIsLoading(false);
+            }}
+          />
+        </DrawerButton>
 
         {/* Update Drawer */}
         {isUpdateDrawerOpen && selectedDish && (

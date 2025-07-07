@@ -11,12 +11,13 @@ import AddIcon from '@mui/icons-material/Add';
 import { Switch } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, Pencil, QrCode } from 'lucide-react';
-import StyleRoundedIcon from '@mui/icons-material/StyleRounded';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
 import { EditCardModal } from './edit.card.modal';
 import { CustomerViewModal } from '../../components/cards/customer-view/customer-view-modal.component';
+import { PageHeader } from '../../components/layout/page-header.component';
+import StyleRoundedIcon from '@mui/icons-material/StyleRounded';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
@@ -150,26 +151,11 @@ export default function CardsPage() {
     return (
         <BaseContent>
             <div className="flex flex-col h-full">
-                {/* Header Section */}
-                <motion.div 
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0"
-                >
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-purple-100 rounded-xl">
-                                <StyleRoundedIcon className="w-6 h-6 text-purple-600" />
-                            </div>
-                            <div>
-                                <TitleStyle className="text-2xl">Gestion des cartes</TitleStyle>
-                                <p className="text-gray-600 text-sm mt-1">
-                                    Créez et gérez vos cartes de menu
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
+                <PageHeader
+                    icon={<StyleRoundedIcon className="w-6 h-6 text-purple-600" />}
+                    title="Gestion des cartes"
+                    description="Créez et gérez vos cartes de menu"
+                />
 
                 {/* Main Content - Scrollable */}
                 <div className="flex-1 overflow-y-auto bg-gray-50">

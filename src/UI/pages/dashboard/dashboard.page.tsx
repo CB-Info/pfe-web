@@ -12,11 +12,12 @@ import {
   TrendingDown,
   ShoppingCart,
   DollarSign,
-  ChefHat,
   Star
 } from 'lucide-react';
 import { DishCategoryLabels } from '../../../data/dto/dish.dto';
 import { motion } from 'framer-motion';
+import { PageHeader } from '../../components/layout/page-header.component';
+import { BarChart3 } from 'lucide-react';
 
 interface DashboardStats {
   totalDishes: number;
@@ -122,15 +123,11 @@ export default function DashboardPage() {
   return (
     <BaseContent>
       <div className="flex flex-col h-full">
-        {/* Header Section */}
-        <div className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0">
-          <div className='flex justify-between items-center'>
-            <TitleStyle>Tableau de bord</TitleStyle>
-            <div className="text-sm text-gray-500">
-              Dernière mise à jour: {new Date().toLocaleDateString('fr-FR')}
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          icon={<BarChart3 className="w-6 h-6 text-green-600" />}
+          title="Tableau de bord"
+          description={`Dernière mise à jour: ${new Date().toLocaleDateString('fr-FR')}`}
+        />
 
         {/* Main Content - Scrollable */}
         <div className="flex-1 overflow-y-auto bg-gray-50">
@@ -150,7 +147,7 @@ export default function DashboardPage() {
                         <p className="text-3xl font-bold text-blue-600">{stats?.totalDishes || 0}</p>
                       </div>
                       <div className="p-3 bg-blue-100 rounded-full">
-                        <ChefHat className="w-6 h-6 text-blue-600" />
+                        <BarChart3 className="w-6 h-6 text-blue-600" />
                       </div>
                     </div>
                     <div className="mt-4 flex items-center">
