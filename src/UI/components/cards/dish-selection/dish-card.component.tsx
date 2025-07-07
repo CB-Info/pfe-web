@@ -33,8 +33,8 @@ export const DishCard: React.FC<DishCardProps> = ({
       className={`
         relative bg-white rounded-lg border-2 transition-all duration-200 cursor-pointer
         ${isSelected 
-          ? 'border-blue-500 bg-blue-50 shadow-md' 
-          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+          ? 'border-blue-500 bg-blue-50 shadow-md ring-2 ring-blue-200' 
+          : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
         }
       `}
       onMouseEnter={() => setIsHovered(true)}
@@ -71,27 +71,33 @@ export const DishCard: React.FC<DishCardProps> = ({
       )}
 
       {/* Dish Image Placeholder */}
-      <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg flex items-center justify-center">
-        <div className="text-4xl">🍽️</div>
+      <div className={`
+        h-32 bg-gradient-to-br rounded-t-lg flex items-center justify-center transition-all duration-200
+        ${isSelected 
+          ? 'from-blue-100 to-blue-200' 
+          : 'from-gray-100 to-gray-200'
+        }
+      `}>
+        <div className="text-4xl filter drop-shadow-sm">🍽️</div>
       </div>
 
       {/* Dish Content */}
-      <div className="p-4">
+      <div className="p-4 space-y-3">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2">
+          <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 flex-1 mr-2">
             {dish.name}
           </h3>
-          <span className="text-lg font-bold text-blue-600 ml-2">
+          <span className="text-lg font-bold text-blue-600 whitespace-nowrap">
             {dish.price}€
           </span>
         </div>
 
-        <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+        <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
           {dish.description}
         </p>
 
         {/* Dish Meta Info */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-gray-500 gap-2">
           <div className="flex items-center gap-1">
             <Users className="w-3 h-3" />
             <span>{dish.ingredients.length} ing.</span>
@@ -105,8 +111,8 @@ export const DishCard: React.FC<DishCardProps> = ({
           <div className={`
             px-2 py-1 rounded-full text-xs font-medium
             ${dish.isAvailable 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
             }
           `}>
             {dish.isAvailable ? 'Dispo' : 'Indispo'}
@@ -114,8 +120,8 @@ export const DishCard: React.FC<DishCardProps> = ({
         </div>
 
         {/* Category Badge */}
-        <div className="mt-2">
-          <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+        <div>
+          <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full border border-gray-200">
             {DishCategoryLabels[dish.category]}
           </span>
         </div>

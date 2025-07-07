@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Dish } from '../../../../data/models/dish.model';
 import { DishCategory } from '../../../../data/dto/dish.dto';
 import { SearchInput } from '../../input/searchInput';
@@ -7,7 +7,7 @@ import { DishCard } from './dish-card.component';
 import { SelectionSummary } from './selection-summary.component';
 import { DishPreviewModal } from './dish-preview-modal.component';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, Grid, List, SortAsc, SortDesc } from 'lucide-react';
+import { Filter, Grid, List, RotateCcw } from 'lucide-react';
 
 interface EnhancedDishSelectionProps {
   dishes: Dish[];
@@ -32,6 +32,14 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
   const [previewDish, setPreviewDish] = useState<Dish | null>(null);
   const [summaryCollapsed, setSummaryCollapsed] = useState(false);
+
+  // Reset filters function
+  const resetFilters = () => {
+    setSearchQuery('');
+    setActiveCategory('ALL');
+    setSortOption('name-asc');
+    setShowOnlyAvailable(false);
+  };
 
   // Get unique categories from dishes
   const categories = useMemo(() => {
@@ -150,7 +158,18 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
-      <div className="space-y-4">
+      <div className="space-y-4 bg-white p-4 rounded-lg border border-gray-200">
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium text-gray-900">Recherche et filtres</h3>
+          <button
+            onClick={resetFilters}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Réinitialiser
+          </button>
+        </div>
+        
         <SearchInput
           label="Rechercher un plat"
           name="search"
@@ -229,7 +248,9 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
       {/* Results Info */}
       <div className="flex justify-between items-center text-sm text-gray-600">
         <span>
-          {filteredAndSortedDishes.length} plat{filteredAndSortedDishes.length > 1 ? 's' : ''} trouvé{filteredAndSortedDishes.length > 1 ? 's' : ''}
+          {filteredAndSortedDishes.length} plat{filteredAndSortedDishes.length > 1 ? 's' : ''} 
+          {searchQuery || activeCategory !== 'ALL' || showOnlyAvailable ? ' trouvé' : ''}
+          {filteredAndSortedDishes.length > 1 ? 's' : ''}
         </span>
         <span>
           {selectedDishIds.size} sélectionné{selectedDishIds.size > 1 ? 's' : ''}
@@ -238,38 +259,47 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
 
       {/* Dishes Grid/List */}
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="flex flex-col items-center justify-center py-16 bg-white rounded-lg border border-gray-200">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p className="text-gray-600">Chargement des plats...</p>
         </div>
       ) : (
-        <div className={`
-          ${viewMode === 'grid' 
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' 
-            : 'space-y-2'
-          }
-        `}>
-          <AnimatePresence>
-            {filteredAndSortedDishes.map((dish) => (
-              <DishCard
-                key={dish._id}
-                dish={dish}
-                isSelected={selectedDishIds.has(dish._id)}
-                onToggle={handleDishToggle}
-                onPreview={setPreviewDish}
-              />
-            ))}
-          </AnimatePresence>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className={`
+            ${viewMode === 'grid' 
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' 
+              : 'space-y-2'
+            }
+          `}>
+            <AnimatePresence>
+              {filteredAndSortedDishes.map((dish) => (
+                <DishCard
+                  key={dish._id}
+                  dish={dish}
+                  isSelected={selectedDishIds.has(dish._id)}
+                  onToggle={handleDishToggle}
+                  onPreview={setPreviewDish}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && filteredAndSortedDishes.length === 0 && (
-        <div className="text-center py-12">
+        <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
           <div className="text-6xl mb-4">🔍</div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun plat trouvé</h3>
           <p className="text-gray-600">
             Essayez de modifier vos critères de recherche ou de filtrage
           </p>
+          <button
+            onClick={resetFilters}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+          >
+            Réinitialiser les filtres
+          </button>
         </div>
       )}
 
