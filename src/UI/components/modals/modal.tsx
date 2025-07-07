@@ -17,7 +17,7 @@ export const Modal: React.FC<ModalProps> = ({ position = PositionModal.BOTTOM, o
     return (
         <div className="z-50">
             <div className='fixed left-0 top-0 h-screen w-screen' onClick={() => setIsOpen(false)}></div>
-            <div className={`flex flex-col rounded-lg p-2 bg-white absolute ${position == PositionModal.TOP ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 ${ fullWidth ? 'right-0' : width  } border border-solid border-blue-sky gap-1 drop-shadow-md`}>
+            <div className={`flex flex-col rounded-lg p-2 bg-white fixed ${position == PositionModal.TOP ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 ${ fullWidth ? 'right-0' : width  } border border-solid border-blue-sky gap-1 drop-shadow-md`}>
                 {children}
             </div>
         </div>
