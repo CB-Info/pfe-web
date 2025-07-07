@@ -11,6 +11,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Switch } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, Pencil, QrCode } from 'lucide-react';
+import StyleRoundedIcon from '@mui/icons-material/StyleRounded';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
