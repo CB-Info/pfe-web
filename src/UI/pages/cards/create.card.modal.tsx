@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { TextInput } from '../../components/input/textInput';
-import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
+import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { useAlerts } from '../../../contexts/alerts.context';
 import { Dish } from '../../../data/models/dish.model';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CircularProgress } from '@mui/material';
-import { SearchInput } from '../../components/input/searchInput';
+import { EnhancedDishSelection } from '../../components/cards/dish-selection/enhanced-dish-selection.component';
 
 interface CreateCardModalProps {
     isOpen: boolean;
@@ -22,7 +22,6 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
 }) => {
     const [name, setName] = useState('');
     const [dishes, setDishes] = useState<Dish[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
     const [selectedDishes, setSelectedDishes] = useState<Set<string>>(new Set());
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,11 +35,7 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
         const fetchDishes = async () => {
             try {
                 const fetchedDishes = await dishesRepository.getAll();
-                // Tri alphabétique des plats
-                const sortedDishes = fetchedDishes.sort((a, b) => 
-                    a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
-                );
-                setDishes(sortedDishes);
+                setDishes(fetchedDishes);
             } catch (error) {
                 setError("Erreur lors de la récupération des plats");
             } finally {
@@ -53,45 +48,11 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
         }
     }, [isOpen]);
 
-    // Filtrage des plats en fonction de la recherche
-    const filteredDishes = useMemo(() => {
-        if (!searchQuery.trim()) return dishes;
-        
-        return dishes.filter(dish => 
-            dish.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [dishes, searchQuery]);
-
     const handleClose = () => {
         setName('');
         setSelectedDishes(new Set());
-        setSearchQuery('');
         setError('');
         onClose();
-    };
-
-    const toggleDish = (dishId: string) => {
-        const newSelection = new Set(selectedDishes);
-        if (newSelection.has(dishId)) {
-            newSelection.delete(dishId);
-        } else {
-            newSelection.add(dishId);
-        }
-        setSelectedDishes(newSelection);
-    };
-
-    const toggleAll = () => {
-        if (selectedDishes.size === filteredDishes.length) {
-            // Désélectionne uniquement les plats filtrés
-            const newSelection = new Set(selectedDishes);
-            filteredDishes.forEach(dish => newSelection.delete(dish._id));
-            setSelectedDishes(newSelection);
-        } else {
-            // Sélectionne tous les plats filtrés
-            const newSelection = new Set(selectedDishes);
-            filteredDishes.forEach(dish => newSelection.add(dish._id));
-            setSelectedDishes(newSelection);
-        }
     };
 
     const handleSubmit = async () => {
@@ -150,54 +111,12 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
                         <p className="text-red-500 text-sm">{error}</p>
                     )}
 
-                    <div>
-                        <div className="flex flex-col gap-4">
-                            <SearchInput
-                                label="Rechercher un plat"
-                                name="search"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                error={false}
-                            />
-
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-medium">Sélection des plats</h3>
-                                <button
-                                    onClick={toggleAll}
-                                    className="text-sm text-blue-600 hover:text-blue-700"
-                                >
-                                    {selectedDishes.size === filteredDishes.length ? 'Tout décocher' : 'Sélectionner tout'}
-                                </button>
-                            </div>
-                        </div>
-
-                        {isLoading ? (
-                            <div className="flex justify-center py-4">
-                                <CircularProgress size={24} />
-                            </div>
-                        ) : filteredDishes.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">
-                                Aucun plat ne correspond à votre recherche
-                            </div>
-                        ) : (
-                            <div className="max-h-64 overflow-y-auto border rounded-lg divide-y mt-2">
-                                {filteredDishes.map(dish => (
-                                    <label
-                                        key={dish._id}
-                                        className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedDishes.has(dish._id)}
-                                            onChange={() => toggleDish(dish._id)}
-                                            className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                        />
-                                        <span className="ml-3">{dish.name}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <EnhancedDishSelection
+                        dishes={dishes}
+                        selectedDishIds={selectedDishes}
+                        onSelectionChange={setSelectedDishes}
+                        isLoading={isLoading}
+                    />
 
                     <div className="flex justify-end gap-3 pt-4">
                         <button
@@ -209,10 +128,13 @@ export const CreateCardModal: React.FC<CreateCardModalProps> = ({
                         <button
                             onClick={handleSubmit}
                             disabled={isSubmitting || !name.trim() || selectedDishes.size === 0}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                         >
                             {isSubmitting ? (
-                                <CircularProgress size={20} color="inherit" />
+                                <div className="flex items-center gap-2">
+                                    <CircularProgress size={16} color="inherit" />
+                                    Création...
+                                </div>
                             ) : (
                                 'Créer'
                             )}
