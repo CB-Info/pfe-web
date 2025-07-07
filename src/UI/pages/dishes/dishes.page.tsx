@@ -1,10 +1,14 @@
-import Drawer, { ContainerDrawer } from "../../components/drawer";
+import DrawerButton, { ContainerDrawer } from "../../components/drawer";
 import TitleStyle from "../../style/title.style";
 import AddDishPage from "./add.dish.page";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { CircularProgress } from "@mui/material";
+import { SearchInput } from "../../components/input/searchInput";
+import TextfieldList from "../../components/input/textfield.list";
+import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
+import { useAlerts } from "../../../contexts/alerts.context";
 import { Dish } from "../../../data/models/dish.model";
-import { sortDishes } from "./utils/sortDishes";
+import { sortDishes, DishSortOption } from "./utils/sortDishes";
 import { filterDishes } from "./utils/filterDishes";
 import DishesTable from "../../components/tables/dishes/dish.table";
 import UpdateDishPage from "./update.dish.page";
@@ -14,62 +18,48 @@ import CustomButton, {
 } from "../../components/buttons/custom.button";
 import { BaseContent } from "../../components/contents/base.content";
 import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
-import { FiltersDropdown, DishSortOption } from "../../components/dishes/filters-dropdown.component";
-import { DishesStats } from "../../components/dishes/dishes-stats.component";
-import { Plus } from "lucide-react";
-import { FilterSortPanel } from "./components/filter-sort-panel";
-import { motion } from "framer-motion";
-import { dishRepository } from "../../../network/repositories/dishes.repository";
-import { useAlerts } from "../../../contexts/alerts.context";
-
-// Custom hook for debouncing
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import { PanelContent } from "../../components/contents/panel.content";
 
 export default function DishesPage() {
-  const { addAlert } = useAlerts();
   const [isLoading, setIsLoading] = useState(false);
   const [dishes, setDishes] = useState<Dish[]>([]);
+  const [filteredDishes, setFilteredDishes] = useState<Dish[]>([]);
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
-  
-  // Search state with debouncing
-  const [searchQueryInput, setSearchQueryInput] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQueryInput, 300);
-  
-  // Filter and sort state
-  const [selectedCategory, setSelectedCategory] = useState<DishCategory>("Toutes");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<
+    DishCategory | "Toutes"
+  >("Toutes");
   const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
-  const [selectedSort, setSelectedSort] = useState<DishSortOption>("Date de création (Descendant)");
+  const sortOptions: DishSortOption[] = [
+    "Date de création (Descendant)",
+    "Date de création (Ascendant)",
+    "Nom (Ascendant)",
+    "Nom (Descendant)",
+    "Prix (Ascendant)",
+    "Prix (Descendant)",
+  ];
+  const [selectedSort, setSelectedSort] = useState<DishSortOption>(
+    sortOptions[0]
+  );
+  const { addAlert } = useAlerts();
+  const dishRepository = new DishesRepositoryImpl();
 
-  const handleCategoryChange = useCallback((label: string) => {
-    const entry = Object.entries(DishCategoryLabels).find(
+  const statusOptions = ["Tous", "Actif", "Inactif"];
+  const categoryOptions = ["Toutes", ...Object.values(DishCategoryLabels)];
+
+  const handleCategoryChange = (label: string) => {
+    if (label === "Toutes") {
+      setSelectedCategory("Toutes");
+    } else {
+      const entry = Object.entries(DishCategoryLabels).find(
         ([, l]) => l === label
-    );
-    if (entry) {
-      setSelectedCategory(entry[0] as DishCategory);
+      );
+      if (entry) {
+        setSelectedCategory(entry[0] as DishCategory);
+      }
     }
-  }, []);
-
-  const handleResetFilters = useCallback(() => {
-    setSearchQueryInput("");
-    setSelectedCategory("Toutes");
-    setSelectedStatus("Tous");
-    setSelectedSort("Date de création (Descendant)");
-  }, []);
+  };
 
   const fetchDishes = async () => {
     try {
@@ -93,26 +83,20 @@ export default function DishesPage() {
     fetch();
   }, []);
 
-  // Filter and sort dishes with memoization
-  const filteredAndSortedDishes = useMemo(() => {
-    const filtered = filterDishes(dishes, {
-      searchQuery: debouncedSearchQuery,
-      selectedCategory,
-      selectedStatus,
-    });
-    
-    return sortDishes(filtered, selectedSort);
-  }, [dishes, debouncedSearchQuery, selectedCategory, selectedStatus, selectedSort]);
+  useEffect(() => {
+    setFilteredDishes(
+      filterDishes(dishes, {
+        searchQuery,
+        selectedCategory,
+        selectedStatus,
+      })
+    );
+  }, [searchQuery, selectedCategory, selectedStatus, dishes]);
 
-  // Statistics calculations
-  const dishStats = useMemo(() => {
-    const total = dishes.length;
-    const available = dishes.filter((dish) => dish.isAvailable).length;
-    const unavailable = dishes.filter((dish) => !dish.isAvailable).length;
-    const categories = new Set(dishes.map((dish) => dish.category)).size;
-    
-    return { total, available, unavailable, categories };
-  }, [dishes]);
+  const sortedDishes = useMemo(
+    () => sortDishes(filteredDishes, selectedSort),
+    [filteredDishes, selectedSort]
+  );
 
   const handleRowClick = (dish: Dish): void => {
     setSelectedDish(dish);
@@ -125,94 +109,141 @@ export default function DishesPage() {
 
   return (
     <BaseContent>
-      <div className="flex flex-col h-full">
-        {/* Header */}
-        <div className="flex-shrink-0 px-6 py-6 border-b border-gray-200 bg-white">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <TitleStyle>Gestion des plats</TitleStyle>
-              <p className="text-gray-600 text-sm mt-1">
-                Gérez votre menu et organisez vos plats
-              </p>
-            </div>
-            
-            <Drawer
-              width={360}
-              defaultChildren={
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm font-medium"
-                >
-                  <Plus className="w-5 h-5" />
-                  Ajouter un plat
-                </motion.button>
-              }
-              drawerId="add-drawer-dish"
-            >
-              <AddDishPage
-                onClickOnConfirm={async () => {
-                  setIsLoading(true);
-                  await fetchDishes();
-                  setIsLoading(false);
-                }}
-              />
-            </Drawer>
-          </div>
-
-          {/* Filter and Sort Panel */}
-          <FilterSortPanel
-            searchQuery={searchQueryInput}
-            onSearchChange={setSearchQueryInput}
-            selectedCategory={selectedCategory}
-            onCategoryChange={handleCategoryChange}
-            selectedStatus={selectedStatus}
-            onStatusChange={setSelectedStatus}
-            selectedSort={selectedSort}
-            onSortChange={setSelectedSort}
-            onResetFilters={handleResetFilters}
-            totalResults={dishes.length}
-            filteredResults={filteredAndSortedDishes.length}
-          />
+      <div className="flex flex-col px-6 py-8 gap-8">
+        <div className="flex justify-between items-center">
+          <TitleStyle>Gestion des plats</TitleStyle>
+          <DrawerButton
+            width={360}
+            defaultChildren={
+              <CustomButton
+                type={TypeButton.PRIMARY}
+                onClick={() => {}}
+                width={WidthButton.SMALL}
+                isLoading={false}
+              >
+                Ajouter un plat
+              </CustomButton>
+            }
+            drawerId={"add-drawer-dish"}
+          >
+            <AddDishPage
+              onClickOnConfirm={async () => {
+                setIsLoading(true);
+                await fetchDishes();
+                setIsLoading(false);
+              }}
+            />
+          </DrawerButton>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-hidden px-6 py-4">
-          <div className="h-full bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="h-full flex flex-col">
-              {/* Table Header */}
-              <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Liste des plats
-                  </h3>
-                  <div className="text-sm text-gray-600">
-                    {filteredAndSortedDishes.length} sur {dishes.length} plat{dishes.length > 1 ? 's' : ''}
+        {isLoading ? (
+          <div className="flex flex-1 items-center justify-center">
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {/* Filters Section */}
+            <PanelContent>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Filtres</h3>
+                <div className="flex gap-4 flex-wrap">
+                  <div className="w-72">
+                    <SearchInput
+                      label={"Rechercher un plat"}
+                      error={false}
+                      name={"search"}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={categoryOptions}
+                      onClicked={handleCategoryChange}
+                      label={"Catégorie"}
+                      defaultValue={
+                        selectedCategory === "Toutes"
+                          ? "Toutes"
+                          : DishCategoryLabels[selectedCategory]
+                      }
+                    />
+                  </div>
+                  <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={statusOptions}
+                      onClicked={setSelectedStatus}
+                      label={"Status"}
+                      defaultValue={selectedStatus}
+                    />
                   </div>
                 </div>
               </div>
+            </PanelContent>
 
-              {/* Table Content */}
-              <div className="flex-1 overflow-hidden">
-                <div className="h-full overflow-y-auto">
-                  {isLoading ? (
-                    <div className="flex justify-center items-center h-full">
-                      <CircularProgress />
-                    </div>
-                  ) : (
-                    <DishesTable
-                      dishes={filteredAndSortedDishes}
-                      setSelectedDish={handleRowClick}
-                      onDelete={handleDelete}
-                    />
-                  )}
+            {/* Statistics Section */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {dishes.length}
+                  </div>
+                  <div className="text-sm text-gray-600">Total des plats</div>
                 </div>
-              </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-green-600">
+                    {dishes.filter((dish) => dish.isAvailable).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Plats disponibles</div>
+                </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-red-600">
+                    {dishes.filter((dish) => !dish.isAvailable).length}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Plats indisponibles
+                  </div>
+                </div>
+              </PanelContent>
+              <PanelContent>
+                <div className="p-4">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {new Set(dishes.map((dish) => dish.category)).size}
+                  </div>
+                  <div className="text-sm text-gray-600">Catégories</div>
+                </div>
+              </PanelContent>
             </div>
-          </div>
-        </div>
 
-        {/* Update Dish Drawer */}
+            {/* Results Section */}
+            <PanelContent>
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">
+                    Résultats ({filteredDishes.length} plat
+                    {filteredDishes.length > 1 ? "s" : ""})
+                  </h3>
+                  <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={sortOptions}
+                      onClicked={setSelectedSort}
+                      defaultValue={selectedSort}
+                    />
+                  </div>
+                </div>
+                <DishesTable
+                  dishes={sortedDishes}
+                  setSelectedDish={handleRowClick}
+                  onDelete={handleDelete}
+                />
+              </div>
+            </PanelContent>
+          </div>
+        )}
+
         {isUpdateDrawerOpen && selectedDish && (
           <UpdateDishDrawer
             dish={selectedDish}
