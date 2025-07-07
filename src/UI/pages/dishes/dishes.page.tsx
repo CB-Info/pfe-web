@@ -38,6 +38,7 @@ export default function DishesPage() {
   const [selectedCategory, setSelectedCategory] = useState<DishCategory | "Toutes">("Toutes");
   const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
   const [showFilters, setShowFilters] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const sortOptions: DishSortOption[] = [
     "Date de création (Descendant)",
@@ -56,6 +57,7 @@ export default function DishesPage() {
   const categoryOptions = ["Toutes", ...Object.values(DishCategoryLabels)];
 
   const handleCategoryChange = (label: string) => {
+    setOpenDropdown(null); // Close any open dropdown
     if (label === "Toutes") {
       setSelectedCategory("Toutes");
     } else {
@@ -66,7 +68,18 @@ export default function DishesPage() {
     }
   };
 
+  const handleStatusChange = (status: string) => {
+    setOpenDropdown(null); // Close any open dropdown
+    setSelectedStatus(status);
+  };
+
+  const handleSortChange = (sort: DishSortOption) => {
+    setOpenDropdown(null); // Close any open dropdown
+    setSelectedSort(sort);
+  };
+
   const resetFilters = () => {
+    setOpenDropdown(null); // Close any open dropdown
     setSearchQuery("");
     setSelectedCategory("Toutes");
     setSelectedStatus("Tous");
@@ -252,14 +265,14 @@ export default function DishesPage() {
                         
                         <TextfieldList
                           valuesToDisplay={statusOptions}
-                          onClicked={setSelectedStatus}
+                          onClicked={handleStatusChange}
                           label="Statut"
                           defaultValue={selectedStatus}
                         />
                         
                         <TextfieldList
                           valuesToDisplay={sortOptions}
-                          onClicked={setSelectedSort}
+                          onClicked={handleSortChange}
                           label="Tri"
                           defaultValue={selectedSort}
                         />
