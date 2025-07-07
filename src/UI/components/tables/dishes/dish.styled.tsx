@@ -5,6 +5,8 @@ export const DishTableStyled = styled(TableContainer)(({ theme }) => ({
     borderRadius: '16px',
     backgroundColor: 'white',
     border: `1px solid ${theme.palette.divider}`,
+    overflow: 'visible',
+    maxHeight: 'none',
 }));
 
 export const DishTableRowStyled = styled(TableRow)(({ theme }) => ({

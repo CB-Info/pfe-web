@@ -186,7 +186,7 @@ export default function DishesPage() {
         </motion.div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex flex-1 items-center justify-center h-full">
               <div className="text-center">
@@ -283,16 +283,15 @@ export default function DishesPage() {
               </div>
 
               {/* Table Section */}
-              <div className="flex-1 overflow-hidden bg-gray-50 relative z-10">
-                <div className="h-full p-6">
+              <div className="flex-1 bg-gray-50 relative z-10">
+                <div className="p-6">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="h-full"
                   >
                     <PanelContent>
-                      <div className="h-full flex flex-col">
+                      <div className="flex flex-col">
                         {/* Table Header */}
                         <div className="p-4 border-b border-gray-200 bg-gray-50">
                           <div className="flex items-center justify-between">
@@ -303,7 +302,7 @@ export default function DishesPage() {
                         </div>
 
                         {/* Table Content */}
-                        <div className="flex-1 overflow-hidden">
+                        <div className="overflow-x-auto">
                           {filteredCount === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-center p-8">
                               <div className="text-6xl mb-4">🔍</div>
