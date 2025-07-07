@@ -138,6 +138,7 @@ export default function CardsPage() {
         setSelectedCard(card);
         setIsCustomerViewOpen(true);
     };
+
     const handleEditCard = (card: CardDto) => {
         setSelectedCard(card);
         setIsEditModalOpen(true);
@@ -148,92 +149,115 @@ export default function CardsPage() {
 
     return (
         <BaseContent>
-            <div className='flex flex-col px-6 py-8 gap-8'>
-                <div className='flex justify-between items-center'>
-                    <TitleStyle>Cartes</TitleStyle>
-                </div>
-
-                {isLoading ? (
-                    <div className="flex flex-1 items-center justify-center">
-                        <CircularProgress />
+            <div className="flex flex-col h-full">
+                {/* Header Section */}
+                <motion.div 
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-purple-100 rounded-xl">
+                                <StyleRoundedIcon className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <div>
+                                <TitleStyle className="text-2xl">Gestion des cartes</TitleStyle>
+                                <p className="text-gray-600 text-sm mt-1">
+                                    Créez et gérez vos cartes de menu
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                ) : (
-                    <div className='flex flex-col gap-8'>
-                        <section>
-                            <h2 className="text-xl font-semibold mb-4">Carte actuellement utilisée</h2>
-                            <AnimatePresence mode="wait">
-                                {activeCard ? (
-                                    <motion.div
-                                        key="active-card"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <PanelContent>
-                                            <CardItem 
-                                                card={activeCard} 
-                                                onToggleActive={handleToggleActive}
-                                                onView={handleViewCard}
-                                                onEdit={handleEditCard}
-                                                isActive={true}
-                                                onCustomerView={handleCustomerView}
-                                            />
-                                        </PanelContent>
-                                    </motion.div>
-                                ) : (
-                                    <motion.p
-                                        key="no-active-card"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="text-gray-500 italic"
-                                    >
-                                        Aucune carte active
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
-                        </section>
+                </motion.div>
 
-                        <section>
-                            <h2 className="text-xl font-semibold mb-4">Toutes les cartes</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => setIsCreateModalOpen(true)}
-                                    className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 transition-all duration-200 hover:shadow-md"
-                                >
-                                    <AddIcon className="w-8 h-8 text-gray-400" />
-                                </motion.button>
-
-                                <AnimatePresence>
-                                    {inactiveCards.map(card => (
+                {/* Main Content - Scrollable */}
+                <div className="flex-1 overflow-y-auto bg-gray-50">
+                    {isLoading ? (
+                        <div className="flex flex-1 items-center justify-center h-full">
+                            <div className="text-center">
+                                <CircularProgress className="mb-4" />
+                                <p className="text-gray-600">Chargement des cartes...</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-6 space-y-8">
+                            <section>
+                                <h2 className="text-xl font-semibold mb-4">Carte actuellement utilisée</h2>
+                                <AnimatePresence mode="wait">
+                                    {activeCard ? (
                                         <motion.div
-                                            key={card._id}
-                                            layout
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            transition={{ duration: 0.2 }}
+                                            key="active-card"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.3 }}
                                         >
                                             <PanelContent>
                                                 <CardItem 
-                                                    card={card} 
+                                                    card={activeCard} 
                                                     onToggleActive={handleToggleActive}
                                                     onView={handleViewCard}
                                                     onEdit={handleEditCard}
-                                                    isActive={false}
                                                     onCustomerView={handleCustomerView}
+                                                    isActive={true}
                                                 />
                                             </PanelContent>
                                         </motion.div>
-                                    ))}
+                                    ) : (
+                                        <motion.p
+                                            key="no-active-card"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="text-gray-500 italic"
+                                        >
+                                            Aucune carte active
+                                        </motion.p>
+                                    )}
                                 </AnimatePresence>
-                            </div>
-                        </section>
-                    </div>
-                )}
+                            </section>
+
+                            <section>
+                                <h2 className="text-xl font-semibold mb-4">Toutes les cartes</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => setIsCreateModalOpen(true)}
+                                        className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 transition-all duration-200 hover:shadow-md"
+                                    >
+                                        <AddIcon className="w-8 h-8 text-gray-400" />
+                                    </motion.button>
+
+                                    <AnimatePresence>
+                                        {inactiveCards.map(card => (
+                                            <motion.div
+                                                key={card._id}
+                                                layout
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.8 }}
+                                                transition={{ duration: 0.2 }}
+                                            >
+                                                <PanelContent>
+                                                    <CardItem 
+                                                        card={card} 
+                                                        onToggleActive={handleToggleActive}
+                                                        onView={handleViewCard}
+                                                        onEdit={handleEditCard}
+                                                        onCustomerView={handleCustomerView}
+                                                        isActive={false}
+                                                    />
+                                                </PanelContent>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+                                </div>
+                            </section>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <CreateCardModal
@@ -280,15 +304,13 @@ export default function CardsPage() {
                             </div>
                         </div>
                     </ConfirmationModal>
-                </>
-            )}
 
-            {selectedCard && (
-                <CustomerViewModal
-                    isOpen={isCustomerViewOpen}
-                    onClose={() => setIsCustomerViewOpen(false)}
-                    card={selectedCard}
-                />
+                    <CustomerViewModal
+                        isOpen={isCustomerViewOpen}
+                        onClose={() => setIsCustomerViewOpen(false)}
+                        card={selectedCard}
+                    />
+                </>
             )}
         </BaseContent>
     );
