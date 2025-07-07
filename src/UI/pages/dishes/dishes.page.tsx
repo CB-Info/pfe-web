@@ -93,7 +93,7 @@ export default function DishesPage() {
     };
 
     fetch();
-  }, []);
+  }, [fetchDishes]);
 
   // Appliquer les filtres quand les plats ou les filtres changent
   useEffect(() => {
@@ -273,6 +273,13 @@ export default function DishesPage() {
                     )}
                   </h3>
                   <div className="w-64">
+                    <TextfieldList
+                      valuesToDisplay={sortOptions}
+                      onClicked={setSelectedSort}
+                      label={"Trier par"}
+                      defaultValue={selectedSort}
+                    />
+                  </div>
                 </div>
                 <DishesTable
                   dishes={sortedDishes}
