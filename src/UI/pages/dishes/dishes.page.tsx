@@ -313,13 +313,14 @@ export default function DishesPage() {
 
         {isUpdateDrawerOpen && selectedDish && (
           <UpdateDishDrawer
-              handleDishCreated();
-            onClickOnConfirm={handleDishCreated}
+            dish={selectedDish}
+            onClose={() => setIsUpdateDrawerOpen(false)}
+            onCloseConfirm={handleDishCreated}
           />
         )}
       </div>
     </BaseContent>
-      {showLoading ? (
+  );
 }
 
 interface UpdateDishDrawerProps {
