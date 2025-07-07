@@ -262,6 +262,7 @@ export default function DishesPage() {
         {isUpdateDrawerOpen && selectedDish && (
           <UpdateDishDrawer
             dish={selectedDish}
+            isOpen={isUpdateDrawerOpen}
             onClose={() => setIsUpdateDrawerOpen(false)}
             onCloseConfirm={async () => {
               setIsUpdateDrawerOpen(false);
@@ -278,12 +279,14 @@ export default function DishesPage() {
 
 interface UpdateDishDrawerProps {
   dish: Dish;
+  isOpen: boolean;
   onClose: () => void;
   onCloseConfirm: () => void;
 }
 
 const UpdateDishDrawer: React.FC<UpdateDishDrawerProps> = ({
   dish,
+  isOpen,
   onCloseConfirm,
   onClose,
 }) => {
@@ -293,7 +296,7 @@ const UpdateDishDrawer: React.FC<UpdateDishDrawerProps> = ({
         id="update-dish-drawer"
         type="checkbox"
         className="drawer-toggle"
-        checked={true}
+        checked={isOpen}
         onChange={() => {}}
       />
       <div className="drawer-side z-50">
