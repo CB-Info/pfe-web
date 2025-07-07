@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { DishCategory, DishCategoryLabels } from '../data/dto/dish.dto';
 import { useAlerts } from './alerts.context';
 
@@ -51,6 +51,7 @@ interface DishFilterProviderProps {
 export const DishFilterProvider: React.FC<DishFilterProviderProps> = ({ children }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addAlert } = useAlerts();
   const [filters, setFilters] = useState<DishFilterState>(defaultFilters);
 
@@ -77,6 +78,11 @@ export const DishFilterProvider: React.FC<DishFilterProviderProps> = ({ children
 
   // Load filters from URL on mount
   useEffect(() => {
+    // Only load filters from URL when on the dishes page
+    if (location.pathname !== '/dishes') {
+      return;
+    }
+
     try {
       const urlSearchQuery = searchParams.get('search') || '';
       const urlCategory = searchParams.get('category') || 'Toutes';
@@ -129,10 +135,15 @@ export const DishFilterProvider: React.FC<DishFilterProviderProps> = ({ children
         timeout: 5,
       });
     }
-  }, [searchParams, addAlert]);
+  }, [searchParams, addAlert, location.pathname]);
 
   // Sync filters to URL
   useEffect(() => {
+    // Only sync filters to URL when on the dishes page
+    if (location.pathname !== '/dishes') {
+      return;
+    }
+
     try {
       const newSearchParams = new URLSearchParams();
 
@@ -160,7 +171,7 @@ export const DishFilterProvider: React.FC<DishFilterProviderProps> = ({ children
         timeout: 5,
       });
     }
-  }, [filters, navigate, addAlert]);
+  }, [filters, navigate, addAlert, location.pathname]);
 
   const setSearchQuery = (query: string) => {
     setFilters(prev => ({ ...prev, searchQuery: query }));
