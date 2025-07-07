@@ -185,7 +185,7 @@ export default function DishesPage() {
             <div className="flex flex-col h-full">
               {/* Filters Bar */}
               <div className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-end gap-4">
                   {/* Search */}
                   <div className="flex-1 max-w-md">
                     <SearchInput
@@ -197,8 +197,8 @@ export default function DishesPage() {
                     />
                   </div>
 
-                  {/* Filter Toggle */}
-                  <div className="flex items-center gap-3">
+                  {/* Filter Controls */}
+                  <div className="flex items-center gap-3 flex-shrink-0">
                     <button
                       onClick={() => setShowFilters(!showFilters)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
@@ -225,10 +225,6 @@ export default function DishesPage() {
                         <span className="text-sm font-medium">Reset</span>
                       </button>
                     )}
-
-                    <div className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
-                      <span className="font-medium">{filteredCount}</span> résultat{filteredCount > 1 ? 's' : ''}
-                    </div>
                   </div>
                 </div>
 
@@ -290,12 +286,6 @@ export default function DishesPage() {
                             <h3 className="font-semibold text-gray-900">
                               Liste des plats
                             </h3>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <BarChart3 className="w-4 h-4" />
-                              <span>
-                                {filteredCount} plat{filteredCount > 1 ? 's' : ''}
-                              </span>
-                            </div>
                           </div>
                         </div>
 
