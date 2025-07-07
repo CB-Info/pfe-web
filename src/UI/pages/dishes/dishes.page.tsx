@@ -47,15 +47,15 @@ export default function DishesPage() {
   const [searchQueryInput, setSearchQueryInput] = useState("");
   const debouncedSearchQuery = useDebounce(searchQueryInput, 300);
   const handleCategoryChange = useCallback((label: string) => {
-  >("Toutes");
-  const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
-  const [selectedSort, setSelectedSort] = useState<DishSortOption>("Date de création (Descendant)");
+    const [selectedCategory, setSelectedCategory] = useState<DishCategory>("Toutes");
+    const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
+    const [selectedSort, setSelectedSort] = useState<DishSortOption>("Date de création (Descendant)");
   
+    const entry = Object.entries(DishCategoryLabels).find(
         ([, l]) => l === label
-      );
-      if (entry) {
-        setSelectedCategory(entry[0] as DishCategory);
-      }
+    );
+    if (entry) {
+      setSelectedCategory(entry[0] as DishCategory);
     }
   }, []);
 
@@ -174,6 +174,7 @@ export default function DishesPage() {
               totalResults={dishes.length}
               filteredResults={filteredAndSortedDishes.length}
             />
+          </div>
               <div className="flex-1 overflow-hidden px-6 py-4">
                 <div className="h-full bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   <div className="h-full flex flex-col">
@@ -187,6 +188,7 @@ export default function DishesPage() {
                           {filteredDishes.length} sur {dishes.length} plat{dishes.length > 1 ? 's' : ''}
                         </div>
                       </div>
+                    </div>
                     {dishStats.unavailable}
 
                     {/* Table Content */}
@@ -197,21 +199,29 @@ export default function DishesPage() {
                           setSelectedDish={handleRowClick}
                           onDelete={handleDelete}
                         />
+                      </div>
+                    </div>
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold">
                     Résultats ({filteredAndSortedDishes.length} plat
                     {filteredAndSortedDishes.length > 1 ? "s" : ""})
                   </h3>
-            dish={selectedDish}
-            onClose={() => setIsUpdateDrawerOpen(false)}
+                </div>
+                <UpdateDishDrawer
+                  dish={selectedDish}
+                  onClose={() => setIsUpdateDrawerOpen(false)}
                   dishes={filteredAndSortedDishes}
-              setIsUpdateDrawerOpen(false);
-              setIsLoading(true);
-              await fetchDishes();
-              setIsLoading(false);
-            }}
-          />
-        )}
+                  onCloseConfirm={async () => {
+                    setIsUpdateDrawerOpen(false);
+                    setIsLoading(true);
+                    await fetchDishes();
+                    setIsLoading(false);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </BaseContent>
   );
