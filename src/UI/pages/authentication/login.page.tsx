@@ -125,19 +125,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Security Badge */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2"
-          >
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <span className="text-sm text-green-700 font-medium">
-              Connexion protégée par chiffrement SSL
-            </span>
-          </motion.div>
-
           {/* Form */}
           <motion.div
             initial={{ opacity: 0 }}
