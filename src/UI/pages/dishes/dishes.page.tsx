@@ -185,9 +185,9 @@ export default function DishesPage() {
             <div className="flex flex-col h-full">
               {/* Filters Bar */}
               <div className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex flex-col lg:flex-row lg:items-end gap-4">
+                <div className="flex flex-row items-center gap-3">
                   {/* Search */}
-                  <div className="flex-1 max-w-md">
+                  <div className="flex-1 min-w-0">
                     <SearchInput
                       label=""
                       error={false}
@@ -198,7 +198,7 @@ export default function DishesPage() {
                   </div>
 
                   {/* Filter Controls */}
-                  <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => setShowFilters(!showFilters)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
@@ -208,9 +208,9 @@ export default function DishesPage() {
                       }`}
                     >
                       <Filter className="w-4 h-4" />
-                      <span className="text-sm font-medium">Filtres</span>
+                      <span className="text-sm font-medium hidden sm:inline">Filtres</span>
                       {hasActiveFilters && (
-                        <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                           !
                         </span>
                       )}
@@ -219,10 +219,10 @@ export default function DishesPage() {
                     {hasActiveFilters && (
                       <button
                         onClick={resetFilters}
-                        className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                        className="flex items-center gap-1 px-2 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
                       >
                         <RotateCcw className="w-4 h-4" />
-                        <span className="text-sm font-medium">Reset</span>
+                        <span className="text-sm font-medium hidden sm:inline">Reset</span>
                       </button>
                     )}
                   </div>
