@@ -25,7 +25,7 @@ class FirebaseAuthManager {
             return userCredential.user;
         } catch (error) {
             console.error("Erreur de connexion: ", error);
-            return null;
+            throw error;
         }
     }
 
