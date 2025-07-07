@@ -1,14 +1,15 @@
 import DrawerButton, { ContainerDrawer } from "../../components/drawer";
 import TitleStyle from "../../style/title.style";
 import AddDishPage from "./add.dish.page";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { CircularProgress } from "@mui/material";
 import { SearchInput } from "../../components/input/searchInput";
 import TextfieldList from "../../components/input/textfield.list";
 import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
 import { useAlerts } from "../../../contexts/alerts.context";
+import { useDishFilters } from "../../../contexts/dishFilters.context";
 import { Dish } from "../../../data/models/dish.model";
-import { sortDishes, DishSortOption } from "./utils/sortDishes";
+import { sortDishes } from "./utils/sortDishes";
 import { filterDishes } from "./utils/filterDishes";
 import DishesTable from "../../components/tables/dishes/dish.table";
 import UpdateDishPage from "./update.dish.page";
@@ -19,19 +20,21 @@ import CustomButton, {
 import { BaseContent } from "../../components/contents/base.content";
 import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
 import { PanelContent } from "../../components/contents/panel.content";
+import { RotateCcw } from "lucide-react";
 
 export default function DishesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [dishes, setDishes] = useState<Dish[]>([]);
-  const [filteredDishes, setFilteredDishes] = useState<Dish[]>([]);
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<
-    DishCategory | "Toutes"
-  >("Toutes");
-  const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
-  const sortOptions: DishSortOption[] = [
+  
+  const { filters, setSearchQuery, setSelectedCategory, setSelectedStatus, setSelectedSort, resetFilters } = useDishFilters();
+  const { addAlert } = useAlerts();
+  
+  // Memoize repository instance to prevent unnecessary re-instantiations
+  const dishRepository = useMemo(() => new DishesRepositoryImpl(), []);
+  
+  const sortOptions = [
     "Date de création (Descendant)",
     "Date de création (Ascendant)",
     "Nom (Ascendant)",
@@ -39,11 +42,6 @@ export default function DishesPage() {
     "Prix (Ascendant)",
     "Prix (Descendant)",
   ];
-  const [selectedSort, setSelectedSort] = useState<DishSortOption>(
-    sortOptions[0]
-  );
-  const { addAlert } = useAlerts();
-  const dishRepository = new DishesRepositoryImpl();
 
   const statusOptions = ["Tous", "Actif", "Inactif"];
   const categoryOptions = ["Toutes", ...Object.values(DishCategoryLabels)];
@@ -61,7 +59,7 @@ export default function DishesPage() {
     }
   };
 
-  const fetchDishes = async () => {
+  const fetchDishes = useCallback(async () => {
     try {
       const allDishes = await dishRepository.getAll();
       setDishes(allDishes);
@@ -71,7 +69,7 @@ export default function DishesPage() {
         message: "Erreur lors de la récupération des repas",
       });
     }
-  };
+  }, [dishRepository, addAlert]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -83,19 +81,18 @@ export default function DishesPage() {
     fetch();
   }, []);
 
-  useEffect(() => {
-    setFilteredDishes(
-      filterDishes(dishes, {
-        searchQuery,
-        selectedCategory,
-        selectedStatus,
-      })
-    );
-  }, [searchQuery, selectedCategory, selectedStatus, dishes]);
+  // Filter and sort dishes based on current filters
+  const filteredDishes = useMemo(() => {
+    return filterDishes(dishes, {
+      searchQuery: filters.searchQuery,
+      selectedCategory: filters.selectedCategory,
+      selectedStatus: filters.selectedStatus,
+    });
+  }, [dishes, filters.searchQuery, filters.selectedCategory, filters.selectedStatus]);
 
   const sortedDishes = useMemo(
-    () => sortDishes(filteredDishes, selectedSort),
-    [filteredDishes, selectedSort]
+    () => sortDishes(filteredDishes, filters.selectedSort),
+    [filteredDishes, filters.selectedSort]
   );
 
   const handleRowClick = (dish: Dish): void => {
@@ -107,6 +104,14 @@ export default function DishesPage() {
     await fetchDishes();
   };
 
+  const handleResetFilters = () => {
+    resetFilters();
+    addAlert({
+      severity: 'info',
+      message: 'Les filtres ont été réinitialisés',
+      timeout: 3,
+    });
+  };
   return (
     <BaseContent>
       <div className="flex flex-col px-6 py-8 gap-8">
@@ -145,14 +150,23 @@ export default function DishesPage() {
             {/* Filters Section */}
             <PanelContent>
               <div className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Filtres</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Filtres</h3>
+                  <button
+                    onClick={handleResetFilters}
+                    className="flex items-center gap-2 px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Réinitialiser
+                  </button>
+                </div>
                 <div className="flex gap-4 flex-wrap">
                   <div className="w-72">
                     <SearchInput
                       label={"Rechercher un plat"}
                       error={false}
                       name={"search"}
-                      value={searchQuery}
+                      value={filters.searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
@@ -162,9 +176,9 @@ export default function DishesPage() {
                       onClicked={handleCategoryChange}
                       label={"Catégorie"}
                       defaultValue={
-                        selectedCategory === "Toutes"
+                        filters.selectedCategory === "Toutes"
                           ? "Toutes"
-                          : DishCategoryLabels[selectedCategory]
+                          : DishCategoryLabels[filters.selectedCategory]
                       }
                     />
                   </div>
@@ -173,7 +187,7 @@ export default function DishesPage() {
                       valuesToDisplay={statusOptions}
                       onClicked={setSelectedStatus}
                       label={"Status"}
-                      defaultValue={selectedStatus}
+                      defaultValue={filters.selectedStatus}
                     />
                   </div>
                 </div>
@@ -230,7 +244,8 @@ export default function DishesPage() {
                     <TextfieldList
                       valuesToDisplay={sortOptions}
                       onClicked={setSelectedSort}
-                      defaultValue={selectedSort}
+                      label={"Tri"}
+                      defaultValue={filters.selectedSort}
                     />
                   </div>
                 </div>

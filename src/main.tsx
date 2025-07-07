@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './applications/css/index.css'
 import { BrowserRouter } from 'react-router-dom';
+import { DishFilterProvider } from './contexts/dishFilters.context.tsx';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -17,7 +18,9 @@ if ('serviceWorker' in navigator) {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App/>
+      <DishFilterProvider>
+        <App/>
+      </DishFilterProvider>
     </BrowserRouter>
   </React.StrictMode>,
 )
