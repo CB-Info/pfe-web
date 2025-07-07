@@ -268,7 +268,6 @@ export default function PasswordResetPage({ onBackToLogin }: PasswordResetPagePr
                 Retour à la connexion
               </button>
             </form>
-          </div>
         </motion.div>
       </div>
     </BaseContent>
