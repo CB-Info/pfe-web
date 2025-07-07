@@ -5,7 +5,6 @@ import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded
 import StyleRoundedIcon from '@mui/icons-material/StyleRounded';
 import LocalDiningRoundedIcon from '@mui/icons-material/LocalDiningRounded';
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
-import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import { Fragment, useEffect } from 'react';
@@ -42,7 +41,6 @@ export function NavBar() {
                         <NavBarCell icon={<InventoryRoundedIcon/>} label={'Stock'} path={'/stock'}/>
                         <NavBarCell icon={<StyleRoundedIcon/>} label={'Cards'} path={'/cards'}/>
                         <NavBarCell icon={<LocalDiningRoundedIcon/>} label={'Dishes'} path={'/dishes'}/>
-                        <NavBarCell icon={<MenuBookRoundedIcon/>} label={'Menu Interactif'} path={'/menu'}/>
                     </div>
                 </div>
                 <div className='flex w-full items-center'>
