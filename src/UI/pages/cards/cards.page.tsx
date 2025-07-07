@@ -15,6 +15,7 @@ import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { Dish } from '../../../data/models/dish.model';
 import { EditCardModal } from './edit.card.modal';
+import { CardDetailsModal } from '../../components/cards/card-details-modal.component';
 
 export default function CardsPage() {
     const [cards, setCards] = useState<CardDto[]>([]);
@@ -23,7 +24,7 @@ export default function CardsPage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<CardDto | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [cardDishes, setCardDishes] = useState<Dish[]>([]);
+    const [allDishes, setAllDishes] = useState<Dish[]>([]);
     const { addAlert } = useAlerts();
     const cardsRepository = new CardsRepositoryImpl();
     const dishesRepository = new DishesRepositoryImpl();
@@ -117,11 +118,10 @@ export default function CardsPage() {
 
     const handleViewCard = async (card: CardDto) => {
         setSelectedCard(card);
-        setIsViewModalOpen(true);
         try {
-            const allDishes = await dishesRepository.getAll();
-            const cardDishes = allDishes.filter(dish => card.dishesId.includes(dish._id));
-            setCardDishes(cardDishes);
+            const dishes = await dishesRepository.getAll();
+            setAllDishes(dishes);
+            setIsViewModalOpen(true);
         } catch (error) {
             addAlert({
                 severity: 'error',
@@ -243,34 +243,12 @@ export default function CardsPage() {
                         onCardDeleted={handleCardDeleted}
                     />
 
-                    <ConfirmationModal
-                        modalName="view-card-modal"
+                    <CardDetailsModal
+                        card={selectedCard}
+                        dishes={allDishes}
                         isOpen={isViewModalOpen}
                         onClose={() => setIsViewModalOpen(false)}
-                    >
-                        <div className="p-6">
-                            <h2 className="text-xl font-semibold mb-6">
-                                {selectedCard.name}
-                            </h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <h3 className="font-medium mb-2">Plats de la carte</h3>
-                                    {cardDishes.length > 0 ? (
-                                        <ul className="space-y-2">
-                                            {cardDishes.map(dish => (
-                                                <li key={dish._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                                                    <span>{dish.name}</span>
-                                                    <span className="text-gray-600">{dish.price} €</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-gray-500 italic">Aucun plat dans cette carte</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </ConfirmationModal>
+                    />
                 </>
             )}
         </BaseContent>
