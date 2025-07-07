@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import { useState, useCallback } from 'react';
 import { NavBar } from './UI/components/navigationBar/navigation.bar';
 import DashboardPage from './UI/pages/dashboard/dashboard.page';
 import DishesPage from './UI/pages/dishes/dishes.page';
@@ -12,14 +13,47 @@ import { ThemeProvider, useTheme } from './contexts/theme.context';
 
 const ThemedApp = () => {
   const { isDarkMode } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
+
+  const closeSidebar = useCallback(() => {
+    setIsSidebarOpen(false);
+  }, []);
 
   return (
     <StyledThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <AlertsProvider>
         <AuthProvider>
-          <div className="h-screen w-screen flex">
-            <NavBar />
-            <Routes>
+          <div className="relative h-screen w-screen flex overflow-hidden">
+            <NavBar isOpen={isSidebarOpen} onClose={closeSidebar} />
+            <button
+              aria-label="Ouvrir le menu"
+              onClick={toggleSidebar}
+              className="md:hidden p-2 absolute top-4 left-4 z-50 rounded bg-white text-gray-800 focus:outline-none focus:ring"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            {isSidebarOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 md:hidden z-40"
+                onClick={closeSidebar}
+                aria-hidden="true"
+              />
+            )}
+            <div className="flex-1 overflow-auto">
+              <Routes>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/dishes" element={<DishesPage />} />
@@ -27,7 +61,8 @@ const ThemedApp = () => {
               <Route path="/settings" element={<SettingsPage />} />
               {/* Redirect old /home route to dashboard */}
               <Route path="/home" element={<DashboardPage />} />
-            </Routes>
+              </Routes>
+            </div>
           </div>
         </AuthProvider>
       </AlertsProvider>
