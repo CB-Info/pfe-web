@@ -53,11 +53,7 @@ export default function LoginPage() {
 
   const handlePasswordChange = (value: string) => {
     setPasswordInput(value);
-    if (value && value.length < 6) {
-      setPasswordError("Le mot de passe doit contenir au moins 6 caractères");
-    } else {
-      setPasswordError("");
-    }
+    setPasswordError("");
   };
 
   const handleSubmit = async (event: FormEvent) => {
