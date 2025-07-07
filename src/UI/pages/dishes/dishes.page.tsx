@@ -259,4 +259,3 @@ const UpdateDishDrawer: React.FC<UpdateDishDrawerProps> = ({
     </div>
   );
 };
-
