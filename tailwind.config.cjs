@@ -18,6 +18,9 @@ module.exports = {
       fontFamily: {
         'lufga': ['Lufga', 'sans-serif'],
         'inter': ['Inter', 'sans-serif']
+      },
+      screens: {
+        'xs': '475px',
       }
     },
   },

@@ -18,16 +18,20 @@ const ThemedApp = () => {
       <AlertsProvider>
         <AuthProvider>
           <div className="h-screen w-screen flex">
-            <NavBar />
-            <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/dishes" element={<DishesPage />} />
-              <Route path="/cards" element={<CardsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              {/* Redirect old /home route to dashboard */}
-              <Route path="/home" element={<DashboardPage />} />
-            </Routes>
+            <div className="flex flex-col lg:flex-row w-full h-full">
+              <NavBar />
+              <div className="flex-1 flex flex-col min-w-0">
+                <Routes>
+                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/dishes" element={<DishesPage />} />
+                  <Route path="/cards" element={<CardsPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  {/* Redirect old /home route to dashboard */}
+                  <Route path="/home" element={<DashboardPage />} />
+                </Routes>
+              </div>
+            </div>
           </div>
         </AuthProvider>
       </AlertsProvider>
