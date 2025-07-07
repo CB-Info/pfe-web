@@ -17,10 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Plus, 
   Filter, 
-  RotateCcw, 
-  TrendingUp, 
-  TrendingDown,
-  ChefHat,
+  RotateCcw,
   Eye,
   EyeOff
 } from "lucide-react";
@@ -103,10 +100,8 @@ export default function DishesPage() {
     const total = dishes.length;
     const available = dishes.filter(dish => dish.isAvailable).length;
     const unavailable = total - available;
-    const categories = new Set(dishes.map(dish => dish.category)).size;
-    const averagePrice = total > 0 ? dishes.reduce((sum, dish) => sum + dish.price, 0) / total : 0;
     
-    return { total, available, unavailable, categories, averagePrice };
+    return { total, available, unavailable };
   }, [dishes]);
 
   // Event handlers
@@ -155,14 +150,14 @@ export default function DishesPage() {
 
   return (
     <BaseContent>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full overflow-hidden">
         {/* Header Section */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="px-6 py-6 border-b border-gray-200 bg-white"
+          className="flex-shrink-0 px-6 py-6 border-b border-gray-200 bg-white"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between">
             <div>
               <TitleStyle>Gestion des plats</TitleStyle>
               <p className="text-gray-600 text-sm mt-1">
@@ -180,104 +175,14 @@ export default function DishesPage() {
               Nouveau plat
             </motion.button>
           </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="bg-blue-50 rounded-lg p-4 border border-blue-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <ChefHat className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-                  <div className="text-xs text-blue-700 font-medium">Total</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="bg-green-50 rounded-lg p-4 border border-green-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Eye className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-600">{stats.available}</div>
-                  <div className="text-xs text-green-700 font-medium">Disponibles</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="bg-red-50 rounded-lg p-4 border border-red-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <EyeOff className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-red-600">{stats.unavailable}</div>
-                  <div className="text-xs text-red-700 font-medium">Indisponibles</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="bg-purple-50 rounded-lg p-4 border border-purple-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Filter className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">{stats.categories}</div>
-                  <div className="text-xs text-purple-700 font-medium">Catégories</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="bg-orange-50 rounded-lg p-4 border border-orange-100"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-orange-600" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-orange-600">
-                    {stats.averagePrice.toFixed(0)}€
-                  </div>
-                  <div className="text-xs text-orange-700 font-medium">Prix moyen</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
         </motion.div>
 
         {/* Filters Section */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="px-6 py-4 bg-gray-50 border-b border-gray-200"
+          transition={{ delay: 0.1 }}
+          className="flex-shrink-0 px-6 py-4 bg-gray-50 border-b border-gray-200"
         >
           <div className="flex items-center justify-between mb-4">
             <button
@@ -358,8 +263,8 @@ export default function DishesPage() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Content Section */}
-        <div className="flex-1 overflow-hidden">
+        {/* Content Section - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full">
               <motion.div
@@ -373,12 +278,12 @@ export default function DishesPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="h-full p-6"
+              transition={{ delay: 0.2 }}
+              className="p-6"
             >
               <PanelContent>
-                <div className="h-full flex flex-col">
-                  <div className="p-6 border-b border-gray-200">
+                <div className="flex flex-col h-full">
+                  <div className="flex-shrink-0 p-6 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">
                         Liste des plats
@@ -399,7 +304,7 @@ export default function DishesPage() {
                     </div>
                   </div>
                   
-                  <div className="flex-1 overflow-hidden">
+                  <div className="flex-1 min-h-0">
                     {sortedDishes.length > 0 ? (
                       <DishesTable
                         dishes={sortedDishes}
@@ -407,7 +312,7 @@ export default function DishesPage() {
                         onDelete={handleDelete}
                       />
                     ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-center">
+                      <div className="flex flex-col items-center justify-center h-full text-center p-8">
                         <motion.div
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}

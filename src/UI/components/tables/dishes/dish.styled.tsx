@@ -5,6 +5,18 @@ export const DishTableStyled = styled(TableContainer)(({ theme }) => ({
     borderRadius: '16px',
     backgroundColor: 'white',
     border: `1px solid ${theme.palette.divider}`,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    '& .MuiTable-root': {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    '& .MuiTableBody-root': {
+        flex: 1,
+        overflowY: 'auto'
+    }
 }));
 
 export const DishTableRowStyled = styled(TableRow)(({ theme }) => ({

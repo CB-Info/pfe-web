@@ -113,9 +113,9 @@ const DishesTable: React.FC<DishesTableProps> = ({
   };
 
   return (
-    <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "hidden", height: "100%" }}>
+    <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "hidden", height: "100%", display: "flex", flexDirection: "column" }}>
       <DishTableStyled>
-        <Table sx={{ minWidth: 700, height: "100%" }} aria-label="customized table">
+        <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
               <DishTableCellStyled>Nom</DishTableCellStyled>
@@ -157,7 +157,7 @@ const DishesTable: React.FC<DishesTableProps> = ({
               </TableRow>
             )}
           </TableBody>
-          <TableFooter>
+          <TableFooter sx={{ marginTop: "auto" }}>
             <TableRow>
               <DishTableCellStyled colSpan={6}>
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
