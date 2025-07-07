@@ -214,6 +214,6 @@ export const MenuFilters: React.FC<MenuFiltersProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
