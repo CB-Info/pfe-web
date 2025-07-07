@@ -1,12 +1,5 @@
-export type DishSortOption =
-  | 'Nom (Ascendant)'
-  | 'Nom (Descendant)'
-  | 'Prix (Ascendant)'
-  | 'Prix (Descendant)'
-  | 'Date de création (Ascendant)'
-  | 'Date de création (Descendant)';
-
 import { Dish } from '../../../../data/models/dish.model';
+import { DishSortOption } from '../hooks/use-dishes-filters';
 
 export function sortDishes(dishes: Dish[], option: DishSortOption): Dish[] {
   const copy = [...dishes];
