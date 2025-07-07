@@ -19,6 +19,18 @@ import CustomButton, {
 import { BaseContent } from "../../components/contents/base.content";
 import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
 import { PanelContent } from "../../components/contents/panel.content";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Plus, 
+  Filter, 
+  RotateCcw, 
+  TrendingUp, 
+  TrendingDown,
+  ChefHat,
+  Eye,
+  EyeOff,
+  BarChart3
+} from "lucide-react";
 
 export default function DishesPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,10 +39,11 @@ export default function DishesPage() {
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<
-    DishCategory | "Toutes"
-  >("Toutes");
+  const [selectedCategory, setSelectedCategory] = useState<DishCategory | "Toutes">("Toutes");
   const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showStats, setShowStats] = useState(true);
+  
   const sortOptions: DishSortOption[] = [
     "Date de création (Descendant)",
     "Date de création (Ascendant)",
@@ -39,9 +52,8 @@ export default function DishesPage() {
     "Prix (Ascendant)",
     "Prix (Descendant)",
   ];
-  const [selectedSort, setSelectedSort] = useState<DishSortOption>(
-    sortOptions[0]
-  );
+  const [selectedSort, setSelectedSort] = useState<DishSortOption>(sortOptions[0]);
+  
   const { addAlert } = useAlerts();
   const dishRepository = new DishesRepositoryImpl();
 
@@ -52,14 +64,21 @@ export default function DishesPage() {
     if (label === "Toutes") {
       setSelectedCategory("Toutes");
     } else {
-      const entry = Object.entries(DishCategoryLabels).find(
-        ([, l]) => l === label
-      );
+      const entry = Object.entries(DishCategoryLabels).find(([, l]) => l === label);
       if (entry) {
         setSelectedCategory(entry[0] as DishCategory);
       }
     }
   };
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("Toutes");
+    setSelectedStatus("Tous");
+    setSelectedSort(sortOptions[0]);
+  };
+
+  const hasActiveFilters = searchQuery || selectedCategory !== "Toutes" || selectedStatus !== "Tous";
 
   const fetchDishes = async () => {
     try {
@@ -107,143 +126,362 @@ export default function DishesPage() {
     await fetchDishes();
   };
 
+  // Calculate statistics
+  const stats = useMemo(() => {
+    const total = dishes.length;
+    const available = dishes.filter(dish => dish.isAvailable).length;
+    const unavailable = total - available;
+    const categories = new Set(dishes.map(dish => dish.category)).size;
+    const averagePrice = total > 0 ? dishes.reduce((sum, dish) => sum + dish.price, 0) / total : 0;
+    
+    return {
+      total,
+      available,
+      unavailable,
+      categories,
+      averagePrice,
+      filteredCount: filteredDishes.length
+    };
+  }, [dishes, filteredDishes]);
+
   return (
     <BaseContent>
-      <div className="flex flex-col px-6 py-8 gap-8">
-        <div className="flex justify-between items-center">
-          <TitleStyle>Gestion des plats</TitleStyle>
-          <DrawerButton
-            width={360}
-            defaultChildren={
-              <CustomButton
-                type={TypeButton.PRIMARY}
-                onClick={() => {}}
-                width={WidthButton.SMALL}
-                isLoading={false}
+      <div className="flex flex-col h-full">
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white border-b border-gray-200 px-6 py-6"
+        >
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <ChefHat className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <TitleStyle className="text-2xl">Gestion des plats</TitleStyle>
+                <p className="text-gray-600 text-sm mt-1">
+                  Gérez votre menu et vos plats en toute simplicité
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowStats(!showStats)}
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
               >
-                Ajouter un plat
-              </CustomButton>
-            }
-            drawerId={"add-drawer-dish"}
-          >
-            <AddDishPage
-              onClickOnConfirm={async () => {
-                setIsLoading(true);
-                await fetchDishes();
-                setIsLoading(false);
-              }}
-            />
-          </DrawerButton>
-        </div>
-
-        {isLoading ? (
-          <div className="flex flex-1 items-center justify-center">
-            <CircularProgress />
+                {showStats ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <span className="text-sm font-medium">
+                  {showStats ? 'Masquer' : 'Afficher'} stats
+                </span>
+              </button>
+              
+              <DrawerButton
+                width={360}
+                defaultChildren={
+                  <CustomButton
+                    type={TypeButton.PRIMARY}
+                    onClick={() => {}}
+                    width={WidthButton.MEDIUM}
+                    isLoading={false}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Nouveau plat
+                  </CustomButton>
+                }
+                drawerId={"add-drawer-dish"}
+              >
+                <AddDishPage
+                  onClickOnConfirm={async () => {
+                    setIsLoading(true);
+                    await fetchDishes();
+                    setIsLoading(false);
+                  }}
+                />
+              </DrawerButton>
+            </div>
           </div>
-        ) : (
-          <div className="flex flex-col gap-6">
-            {/* Filters Section */}
-            <PanelContent>
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Filtres</h3>
-                <div className="flex gap-4 flex-wrap">
-                  <div className="w-72">
+        </motion.div>
+
+        {/* Statistics Section */}
+        <AnimatePresence>
+          {showStats && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-gray-50 border-b border-gray-200 px-6 py-4 overflow-hidden"
+            >
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <PanelContent>
+                    <div className="p-4 text-center">
+                      <div className="text-2xl font-bold text-blue-600 mb-1">
+                        {stats.total}
+                      </div>
+                      <div className="text-xs text-gray-600 font-medium">Total</div>
+                    </div>
+                  </PanelContent>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <PanelContent>
+                    <div className="p-4 text-center">
+                      <div className="text-2xl font-bold text-green-600 mb-1">
+                        {stats.available}
+                      </div>
+                      <div className="text-xs text-gray-600 font-medium">Disponibles</div>
+                    </div>
+                  </PanelContent>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <PanelContent>
+                    <div className="p-4 text-center">
+                      <div className="text-2xl font-bold text-red-600 mb-1">
+                        {stats.unavailable}
+                      </div>
+                      <div className="text-xs text-gray-600 font-medium">Indisponibles</div>
+                    </div>
+                  </PanelContent>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <PanelContent>
+                    <div className="p-4 text-center">
+                      <div className="text-2xl font-bold text-purple-600 mb-1">
+                        {stats.categories}
+                      </div>
+                      <div className="text-xs text-gray-600 font-medium">Catégories</div>
+                    </div>
+                  </PanelContent>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <PanelContent>
+                    <div className="p-4 text-center">
+                      <div className="text-2xl font-bold text-orange-600 mb-1">
+                        {stats.averagePrice.toFixed(1)}€
+                      </div>
+                      <div className="text-xs text-gray-600 font-medium">Prix moyen</div>
+                    </div>
+                  </PanelContent>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-hidden">
+          {isLoading ? (
+            <div className="flex flex-1 items-center justify-center h-full">
+              <div className="text-center">
+                <CircularProgress className="mb-4" />
+                <p className="text-gray-600">Chargement des plats...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col h-full">
+              {/* Filters Bar */}
+              <div className="bg-white border-b border-gray-200 px-6 py-4">
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                  {/* Search */}
+                  <div className="flex-1 max-w-md">
                     <SearchInput
-                      label={"Rechercher un plat"}
+                      label=""
                       error={false}
-                      name={"search"}
+                      name="search"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
-                  <div className="w-64">
-                    <TextfieldList
-                      valuesToDisplay={categoryOptions}
-                      onClicked={handleCategoryChange}
-                      label={"Catégorie"}
-                      defaultValue={
-                        selectedCategory === "Toutes"
-                          ? "Toutes"
-                          : DishCategoryLabels[selectedCategory]
-                      }
-                    />
+
+                  {/* Filter Toggle */}
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                        showFilters || hasActiveFilters
+                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      <Filter className="w-4 h-4" />
+                      <span className="text-sm font-medium">Filtres</span>
+                      {hasActiveFilters && (
+                        <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          !
+                        </span>
+                      )}
+                    </button>
+
+                    {hasActiveFilters && (
+                      <button
+                        onClick={resetFilters}
+                        className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        <span className="text-sm font-medium">Reset</span>
+                      </button>
+                    )}
+
+                    <div className="text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-lg">
+                      <span className="font-medium">{stats.filteredCount}</span> résultat{stats.filteredCount > 1 ? 's' : ''}
+                    </div>
                   </div>
-                  <div className="w-64">
-                    <TextfieldList
-                      valuesToDisplay={statusOptions}
-                      onClicked={setSelectedStatus}
-                      label={"Status"}
-                      defaultValue={selectedStatus}
-                    />
-                  </div>
+                </div>
+
+                {/* Extended Filters */}
+                <AnimatePresence>
+                  {showFilters && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-4 pt-4 border-t border-gray-200 overflow-hidden"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <TextfieldList
+                          valuesToDisplay={categoryOptions}
+                          onClicked={handleCategoryChange}
+                          label="Catégorie"
+                          defaultValue={
+                            selectedCategory === "Toutes"
+                              ? "Toutes"
+                              : DishCategoryLabels[selectedCategory]
+                          }
+                        />
+                        
+                        <TextfieldList
+                          valuesToDisplay={statusOptions}
+                          onClicked={setSelectedStatus}
+                          label="Statut"
+                          defaultValue={selectedStatus}
+                        />
+                        
+                        <TextfieldList
+                          valuesToDisplay={sortOptions}
+                          onClicked={setSelectedSort}
+                          label="Tri"
+                          defaultValue={selectedSort}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Table Section */}
+              <div className="flex-1 overflow-hidden bg-gray-50">
+                <div className="h-full p-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="h-full"
+                  >
+                    <PanelContent>
+                      <div className="h-full flex flex-col">
+                        {/* Table Header */}
+                        <div className="p-4 border-b border-gray-200 bg-gray-50">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-gray-900">
+                              Liste des plats
+                            </h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <BarChart3 className="w-4 h-4" />
+                              <span>
+                                {stats.filteredCount} sur {stats.total} plats
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Table Content */}
+                        <div className="flex-1 overflow-hidden">
+                          {stats.filteredCount === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                              <div className="text-6xl mb-4">🔍</div>
+                              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                Aucun plat trouvé
+                              </h3>
+                              <p className="text-gray-600 mb-4">
+                                {hasActiveFilters 
+                                  ? "Aucun plat ne correspond à vos critères de recherche"
+                                  : "Commencez par ajouter votre premier plat"
+                                }
+                              </p>
+                              {hasActiveFilters ? (
+                                <button
+                                  onClick={resetFilters}
+                                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                >
+                                  <RotateCcw className="w-4 h-4" />
+                                  Réinitialiser les filtres
+                                </button>
+                              ) : (
+                                <DrawerButton
+                                  width={360}
+                                  defaultChildren={
+                                    <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                      <Plus className="w-4 h-4" />
+                                      Ajouter un plat
+                                    </button>
+                                  }
+                                  drawerId={"add-drawer-dish-empty"}
+                                >
+                                  <AddDishPage
+                                    onClickOnConfirm={async () => {
+                                      setIsLoading(true);
+                                      await fetchDishes();
+                                      setIsLoading(false);
+                                    }}
+                                  />
+                                </DrawerButton>
+                              )}
+                            </div>
+                          ) : (
+                            <DishesTable
+                              dishes={sortedDishes}
+                              setSelectedDish={handleRowClick}
+                              onDelete={handleDelete}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </PanelContent>
+                  </motion.div>
                 </div>
               </div>
-            </PanelContent>
-
-            {/* Statistics Section */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <PanelContent>
-                <div className="p-4">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {dishes.length}
-                  </div>
-                  <div className="text-sm text-gray-600">Total des plats</div>
-                </div>
-              </PanelContent>
-              <PanelContent>
-                <div className="p-4">
-                  <div className="text-2xl font-bold text-green-600">
-                    {dishes.filter((dish) => dish.isAvailable).length}
-                  </div>
-                  <div className="text-sm text-gray-600">Plats disponibles</div>
-                </div>
-              </PanelContent>
-              <PanelContent>
-                <div className="p-4">
-                  <div className="text-2xl font-bold text-red-600">
-                    {dishes.filter((dish) => !dish.isAvailable).length}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Plats indisponibles
-                  </div>
-                </div>
-              </PanelContent>
-              <PanelContent>
-                <div className="p-4">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {new Set(dishes.map((dish) => dish.category)).size}
-                  </div>
-                  <div className="text-sm text-gray-600">Catégories</div>
-                </div>
-              </PanelContent>
             </div>
+          )}
+        </div>
 
-            {/* Results Section */}
-            <PanelContent>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    Résultats ({filteredDishes.length} plat
-                    {filteredDishes.length > 1 ? "s" : ""})
-                  </h3>
-                  <div className="w-64">
-                    <TextfieldList
-                      valuesToDisplay={sortOptions}
-                      onClicked={setSelectedSort}
-                      defaultValue={selectedSort}
-                    />
-                  </div>
-                </div>
-                <DishesTable
-                  dishes={sortedDishes}
-                  setSelectedDish={handleRowClick}
-                  onDelete={handleDelete}
-                />
-              </div>
-            </PanelContent>
-          </div>
-        )}
-
+        {/* Update Drawer */}
         {isUpdateDrawerOpen && selectedDish && (
           <UpdateDishDrawer
             dish={selectedDish}
