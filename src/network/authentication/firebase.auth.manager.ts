@@ -1,15 +1,20 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, User, Auth } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, User, Auth, getRedirectResult } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 import firebaseConfig from '../../credentials.json';
+import { oauthService } from '../../services/oauth.service';
 
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 class FirebaseAuthManager {
     private static instance: FirebaseAuthManager;
     private auth: Auth;
+    private db = db;
 
     private constructor() {
         this.auth = getAuth(app);
+        this.initializeRedirectHandler();
     }
 
     public static getInstance(): FirebaseAuthManager {
@@ -17,6 +22,17 @@ class FirebaseAuthManager {
             FirebaseAuthManager.instance = new FirebaseAuthManager();
         }
         return FirebaseAuthManager.instance;
+    }
+
+    /**
+     * Initialise la gestion des redirections OAuth
+     */
+    private async initializeRedirectHandler(): Promise<void> {
+        try {
+            await oauthService.handleRedirectResult();
+        } catch (error) {
+            console.error('Error handling redirect result:', error);
+        }
     }
 
     async login(email: string, password: string): Promise<User | null> {

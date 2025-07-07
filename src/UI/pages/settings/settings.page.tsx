@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { ProfilContent } from "../../components/settingsContent/profilContent";
 import { PreferencesContent } from "../../components/settingsContent/preferencesContent";
+import { AccountLinkingPage } from "./account-linking.page";
 import { BaseContent } from '../../components/contents/base.content';
 import { PanelContent } from '../../components/contents/panel.content';
-import { User, Settings, Shield } from 'lucide-react';
+import { User, Settings, Shield, Link } from 'lucide-react';
 
 const tabs = [
   { id: 'profile', label: 'Profil', icon: User },
   { id: 'preferences', label: 'Préférences', icon: Settings },
-  { id: 'security', label: 'Sécurité', icon: Shield }
+  { id: 'security', label: 'Sécurité', icon: Shield },
+  { id: 'accounts', label: 'Comptes liés', icon: Link }
 ];
 
 export default function SettingsPage() {
@@ -52,6 +54,7 @@ export default function SettingsPage() {
               <div className="p-6">
                 {activeTab === 'profile' && <ProfilContent />}
                 {activeTab === 'preferences' && <PreferencesContent />}
+                {activeTab === 'accounts' && <AccountLinkingPage />}
                 {activeTab === 'security' && (
                   <div className="flex flex-col gap-4">
                     <h2 className="text-xl font-semibold mb-4">Sécurité</h2>
