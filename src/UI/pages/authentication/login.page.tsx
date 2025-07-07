@@ -8,7 +8,6 @@ import { BaseContent } from '../../components/contents/base.content';
 import PasswordResetPage from './password-reset.page';
 import { Eye, EyeOff, Shield, Lock, Mail, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { OAuthSection } from '../../components/auth/OAuthSection';
 
 export default function LoginPage() {
   const [emailInput, setEmailInput] = useState("")
@@ -146,13 +145,6 @@ export default function LoginPage() {
             transition={{ delay: 0.3 }}
             className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8"
           >
-            {/* OAuth Section */}
-            <OAuthSection 
-              title="Connexion rapide"
-              subtitle="Connectez-vous avec votre compte préféré"
-              className="mb-8"
-            />
-
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Field */}
               <div className="space-y-2">
