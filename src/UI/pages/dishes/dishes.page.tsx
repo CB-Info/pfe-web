@@ -65,7 +65,6 @@ export default function DishesPage() {
     try {
       const allDishes = await dishRepository.getAll();
       setDishes(allDishes);
-      setFilteredDishes(allDishes);
     } catch (error) {
       addAlert({
         severity: "error",
