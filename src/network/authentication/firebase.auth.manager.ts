@@ -29,6 +29,16 @@ class FirebaseAuthManager {
         }
     }
 
+    async sendPasswordResetEmail(email: string): Promise<void> {
+        try {
+            const { sendPasswordResetEmail } = await import("firebase/auth");
+            await sendPasswordResetEmail(this.auth, email);
+        } catch (error) {
+            console.error("Erreur lors de l'envoi de l'email de réinitialisation: ", error);
+            throw error;
+        }
+    }
+
     async getToken(): Promise<string | null> {
         if (this.auth.currentUser) {
             return this.auth.currentUser.getIdToken();

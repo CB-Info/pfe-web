@@ -5,15 +5,21 @@ import CustomButton, { TypeButton, WidthButton } from "../../components/buttons/
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
 import { useAlerts } from '../../../contexts/alerts.context';
 import { BaseContent } from '../../components/contents/base.content';
+import PasswordResetPage from './password-reset.page';
 
 
 export default function LoginPage() {
   const [emailInput, setEmailInput] = useState("")
   const [passwordInput, setPasswordInput] = useState("")
+  const [showPasswordReset, setShowPasswordReset] = useState(false)
   const { addAlert } = useAlerts();
   const [isLoading, setIsLoading] = useState(false)
 
   const userRepository = new UserRepositoryImpl()
+
+  if (showPasswordReset) {
+    return <PasswordResetPage onBackToLogin={() => setShowPasswordReset(false)} />;
+  }
 
   const handleSubmit = async (event: FormEvent) => {
     setIsLoading(true)
@@ -40,13 +46,16 @@ export default function LoginPage() {
             </div>
             <div className="mb-6">
               <TextInput name='password' label='Mot de passe' type='password' value={passwordInput} onChange={(newValue) => setPasswordInput(newValue)} $isError={false} />
-              {/* <div className='flex justify-between pt-2'>
-                <div className="flex items-center gap-1">
-                  <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 border border-blue-500 cursor-pointer rounded " />
-                  <label htmlFor="default-checkbox" className="text-xs font-inter italic text-right">Se rappeler de moi</label>
-                </div>
-                <p className="text-xs font-inter text-right">Mot de passe oublié ?</p>
-              </div> */}
+              <div className='flex justify-end pt-2'>
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordReset(true)}
+                  className="text-xs font-inter text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                  disabled={isLoading}
+                >
+                  Mot de passe oublié ?
+                </button>
+              </div>
             </div>
             <div className="flex flex-col items-center justify-between mb-6 gap-2">
               <CustomButton inputType="submit" type={TypeButton.PRIMARY} width={WidthButton.SMALL} onClick={() => {}} isLoading={isLoading}>Se connecter</CustomButton>
