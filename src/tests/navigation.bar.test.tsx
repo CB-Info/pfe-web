@@ -1,5 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { NavBar } from "../UI/components/navigation/navigation.bar";
+import { NavBar } from "../UI/components/navigation/NavBar";
+import AlertsProvider from "../contexts/alerts.context";
+import { MemoryRouter } from "react-router-dom";
 import {
   UsersListerStateContext,
   UsersListerDispatchContext,
@@ -16,11 +18,13 @@ const Wrapper: FC<{ children: ReactNode }> = ({ children }) => {
     UsersListerInitialState
   );
   return (
-    <UsersListerStateContext.Provider value={state}>
-      <UsersListerDispatchContext.Provider value={dispatch}>
-        {children}
-      </UsersListerDispatchContext.Provider>
-    </UsersListerStateContext.Provider>
+    <MemoryRouter>
+      <UsersListerStateContext.Provider value={state}>
+        <UsersListerDispatchContext.Provider value={dispatch}>
+          <AlertsProvider>{children}</AlertsProvider>
+        </UsersListerDispatchContext.Provider>
+      </UsersListerStateContext.Provider>
+    </MemoryRouter>
   );
 };
 

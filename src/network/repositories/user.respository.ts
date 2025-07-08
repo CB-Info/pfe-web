@@ -3,8 +3,10 @@ import { UserDto } from "../../data/dto/user.dto";
 import { User } from "../../data/models/user.model";
 import FirebaseAuthManager from "../authentication/firebase.auth.manager";
 
+import { API_BASE_URL } from "../api.config";
+
 export class UserRepositoryImpl {
-  private url: string = "https://pfe-api-fbyd.onrender.com/users";
+  private url: string = `${API_BASE_URL}/users`;
 
   async login(email: string, password: string) {
     await FirebaseAuthManager.getInstance().login(email, password);

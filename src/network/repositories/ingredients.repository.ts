@@ -1,6 +1,7 @@
 import { IngredientDto } from "../../data/dto/ingredient.dto";
 import FirebaseAuthManager from "../authentication/firebase.auth.manager";
 import { Ingredient } from "../../data/models/ingredient.model";
+import { API_BASE_URL } from "../api.config";
 
 export interface Data<T> {
   error: string;
@@ -8,7 +9,7 @@ export interface Data<T> {
 }
 
 export class IngredientRepositoryImpl {
-  private url: string = "https://pfe-api-fbyd.onrender.com/ingredients";
+  private url: string = `${API_BASE_URL}/ingredients`;
 
   async createOne(newIngredient: IngredientDto): Promise<Ingredient> {
     try {

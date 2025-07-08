@@ -20,6 +20,16 @@ Ajouter le fichier **credentials.json** dans le dossier **src** <br />
 npm install
 ```
 
+## .env configuration
+
+Create a `.env` file at the project root containing:
+
+```bash
+VITE_API_BASE_URL=<URL of the API>
+```
+
+This variable defines the base URL for all API requests.
+
 ## Lancer l'app
 
 ```bash

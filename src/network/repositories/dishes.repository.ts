@@ -5,9 +5,10 @@ import FirebaseAuthManager from "../authentication/firebase.auth.manager";
 import { Dish } from "../../data/models/dish.model";
 import { Ingredient } from "../../data/models/ingredient.model";
 import { Data } from "./ingredients.repository";
+import { API_BASE_URL } from "../api.config";
 
 export class DishesRepositoryImpl {
-  private url: string = "https://pfe-api-fbyd.onrender.com/dishes";
+  private url: string = `${API_BASE_URL}/dishes`;
 
   async getTopIngredients(): Promise<Ingredient[]> {
     try {
