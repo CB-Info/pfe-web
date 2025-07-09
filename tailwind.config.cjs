@@ -22,7 +22,7 @@ module.exports = {
     },
   },
   plugins: [
-    require("daisyui")
+    // DaisyUI removed for bundle size optimization
   ],
 }
 

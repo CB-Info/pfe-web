@@ -1,8 +1,7 @@
 import React, { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Link } from "react-router-dom";
-import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import { Settings, LogOut } from "lucide-react";
 import {
   useUsersListerDispatchContext,
   useUsersListerStateContext,
@@ -76,7 +75,7 @@ export const NavBarFooter: React.FC<NavBarFooterProps> = ({ collapsed }) => {
               <nav>
                 <Link to="/settings">
                   <div className="flex text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded transition-all duration-300 ease-in-out justify-start">
-                    <TuneRoundedIcon
+                    <Settings
                       className={`w-6 h-6 flex-shrink-0 transition-all duration-300 ease-in-out ${
                         collapsed ? "mx-auto" : "mr-0"
                       }`}
@@ -97,7 +96,7 @@ export const NavBarFooter: React.FC<NavBarFooterProps> = ({ collapsed }) => {
                   onClick={onLogout}
                   className="flex text-sm items-center p-2 hover:bg-black hover:bg-opacity-10 rounded transition-all duration-300 ease-in-out justify-start w-full text-left"
                 >
-                  <LogoutRoundedIcon
+                  <LogOut
                     className={`w-6 h-6 flex-shrink-0 transition-all duration-300 ease-in-out ${
                       collapsed ? "mx-auto" : "mr-0"
                     }`}

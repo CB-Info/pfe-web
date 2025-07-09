@@ -17,7 +17,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,webp}'],
+        maximumFileSizeToCacheInBytes: 5000000, // 5MB limit for bundle analysis
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -48,10 +49,10 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          ui: ['@mui/material', '@mui/icons-material'],
+          ui: ['@mui/material'], // Removed @mui/icons-material - using Lucide React
           firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           animation: ['framer-motion'],
-          utils: ['axios']
+          icons: ['lucide-react'], // Consolidated to Lucide React only
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',

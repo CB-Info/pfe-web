@@ -1,78 +1,12 @@
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-italic.otf') format('opentype');
-    font-weight: normal;
-    font-style: italic;
-}
+/* Optimized Lufga Font - Only Essential Variants (3 instead of 18)
+   Reduces font loading by ~85% while maintaining design consistency */
 
 @font-face {
     font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-black.otf') format('opentype');
-    font-weight: 900;
+    src: url('../public/fonts/Fontspring-DEMO-lufga-regular.otf') format('opentype');
+    font-weight: 400;
     font-style: normal;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-blackitalic.otf') format('opentype');
-    font-weight: 900;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-bold.otf') format('opentype');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-bolditalic.otf') format('opentype');
-    font-weight: bold;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-extrabold.otf') format('opentype');
-    font-weight: 800;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-extrabolditalic.otf') format('opentype');
-    font-weight: 800;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-extralight.otf') format('opentype');
-    font-weight: 200;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-extralightitalic.otf') format('opentype');
-    font-weight: 200;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-light.otf') format('opentype');
-    font-weight: 300;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-lightitalic.otf') format('opentype');
-    font-weight: 300;
-    font-style: italic;
+    font-display: swap; /* Improves loading performance */
 }
 
 @font-face {
@@ -80,20 +14,7 @@
     src: url('../public/fonts/Fontspring-DEMO-lufga-medium.otf') format('opentype');
     font-weight: 500;
     font-style: normal;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-mediumitalic.otf') format('opentype');
-    font-weight: 500;
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-regular.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -101,25 +22,18 @@
     src: url('../public/fonts/Fontspring-DEMO-lufga-semibold.otf') format('opentype');
     font-weight: 600;
     font-style: normal;
+    font-display: swap;
 }
 
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-semibolditalic.otf') format('opentype');
-    font-weight: 600;
-    font-style: italic;
-}
+/* 
+REMOVED VARIANTS (15 variants removed for performance):
+- All italic variants (not essential for web UI)
+- Thin (100), ExtraLight (200), Light (300) - too light for readability
+- Bold (700), ExtraBold (800), Black (900) - medium and semibold provide sufficient contrast
 
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-thin.otf') format('opentype');
-    font-weight: 100;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Lufga';
-    src: url('../public/fonts/Fontspring-DEMO-lufga-thinitalic.otf') format('opentype');
-    font-weight: 100;
-    font-style: italic;
-}
+MAPPING FOR EXISTING USAGE:
+- font-weight: 100-300 → 400 (regular)
+- font-weight: 400 → 400 (regular) 
+- font-weight: 500 → 500 (medium)
+- font-weight: 600-900 → 600 (semibold)
+*/

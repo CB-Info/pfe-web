@@ -8,8 +8,10 @@ interface ContainerDrawerProps {
 
 export const ContainerDrawer = styled.div<ContainerDrawerProps>(({ theme, width }) => [
     tw`
-        menu
+        bg-white
+        shadow-lg
         h-full
+        overflow-y-auto
     `,
     css`
         background-color: ${theme.backgroundColor};
@@ -34,18 +36,20 @@ const Drawer: React.FC<DrawerButtonProps> = ({ children, width, drawerId, defaul
     };
 
     return (
-        <div className="drawer drawer-end">
-            <input id={drawerId} type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content">
+        <div className="relative">
+            <input id={drawerId} type="checkbox" className="hidden" />
+            <div className="relative">
                 <div onClick={toggleDrawer}>
                     {defaultChildren}
                 </div>
             </div>
-            <div className="drawer-side z-50">
-                <label htmlFor={drawerId} aria-label="close sidebar" className="drawer-overlay"></label>
-                <ContainerDrawer width={width}>
-                    {children}
-                </ContainerDrawer>
+            <div className="fixed inset-0 z-50 hidden peer-checked:block">
+                <label htmlFor={drawerId} aria-label="close sidebar" className="absolute inset-0 bg-black bg-opacity-50"></label>
+                <div className="absolute right-0 top-0 h-full">
+                    <ContainerDrawer width={width}>
+                        {children}
+                    </ContainerDrawer>
+                </div>
             </div>
         </div>
     )
