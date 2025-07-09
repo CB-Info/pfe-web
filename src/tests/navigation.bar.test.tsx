@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { NavBar } from "../UI/components/navigation/navigation.bar";
+import { render } from "@testing-library/react";
+import { NavBar } from "../UI/components/navigation/NavBar";
 import {
   UsersListerStateContext,
   UsersListerDispatchContext,
@@ -53,4 +53,8 @@ describe("NavBar collapsed state", () => {
     fireEvent.click(btn);
     expect(localStorage.getItem("navCollapsed")).toBe("true");
   });
+});
+
+test("renders navigation bar", () => {
+  render(<NavBar isOpen={false} onClose={() => {}} />);
 });
