@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { NavBar } from "../UI/components/navigation/navigation.bar";
+import { NavBar } from "../UI/components/navigation/NavBar";
 import {
   UsersListerStateContext,
   UsersListerDispatchContext,

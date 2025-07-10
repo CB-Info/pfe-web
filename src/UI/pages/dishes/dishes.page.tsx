@@ -1,5 +1,4 @@
 import DrawerButton, { ContainerDrawer } from "../../components/drawer";
-import TitleStyle from "../../style/title.style";
 import AddDishPage from "./add.dish.page";
 import { useEffect, useState, useMemo } from "react";
 import { CircularProgress } from "@mui/material";
@@ -12,10 +11,6 @@ import { sortDishes, DishSortOption } from "./utils/sortDishes";
 import { filterDishes } from "./utils/filterDishes";
 import DishesTable from "../../components/tables/dishes/dish.table";
 import UpdateDishPage from "./update.dish.page";
-import CustomButton, {
-  TypeButton,
-  WidthButton,
-} from "../../components/buttons/custom.button";
 import { BaseContent } from "../../components/contents/base.content";
 import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
 import { PanelContent } from "../../components/contents/panel.content";
@@ -24,7 +19,6 @@ import {
   Plus, 
   Filter, 
   RotateCcw, 
-  BarChart3
 } from "lucide-react";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { ChefHat } from "lucide-react";
@@ -37,9 +31,8 @@ export default function DishesPage() {
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<DishCategory | "Toutes">("Toutes");
-  const [selectedStatus, setSelectedStatus] = useState<string>("Tous");
+  const [selectedStatus, setSelectedStatus] = useState<'Tous' | 'Actif' | 'Inactif'>('Tous');
   const [showFilters, setShowFilters] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const sortOptions: DishSortOption[] = [
     "Date de création (Descendant)",
@@ -52,13 +45,11 @@ export default function DishesPage() {
   const [selectedSort, setSelectedSort] = useState<DishSortOption>(sortOptions[0]);
   
   const { addAlert } = useAlerts();
-  const dishRepository = new DishesRepositoryImpl();
-
+  const dishRepository = useMemo(() => new DishesRepositoryImpl(), []);
   const statusOptions = ["Tous", "Actif", "Inactif"];
   const categoryOptions = ["Toutes", ...Object.values(DishCategoryLabels)];
 
   const handleCategoryChange = (label: string) => {
-    setOpenDropdown(null); // Close any open dropdown
     if (label === "Toutes") {
       setSelectedCategory("Toutes");
     } else {
@@ -70,17 +61,14 @@ export default function DishesPage() {
   };
 
   const handleStatusChange = (status: string) => {
-    setOpenDropdown(null); // Close any open dropdown
-    setSelectedStatus(status);
+    setSelectedStatus(status as 'Tous' | 'Actif' | 'Inactif');
   };
 
-  const handleSortChange = (sort: DishSortOption) => {
-    setOpenDropdown(null); // Close any open dropdown
-    setSelectedSort(sort);
+  const handleSortChange = (sort: string) => {
+    setSelectedSort(sort as DishSortOption);
   };
 
   const resetFilters = () => {
-    setOpenDropdown(null); // Close any open dropdown
     setSearchQuery("");
     setSelectedCategory("Toutes");
     setSelectedStatus("Tous");

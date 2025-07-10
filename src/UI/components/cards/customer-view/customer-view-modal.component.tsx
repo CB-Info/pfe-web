@@ -12,7 +12,6 @@ import {
   QrCode, 
   ChevronDown,
   ChevronUp,
-  ArrowLeft,
   Smartphone,
   Monitor
 } from 'lucide-react';
@@ -169,7 +168,6 @@ export const CustomerViewModal: React.FC<CustomerViewModalProps> = ({
             <CustomerDishDetail
               dish={selectedDish}
               onBack={handleBackToMenu}
-              viewMode={viewMode}
             />
           ) : (
             <div className="flex flex-col h-full">

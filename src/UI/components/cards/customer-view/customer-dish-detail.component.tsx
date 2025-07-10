@@ -12,13 +12,11 @@ import { motion } from 'framer-motion';
 interface CustomerDishDetailProps {
   dish: Dish;
   onBack: () => void;
-  viewMode: 'mobile' | 'desktop';
 }
 
 export const CustomerDishDetail: React.FC<CustomerDishDetailProps> = ({
   dish,
-  onBack,
-  viewMode
+  onBack
 }) => {
   return (
     <motion.div

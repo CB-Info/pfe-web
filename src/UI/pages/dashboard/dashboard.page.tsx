@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
 import { PanelContent } from '../../components/contents/panel.content';
-import TitleStyle from '../../style/title.style';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
 import { useAlerts } from '../../../contexts/alerts.context';

@@ -6,7 +6,7 @@ import { CategoryTabs } from './category-tabs.component';
 import { DishCard } from './dish-card.component';
 import { SelectionSummary } from './selection-summary.component';
 import { DishPreviewModal } from './dish-preview-modal.component';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { Filter, Grid, List, RotateCcw } from 'lucide-react';
 
 interface EnhancedDishSelectionProps {
@@ -95,7 +95,7 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
 
   // Calculate counts for categories
   const dishCounts = useMemo(() => {
-    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': dishes.length };
+    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': dishes.length } as any;
     
     categories.forEach(category => {
       counts[category] = dishes.filter(dish => dish.category === category).length;
@@ -107,7 +107,7 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
   // Calculate selected counts for categories
   const selectedCounts = useMemo(() => {
     const selectedDishes = dishes.filter(dish => selectedDishIds.has(dish._id));
-    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': selectedDishes.length };
+    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': selectedDishes.length } as any;
     
     categories.forEach(category => {
       counts[category] = selectedDishes.filter(dish => dish.category === category).length;
@@ -138,7 +138,6 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
   };
 
   const handleSelectAll = () => {
-    const allFilteredIds = new Set(filteredAndSortedDishes.map(dish => dish._id));
     const newSelection = new Set(selectedDishIds);
     
     // Check if all filtered dishes are selected

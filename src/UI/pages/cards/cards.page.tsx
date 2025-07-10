@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
-import TitleStyle from '../../style/title.style';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
 import { useAlerts } from '../../../contexts/alerts.context';
