@@ -1,8 +1,5 @@
-import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, User, Auth } from "firebase/auth";
-import firebaseConfig from '../../credentials.json';
-
-const app = initializeApp(firebaseConfig);
+import { app } from '../../config/firebase.config';
 
 class FirebaseAuthManager {
     private static instance: FirebaseAuthManager;
