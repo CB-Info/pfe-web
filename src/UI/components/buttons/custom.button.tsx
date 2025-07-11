@@ -217,3 +217,6 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
 };
 
 export default CustomButton;
+
+// Réexporter les types pour permettre l'import depuis ce module
+export { TypeButton, WidthButton } from "./button.types";
