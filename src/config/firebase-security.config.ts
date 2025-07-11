@@ -15,9 +15,9 @@ export function initializeFirebaseAppCheck(app: FirebaseApp) {
       });
 
       // Verify App Check is working
-      getToken(appCheck).then((result: any) => {
+      getToken(appCheck).then(() => {
         console.log('App Check initialized successfully');
-      }).catch((error: any) => {
+      }).catch((error: unknown) => {
         console.warn('App Check initialization failed:', error);
       });
 

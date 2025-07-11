@@ -49,7 +49,7 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
 
   // Filter and sort dishes
   const filteredAndSortedDishes = useMemo(() => {
-    let filtered = dishes.filter(dish => {
+    const filtered = dishes.filter(dish => {
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
@@ -95,7 +95,7 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
 
   // Calculate counts for categories
   const dishCounts = useMemo(() => {
-    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': dishes.length } as any;
+    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': dishes.length } as Record<DishCategory | 'ALL', number>;
     
     categories.forEach(category => {
       counts[category] = dishes.filter(dish => dish.category === category).length;
@@ -107,7 +107,7 @@ export const EnhancedDishSelection: React.FC<EnhancedDishSelectionProps> = ({
   // Calculate selected counts for categories
   const selectedCounts = useMemo(() => {
     const selectedDishes = dishes.filter(dish => selectedDishIds.has(dish._id));
-    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': selectedDishes.length } as any;
+    const counts: Record<DishCategory | 'ALL', number> = { 'ALL': selectedDishes.length } as Record<DishCategory | 'ALL', number>;
     
     categories.forEach(category => {
       counts[category] = selectedDishes.filter(dish => dish.category === category).length;

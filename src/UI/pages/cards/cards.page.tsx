@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BaseContent } from '../../components/contents/base.content';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/useAlerts';
 import { CircularProgress } from '@mui/material';
 import { CreateCardModal } from './create.card.modal';
 import { PanelContent } from '../../components/contents/panel.content';

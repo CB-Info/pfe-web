@@ -3,7 +3,7 @@ import { FullScreenModal } from '../../modals/full-screen-modal';
 import { CardDto } from '../../../../data/dto/card.dto';
 import { Dish } from '../../../../data/models/dish.model';
 import { DishesRepositoryImpl } from '../../../../network/repositories/dishes.repository';
-import { useAlerts } from '../../../../contexts/alerts.context';
+import { useAlerts } from '../../../../hooks/useAlerts';
 import { CustomerDishCard } from './customer-dish-card.component';
 import { CustomerDishDetail } from './customer-dish-detail.component';
 import { DishCategory, DishCategoryLabels } from '../../../../data/dto/dish.dto';

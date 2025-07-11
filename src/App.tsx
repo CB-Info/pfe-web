@@ -9,7 +9,8 @@ import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import AlertsProvider from "./contexts/alerts.context";
 import AuthProvider from "./contexts/auth.provider";
 const SettingsPage = lazy(() => import("./UI/pages/settings/settings.page"));
-import { ThemeProvider, useTheme } from "./contexts/theme.context";
+import { ThemeProvider } from "./contexts/theme.context";
+import { useTheme } from "./hooks/useTheme";
 
 const ThemedApp = () => {
   const { isDarkMode } = useTheme();

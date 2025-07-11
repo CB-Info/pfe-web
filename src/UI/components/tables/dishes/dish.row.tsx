@@ -5,7 +5,7 @@ import { DishRowProps } from "./dish.props";
 import { useState } from "react";
 import { ConfirmationModal } from "../../modals/confirmation.modal";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
-import { useAlerts } from "../../../../contexts/alerts.context";
+import { useAlerts } from "../../../../hooks/useAlerts";
 import { DishCategoryLabels } from "../../../../data/dto/dish.dto";
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
