@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { Suspense, lazy, useState, useCallback } from "react";
 import { NavBar } from "./UI/components/navigation/NavBar";
-// Replace static imports with lazy imports
 const DashboardPage = lazy(() => import("./UI/pages/dashboard/dashboard.page"));
 const DishesPage = lazy(() => import("./UI/pages/dishes/dishes.page"));
 const CardsPage = lazy(() => import("./UI/pages/cards/cards.page"));
