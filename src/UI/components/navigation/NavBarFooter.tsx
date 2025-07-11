@@ -7,7 +7,7 @@ import {
   useUsersListerDispatchContext,
   useUsersListerStateContext,
 } from "../../../reducers/auth.reducer";
-import { useAlerts } from "../../../contexts/alerts.context";
+import { useAlerts } from "../../../hooks/useAlerts";
 import FirebaseAuthManager from "../../../network/authentication/firebase.auth.manager";
 
 interface NavBarFooterProps {

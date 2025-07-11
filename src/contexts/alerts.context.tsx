@@ -1,17 +1,7 @@
-import { createContext, useContext, useRef, useState, useEffect, ReactNode, FC } from "react";
+import { createContext, useState, useEffect, ReactNode, FC } from "react";
 import { Alert, AlertsWrapper } from "../UI/components/alert/alert";
 import { motion, AnimatePresence } from "framer-motion";
-
-// Définition du type de l'alerte
-export interface AlertType {
-  id?: string;
-  groupId?: string;
-  message: ReactNode;
-  severity?: 'info' | 'warning' | 'error' | 'success';
-  timeout?: number;
-  priority?: number;
-  persist?: boolean;
-}
+import { AlertType } from "./alerts.types";
 
 // Définition du type pour le contexte
 interface AlertsContextType {
@@ -20,7 +10,7 @@ interface AlertsContextType {
   dismissAlert: (id: string) => void;
 }
 
-const AlertsContext = createContext<AlertsContextType | undefined>(undefined);
+export const AlertsContext = createContext<AlertsContextType | undefined>(undefined);
 
 const defaultDurations: Record<'info' | 'warning' | 'error' | 'success', number> = {
   info: 5,
@@ -180,31 +170,6 @@ const AlertsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 }
 
-// Hook useAlerts
-export const useAlerts = () => {
-  const context = useContext(AlertsContext);
-  if (!context) {
-    throw new Error('useAlerts must be used within an AlertsProvider');
-  }
 
-  const { addAlert, dismissAlert } = context;
-
-  const [alertIds, setAlertIds] = useState<string[]>([]);
-  const alertIdsRef = useRef<string[]>(alertIds);
-
-  const addAlertWithId = (alert: Omit<AlertType, 'id'>): void => {
-    const id = addAlert(alert);
-    alertIdsRef.current.push(id);
-    setAlertIds([...alertIdsRef.current]);
-  }
-
-  const clearAlerts = (): void => {
-    alertIdsRef.current.forEach(dismissAlert);
-    alertIdsRef.current = [];
-    setAlertIds([]);
-  }
-
-  return { addAlert: addAlertWithId, clearAlerts };
-}
 
 export default AlertsProvider;

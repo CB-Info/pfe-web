@@ -1,4 +1,5 @@
-import { Modal, PositionModal } from "../../modals/modal"
+import { Modal } from "../../modals/modal"
+import { PositionModal } from "../../modals/modal.types"
 import ModalInput from "../../../style/modal.input.style"
 import { toCapitalize } from '../../../../applications/extensions/string+extension';
 import { Ingredient, IngredientUnity } from "../../../../data/models/ingredient.model";

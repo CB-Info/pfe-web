@@ -16,7 +16,7 @@ import {
   DishCategory,
   DishCategoryLabels,
 } from "../../../../data/dto/dish.dto";
-import { useAlerts } from "../../../../contexts/alerts.context";
+import { useAlerts } from "../../../../hooks/useAlerts";
 import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
 import { DishFormProps, DishFormMode } from "./dish.form.props";
 

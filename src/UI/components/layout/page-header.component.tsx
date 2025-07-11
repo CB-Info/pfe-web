@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import CustomButton, { TypeButton, WidthButton } from '../buttons/custom.button';
+import CustomButton from '../buttons/custom.button';
+import { TypeButton, WidthButton } from '../buttons/button.types';
 
 interface PageHeaderProps {
   icon: React.ReactNode;
