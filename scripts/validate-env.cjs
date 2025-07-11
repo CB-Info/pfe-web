@@ -15,7 +15,8 @@ const REQUIRED_ENV_VARS = [
   'VITE_FIREBASE_PROJECT_ID',
   'VITE_FIREBASE_STORAGE_BUCKET',
   'VITE_FIREBASE_MESSAGING_SENDER_ID',
-  'VITE_FIREBASE_APP_ID'
+  'VITE_FIREBASE_APP_ID',
+  'VITE_API_BASE_URL'
 ];
 
 const OPTIONAL_ENV_VARS = [
@@ -31,7 +32,7 @@ const envPath = path.join(process.cwd(), '.env');
 if (!fs.existsSync(envPath)) {
   console.error('❌ .env file not found!');
   console.log('💡 Please create a .env file in the project root and add your Firebase configuration.');
-  console.log('📖 See SECURITY.md for setup instructions.');
+  console.log('📖 Copy .env.example to .env and fill in your values.');
   process.exit(1);
 }
 
@@ -76,7 +77,7 @@ if (hasErrors) {
   }
   
   console.log('💡 Please update your .env file with the missing/empty values.');
-  console.log('📖 See SECURITY.md for detailed setup instructions.');
+  console.log('📖 Use .env.example as a template.');
   process.exit(1);
 } else {
   console.log('✅ All required configuration variables are set!');
@@ -101,7 +102,7 @@ if (fs.existsSync(gitignorePath)) {
   if (gitignoreContent.includes('.env')) {
     console.log('✅ .env is properly ignored by Git');
   } else {
-    console.warn('⚠️  .env should be added to .gitignore for consistency');
+    console.warn('⚠️  .env should be added to .gitignore for security');
   }
 } else {
   console.warn('⚠️  .gitignore file not found');
@@ -115,8 +116,18 @@ if (fs.existsSync(credentialsPath)) {
   console.log('✅ No old credential files found');
 }
 
+// Validate API URL format
+if (envVars['VITE_API_BASE_URL']) {
+  try {
+    new URL(envVars['VITE_API_BASE_URL']);
+    console.log('✅ API URL format is valid');
+  } catch {
+    console.warn('⚠️  API URL format may be invalid - please check VITE_API_BASE_URL');
+  }
+}
+
 // Security reminder
 console.log('\n🛡️  Security Reminder:');
 console.log('✅ Firebase client API keys are safe to expose (they are public identifiers)');
 console.log('🔒 Real security comes from Firebase Security Rules and Authentication');
-console.log('📖 Read FIREBASE_SECURITY_EXPLAINED.md for complete security details');
+console.log('🔑 Never commit your .env file to version control');

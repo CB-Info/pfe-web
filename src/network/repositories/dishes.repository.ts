@@ -7,7 +7,7 @@ import { Ingredient } from "../../data/models/ingredient.model";
 import { Data } from "./ingredients.repository";
 
 export class DishesRepositoryImpl {
-  private url: string = "https://pfe-api-fbyd.onrender.com/dishes";
+  private url: string = `${import.meta.env.VITE_API_BASE_URL}/dishes`;
 
   async getTopIngredients(): Promise<Ingredient[]> {
     try {
