@@ -2,18 +2,7 @@ import { CircularProgress } from "@mui/material";
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import tw from "twin.macro";
-
-export enum TypeButton {
-  "PRIMARY",
-  "SECONDARY",
-  "TEXT",
-}
-
-export enum WidthButton {
-  "LARGE",
-  "MEDIUM",
-  "SMALL",
-}
+import { TypeButton, WidthButton } from "./button.types";
 
 interface CustomButtonProps {
   inputType?: "submit" | "reset" | "button" | undefined;

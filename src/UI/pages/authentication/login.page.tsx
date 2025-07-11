@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import TitleStyle from "../../style/title.style";
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/useAlerts';
 import { BaseContent } from '../../components/contents/base.content';
 import PasswordResetPage from './password-reset.page';
 import { Eye, EyeOff, Shield, Lock, Mail, CheckCircle, XCircle, AlertCircle } from 'lucide-react';

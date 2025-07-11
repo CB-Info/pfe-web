@@ -1,9 +1,10 @@
 import { TextInput } from '../input/textInput';
 import { useUsersListerDispatchContext, useUsersListerStateContext } from '../../../reducers/auth.reducer';
 import { UserRepositoryImpl } from '../../../network/repositories/user.respository';
-import CustomButton, { TypeButton, WidthButton } from '../buttons/custom.button';
+import CustomButton from '../buttons/custom.button';
+import { TypeButton, WidthButton } from '../buttons/button.types';
 import { useState } from 'react';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/useAlerts';
 
 export const ProfilContent: React.FC = () => {
     const dispatch = useUsersListerDispatchContext();

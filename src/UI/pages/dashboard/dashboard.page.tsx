@@ -3,7 +3,7 @@ import { BaseContent } from '../../components/contents/base.content';
 import { PanelContent } from '../../components/contents/panel.content';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/useAlerts';
 import { Dish } from '../../../data/models/dish.model';
 import { CircularProgress } from '@mui/material';
 import {

@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import TitleStyle from "../../style/title.style";
 import FirebaseAuthManager from '../../../network/authentication/firebase.auth.manager';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/useAlerts';
 import { BaseContent } from '../../components/contents/base.content';
 import { ArrowLeft, Mail, Shield, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -56,14 +56,15 @@ export default function PasswordResetPage({ onBackToLogin }: PasswordResetPagePr
         message: "Un email de réinitialisation a été envoyé à votre adresse",
         timeout: 5
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       let errorMessage = "Une erreur est survenue lors de l'envoi de l'email";
+      const firebaseError = error as { code?: string };
       
-      if (error?.code === 'auth/user-not-found') {
+      if (firebaseError?.code === 'auth/user-not-found') {
         errorMessage = "Aucun compte n'est associé à cette adresse email";
-      } else if (error?.code === 'auth/invalid-email') {
+      } else if (firebaseError?.code === 'auth/invalid-email') {
         errorMessage = "L'adresse email n'est pas valide";
-      } else if (error?.code === 'auth/too-many-requests') {
+      } else if (firebaseError?.code === 'auth/too-many-requests') {
         errorMessage = "Trop de tentatives. Veuillez réessayer plus tard";
       }
       

@@ -148,7 +148,8 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            toggleDropdown(e as any);
+            e.stopPropagation();
+            setIsOpen(!isOpen);
           }
         }}
       >

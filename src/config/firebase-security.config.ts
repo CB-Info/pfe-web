@@ -15,9 +15,9 @@ export function initializeFirebaseAppCheck(app: FirebaseApp) {
       });
 
       // Verify App Check is working
-      getToken(appCheck).then((result: any) => {
+      getToken(appCheck).then(() => {
         console.log('App Check initialized successfully');
-      }).catch((error: any) => {
+      }).catch((error: unknown) => {
         console.warn('App Check initialization failed:', error);
       });
 
@@ -45,7 +45,6 @@ export const FIREBASE_SECURITY_CONFIG = {
     passwordMinLength: 8,
     requireStrongPassword: true,
     
-    // Session timeout (in minutes)
     sessionTimeout: 60,
     
     // Maximum login attempts before temporary lockout

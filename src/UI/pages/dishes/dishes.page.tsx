@@ -5,7 +5,7 @@ import { CircularProgress } from "@mui/material";
 import { SearchInput } from "../../components/input/searchInput";
 import TextfieldList from "../../components/input/textfield.list";
 import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
-import { useAlerts } from "../../../contexts/alerts.context";
+import { useAlerts } from "../../../hooks/useAlerts";
 import { Dish } from "../../../data/models/dish.model";
 import { sortDishes, DishSortOption } from "./utils/sortDishes";
 import { filterDishes } from "./utils/filterDishes";

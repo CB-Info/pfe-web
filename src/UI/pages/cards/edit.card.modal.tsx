@@ -4,7 +4,7 @@ import { ConfirmationModal } from '../../components/modals/confirmation.modal';
 import { TextInput } from '../../components/input/textInput';
 import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
 import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
+import { useAlerts } from '../../../hooks/useAlerts';
 import { Dish } from '../../../data/models/dish.model';
 import { CardDto } from '../../../data/dto/card.dto';
 import { CircularProgress } from '@mui/material';

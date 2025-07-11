@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
-import AlertsProvider, { useAlerts } from '../contexts/alerts.context';
+import AlertsProvider from '../contexts/alerts.context';
+import { useAlerts } from '../hooks/useAlerts';
 import { describe, test, expect, beforeEach } from 'vitest';
 
 const TestComponent = () => {

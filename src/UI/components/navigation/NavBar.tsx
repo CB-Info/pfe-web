@@ -4,7 +4,7 @@ import { NavBarCollapseButton } from "./NavBarCollapseButton";
 import { NavBarItems } from "./NavBarItems";
 import { NavBarFooter } from "./NavBarFooter";
 import { useUsersListerDispatchContext } from "../../../reducers/auth.reducer";
-import { useAlerts } from "../../../contexts/alerts.context";
+import { useAlerts } from "../../../hooks/useAlerts";
 import { UserRepositoryImpl } from "../../../network/repositories/user.respository";
 
 interface NavBarProps {
