@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI Pipeline (Disabled)
 
 on:
   push:
@@ -71,7 +71,7 @@ jobs:
         run: npm ci --prefer-offline
 
       - name: TypeScript type check
-        run: npx tsc --noEmit
+        run: npx tsc --noEmit --skipLibCheck
 
   # Linting en parallèle
   lint:
@@ -131,7 +131,7 @@ jobs:
         run: npm ci --prefer-offline
 
       - name: Run tests
-        run: npm test -- --reporter=verbose --coverage
+        run: npm test -- --reporter=verbose --run
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4

@@ -1,4 +1,4 @@
-name: PR Validation
+name: PR Validation (Disabled)
 
 on:
   pull_request:
@@ -171,12 +171,11 @@ jobs:
           
           # Calculer la différence
           DIFF=$((PR_SIZE - BASE_SIZE))
-          DIFF_PERCENT=$(echo "scale=2; $DIFF * 100 / $BASE_SIZE" | bc -l)
           
           echo "### Build Size Comparison" >> $GITHUB_STEP_SUMMARY
-          echo "- **Base build**: $(numfmt --to=iec $BASE_SIZE)" >> $GITHUB_STEP_SUMMARY
-          echo "- **PR build**: $(numfmt --to=iec $PR_SIZE)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Difference**: $(numfmt --to=iec $DIFF) (${DIFF_PERCENT}%)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Base build**: $(echo $BASE_SIZE | awk '{print int($1/1024/1024) " MB"}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **PR build**: $(echo $PR_SIZE | awk '{print int($1/1024/1024) " MB"}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Difference**: $(echo $DIFF | awk '{if($1>=0) print "+" int($1/1024) " KB"; else print int($1/1024) " KB"}')" >> $GITHUB_STEP_SUMMARY
           
           # Alerte si augmentation significative
           if [ $DIFF -gt 100000 ]; then  # > 100KB
