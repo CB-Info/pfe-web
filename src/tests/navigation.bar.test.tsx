@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { NavBar } from "../UI/components/navigation/NavBar";
 import {
   UsersListerStateContext,
@@ -8,7 +8,36 @@ import {
 } from "../reducers/auth.reducer";
 import { UserRepositoryImpl } from "../network/repositories/user.respository";
 import { useReducer, FC, ReactNode } from "react";
-import { vi } from "vitest";
+import { vi, beforeEach, describe, test, expect } from "vitest";
+import AlertsProvider from "../contexts/alerts.context";
+import { MemoryRouter } from "react-router-dom";
+
+// Mock Firebase dependencies
+vi.mock("../network/authentication/firebase.auth.manager", () => ({
+  default: class MockFirebaseAuthManager {
+    static getInstance() {
+      return {
+        logout: vi.fn().mockResolvedValue(undefined),
+        getToken: vi.fn().mockResolvedValue("mock-token"),
+        login: vi.fn().mockResolvedValue({}),
+      };
+    }
+  }
+}));
+
+// Mock Firebase config
+vi.mock("../config/firebase.config", () => ({
+  app: {},
+  appCheck: {},
+  default: {}
+}));
+
+// Mock Firebase security config
+vi.mock("../config/firebase-security.config", () => ({
+  initializeFirebaseAppCheck: vi.fn().mockReturnValue(null),
+  FIREBASE_SECURITY_CONFIG: {},
+  SECURITY_HEADERS: {}
+}));
 
 const Wrapper: FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(
@@ -16,11 +45,15 @@ const Wrapper: FC<{ children: ReactNode }> = ({ children }) => {
     UsersListerInitialState
   );
   return (
-    <UsersListerStateContext.Provider value={state}>
-      <UsersListerDispatchContext.Provider value={dispatch}>
-        {children}
-      </UsersListerDispatchContext.Provider>
-    </UsersListerStateContext.Provider>
+    <MemoryRouter>
+      <AlertsProvider>
+        <UsersListerStateContext.Provider value={state}>
+          <UsersListerDispatchContext.Provider value={dispatch}>
+            {children}
+          </UsersListerDispatchContext.Provider>
+        </UsersListerStateContext.Provider>
+      </AlertsProvider>
+    </MemoryRouter>
   );
 };
 
@@ -41,16 +74,30 @@ describe("NavBar collapsed state", () => {
   test("loads collapsed state from localStorage", async () => {
     localStorage.setItem("navCollapsed", "true");
     mockUser();
-    render(<NavBar isOpen={true} onClose={() => {}} />, { wrapper: Wrapper });
-    expect(screen.queryByText("Dashboard")).not.toBeInTheDocument();
+    
+    await act(async () => {
+      render(<NavBar isOpen={true} onClose={() => {}} />, { wrapper: Wrapper });
+    });
+    
+    // Check that the Dashboard text is hidden (has the collapsed CSS classes)
+    const dashboardText = screen.getByText("Dashboard");
+    expect(dashboardText.parentElement).toHaveClass("w-0", "opacity-0");
   });
 
   test("toggle collapse on button click", async () => {
     localStorage.setItem("navCollapsed", "false");
     mockUser();
-    render(<NavBar isOpen={true} onClose={() => {}} />, { wrapper: Wrapper });
+    
+    await act(async () => {
+      render(<NavBar isOpen={true} onClose={() => {}} />, { wrapper: Wrapper });
+    });
+    
     const btn = screen.getByLabelText("Réduire la navigation");
-    fireEvent.click(btn);
+    
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+    
     expect(localStorage.getItem("navCollapsed")).toBe("true");
   });
 });
