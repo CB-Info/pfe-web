@@ -1,0 +1,187 @@
+name: PR Validation (Disabled)
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  pr-info:
+    name: PR Information
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR Info
+        run: |
+          echo "### Pull Request Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.head_ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target**: ${{ github.base_ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files changed**: Calculating..." >> $GITHUB_STEP_SUMMARY
+
+  size-check:
+    name: PR Size Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR size
+        run: |
+          # Compter les lignes modifiées
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          CHANGED_FILES=$(git diff --name-only $BASE_SHA..$HEAD_SHA | wc -l)
+          ADDED_LINES=$(git diff --numstat $BASE_SHA..$HEAD_SHA | awk '{sum += $1} END {print sum}')
+          REMOVED_LINES=$(git diff --numstat $BASE_SHA..$HEAD_SHA | awk '{sum += $2} END {print sum}')
+          
+          echo "### PR Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files changed**: $CHANGED_FILES" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lines added**: $ADDED_LINES" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lines removed**: $REMOVED_LINES" >> $GITHUB_STEP_SUMMARY
+          
+          # Alerte si la PR est trop grosse
+          if [ $CHANGED_FILES -gt 20 ] || [ $ADDED_LINES -gt 500 ]; then
+            echo "⚠️ **Large PR detected!** Consider breaking it into smaller chunks." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **Good PR size!**" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  conventional-commits:
+    name: Conventional Commits Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit messages
+        run: |
+          echo "### Commit Message Validation" >> $GITHUB_STEP_SUMMARY
+          
+          # Pattern pour conventional commits
+          PATTERN="^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\(.+\))?: .{1,50}"
+          
+          # Vérifier chaque commit dans la PR
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          INVALID_COMMITS=0
+          while IFS= read -r commit; do
+            if ! echo "$commit" | grep -qE "$PATTERN"; then
+              echo "❌ Invalid commit: $commit" >> $GITHUB_STEP_SUMMARY
+              INVALID_COMMITS=$((INVALID_COMMITS + 1))
+            fi
+          done < <(git log --format="%s" $BASE_SHA..$HEAD_SHA)
+          
+          if [ $INVALID_COMMITS -eq 0 ]; then
+            echo "✅ All commits follow conventional commit format!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ $INVALID_COMMITS commits don't follow conventional format" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Expected format**: \`type(scope): description\`" >> $GITHUB_STEP_SUMMARY
+            echo "**Types**: feat, fix, docs, style, refactor, test, chore, ci, perf, build, revert" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  changed-files:
+    name: Changed Files Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Analyze changed files
+        run: |
+          echo "### Changed Files Analysis" >> $GITHUB_STEP_SUMMARY
+          
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          # Analyser les types de fichiers modifiés
+          echo "#### File Types Changed:" >> $GITHUB_STEP_SUMMARY
+          git diff --name-only $BASE_SHA..$HEAD_SHA | sed 's/.*\.//' | sort | uniq -c | while read count ext; do
+            echo "- **.$ext**: $count files" >> $GITHUB_STEP_SUMMARY
+          done
+          
+          # Vérifier si des fichiers critiques ont été modifiés
+          CRITICAL_FILES="package.json package-lock.json vite.config.ts tsconfig.json .github/"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Critical Files Check:" >> $GITHUB_STEP_SUMMARY
+          
+          CRITICAL_CHANGED=false
+          for file in $CRITICAL_FILES; do
+            if git diff --name-only $BASE_SHA..$HEAD_SHA | grep -q "^$file"; then
+              echo "⚠️ **$file** has been modified" >> $GITHUB_STEP_SUMMARY
+              CRITICAL_CHANGED=true
+            fi
+          done
+          
+          if [ "$CRITICAL_CHANGED" = false ]; then
+            echo "✅ No critical configuration files modified" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  build-diff:
+    name: Build Size Comparison
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Build PR version
+        run: npm run build
+
+      - name: Get PR build size
+        id: pr-size
+        run: |
+          PR_SIZE=$(du -sb dist | cut -f1)
+          echo "size=$PR_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Install dependencies (base)
+        run: npm ci --prefer-offline
+
+      - name: Build base version
+        run: npm run build
+
+      - name: Compare build sizes
+        run: |
+          BASE_SIZE=$(du -sb dist | cut -f1)
+          PR_SIZE=${{ steps.pr-size.outputs.size }}
+          
+          # Calculer la différence
+          DIFF=$((PR_SIZE - BASE_SIZE))
+          
+          echo "### Build Size Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "- **Base build**: $(echo $BASE_SIZE | awk '{print int($1/1024/1024) " MB"}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **PR build**: $(echo $PR_SIZE | awk '{print int($1/1024/1024) " MB"}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Difference**: $(echo $DIFF | awk '{if($1>=0) print "+" int($1/1024) " KB"; else print int($1/1024) " KB"}')" >> $GITHUB_STEP_SUMMARY
+          
+          # Alerte si augmentation significative
+          if [ $DIFF -gt 100000 ]; then  # > 100KB
+            echo "⚠️ **Significant build size increase!**" >> $GITHUB_STEP_SUMMARY
+          elif [ $DIFF -lt -50000 ]; then  # < -50KB
+            echo "🎉 **Great! Build size decreased!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **Build size change is acceptable**" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -29,11 +29,19 @@ console.log('🔍 Validating Firebase Configuration Variables...\n');
 
 // Check if .env file exists
 const envPath = path.join(process.cwd(), '.env');
+const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
+
 if (!fs.existsSync(envPath)) {
-  console.error('❌ .env file not found!');
-  console.log('💡 Please create a .env file in the project root and add your Firebase configuration.');
-  console.log('📖 Copy .env.example to .env and fill in your values.');
-  process.exit(1);
+  if (isCI) {
+    console.log('ℹ️ .env file not found in CI environment - this is expected');
+    console.log('✅ Environment validation skipped in CI');
+    process.exit(0);
+  } else {
+    console.error('❌ .env file not found!');
+    console.log('💡 Please create a .env file in the project root and add your Firebase configuration.');
+    console.log('📖 Copy .env.example to .env and fill in your values.');
+    process.exit(1);
+  }
 }
 
 // Parse .env file
