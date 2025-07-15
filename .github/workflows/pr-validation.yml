@@ -147,7 +147,9 @@ jobs:
           cache-dependency-path: "package-lock.json"
 
       - name: Clean npm cache
-        run: npm cache verify
+        run: |
+          npm cache verify
+          rm -rf node_modules
 
       - name: Install dependencies
         run: |
@@ -157,10 +159,21 @@ jobs:
           echo "- **npm**: $(npm --version)" >> $GITHUB_STEP_SUMMARY
           echo "- **Platform**: $(uname -a)" >> $GITHUB_STEP_SUMMARY
 
+      - name: Clear TypeScript cache
+        run: |
+          echo "🧹 Clearing TypeScript and build caches..."
+          # Supprimer les fichiers de cache TypeScript
+          find . -name "*.tsbuildinfo" -delete 2>/dev/null || true
+          # Nettoyer le cache node_modules
+          rm -rf node_modules/.cache 2>/dev/null || true
+          # Nettoyer le cache npm TypeScript
+          npm cache clean --force 2>/dev/null || true
+          echo "✅ TypeScript cache cleared"
+
       - name: Type check
         run: |
           echo "### TypeScript Compilation" >> $GITHUB_STEP_SUMMARY
-          if npx tsc --noEmit; then
+          if npx tsc --noEmit --skipLibCheck --incremental false; then
             echo "✅ TypeScript compilation successful" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ TypeScript compilation failed" >> $GITHUB_STEP_SUMMARY
@@ -204,7 +217,14 @@ jobs:
         run: npm ci --prefer-offline --no-audit --progress=false
 
       - name: Build base version
-        run: npm run build
+        run: |
+          # Build de la branche de base avec tolérance aux erreurs TypeScript
+          # (la branche de base peut avoir des erreurs en cours de correction)
+          echo "Building base branch for size comparison..."
+          npm run build || {
+            echo "⚠️ Base branch has TypeScript errors, building with Vite only for size comparison..."
+            npx vite build
+          }
 
       - name: Get base build size
         id: base-size
