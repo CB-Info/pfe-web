@@ -13,11 +13,9 @@ on:
 env:
   NODE_VERSION: "20"
 
-# Add repository-level permissions for CodeQL
 permissions:
   actions: read
   contents: read
-  security-events: write
 
 jobs:
   dependency-audit:
@@ -58,13 +56,12 @@ jobs:
           npm outdated >> $GITHUB_STEP_SUMMARY || true
           echo "```" >> $GITHUB_STEP_SUMMARY
 
-  codeql-analysis:
-    name: CodeQL Security Analysis
+  codeql-cli-analysis:
+    name: CodeQL CLI Security Analysis
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
-      security-events: write
     strategy:
       fail-fast: false
       matrix:
@@ -72,12 +69,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -91,10 +82,62 @@ jobs:
       - name: Build for analysis
         run: npm run build
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+      - name: Download and setup CodeQL CLI
+        run: |
+          wget -q https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-linux64.tar.gz
+          tar -xzf codeql-linux64.tar.gz
+          echo "$GITHUB_WORKSPACE/codeql" >> $GITHUB_PATH
+
+      - name: Create CodeQL database
+        run: |
+          codeql database create codeql-db \
+            --language=${{ matrix.language }} \
+            --source-root . \
+            --command="npm run build" || \
+          codeql database create codeql-db \
+            --language=${{ matrix.language }} \
+            --source-root .
+
+      - name: Run CodeQL analysis
+        run: |
+          codeql database analyze codeql-db \
+            --format=sarif-latest \
+            --output=codeql-results.sarif \
+            --ram=2048 \
+            javascript-security-and-quality.qls
+
+      - name: Generate human-readable report
+        run: |
+          codeql database analyze codeql-db \
+            --format=csv \
+            --output=codeql-results.csv \
+            javascript-security-and-quality.qls
+
+          # Create summary for GitHub
+          echo "### CodeQL Analysis Results" >> $GITHUB_STEP_SUMMARY
+          if [ -s codeql-results.csv ]; then
+            echo "⚠️ Security issues found - download artifacts for details" >> $GITHUB_STEP_SUMMARY
+            echo "Issues found: $(tail -n +2 codeql-results.csv | wc -l)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No security issues found!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload CodeQL results
+        uses: actions/upload-artifact@v4
         with:
-          category: "/language:${{ matrix.language }}"
+          name: codeql-results-${{ matrix.language }}
+          path: |
+            codeql-results.sarif
+            codeql-results.csv
+          retention-days: 30
+
+      - name: Fail on high severity issues (optional)
+        run: |
+          # Check for critical/high severity issues and fail if found
+          if grep -q '"level":"error"' codeql-results.sarif; then
+            echo "❌ Critical security issues found!"
+            exit 1
+          fi
 
   license-check:
     name: License Compliance Check
