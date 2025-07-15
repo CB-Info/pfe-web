@@ -2,8 +2,10 @@ import { FormEvent, useEffect, useState, useMemo } from "react";
 import BorderContainer from "../../../style/border.container.style";
 import { TextInput } from "../../input/textInput";
 import TextfieldList from "../../input/textfield.list";
-import CustomButton from "../../buttons/custom.button";
-import { TypeButton, WidthButton } from "../../buttons/button.types";
+import CustomButton, {
+  TypeButton,
+  WidthButton,
+} from "../../buttons/custom.button";
 import TitleStyle from "../../../style/title.style";
 import IngredientsLister from "../../ingredientsLister/ingredients.lister";
 import { Ingredient } from "../../../../data/models/ingredient.model";
