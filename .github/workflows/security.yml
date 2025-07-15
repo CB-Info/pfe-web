@@ -112,33 +112,12 @@ jobs:
           echo "Running existing project linter..."
           npm run lint
 
-      - name: Install additional security ESLint plugins
-        run: |
-          npm install --no-save eslint-plugin-security eslint-plugin-no-secrets eslint-plugin-react-security
-
       - name: Run ESLint security analysis
         run: |
           echo "Running additional security-focused ESLint analysis..."
           npx eslint src/ \
             --ext .ts,.tsx \
-            --config '{
-              "extends": ["plugin:security/recommended", "plugin:react-security/recommended"], 
-              "plugins": ["security", "no-secrets", "react-security"], 
-              "rules": {
-                "no-secrets/no-secrets": "error",
-                "security/detect-object-injection": "warn",
-                "security/detect-non-literal-regexp": "warn",
-                "security/detect-unsafe-regex": "error",
-                "react-security/jsx-no-script-url": "error",
-                "react-security/jsx-no-target-blank": "error"
-              },
-              "parser": "@typescript-eslint/parser",
-              "parserOptions": {
-                "ecmaVersion": 2020,
-                "sourceType": "module",
-                "ecmaFeatures": {"jsx": true}
-              }
-            }' \
+            --config .eslintrc.security.json \
             --format json \
             --output-file eslint-security.json || true
 
