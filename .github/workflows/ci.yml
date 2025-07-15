@@ -171,13 +171,227 @@ jobs:
 
       - name: Check build size
         run: |
-          echo "### Build Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Build Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Taille totale du build
+          total_size=$(du -sh dist | cut -f1)
+          total_size_bytes=$(du -sb dist | cut -f1)
+          echo "**Total build size:** \`$total_size\`" >> $GITHUB_STEP_SUMMARY
+
+          # Comparaison avec le build précédent
+          if [ -f "previous-build-size.txt" ]; then
+            prev_size_bytes=$(cat previous-build-size.txt)
+            diff_bytes=$((total_size_bytes - prev_size_bytes))
+            
+            if [ $diff_bytes -ne 0 ]; then
+              if [ $diff_bytes -gt 0 ]; then
+                diff_human=$(echo $diff_bytes | numfmt --to=iec)
+                percentage=$(echo "scale=1; $diff_bytes * 100 / $prev_size_bytes" | bc -l)
+                echo "📈 **Size change:** +\`$diff_human\` (+$percentage%)" >> $GITHUB_STEP_SUMMARY
+              else
+                diff_human=$(echo ${diff_bytes#-} | numfmt --to=iec)
+                percentage=$(echo "scale=1; $diff_bytes * 100 / $prev_size_bytes" | bc -l)
+                echo "📉 **Size change:** -\`$diff_human\` ($percentage%)" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              echo "📊 **Size change:** No change" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "📊 **Size change:** First build (no comparison)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Sauvegarder la taille actuelle pour la prochaine fois
+          echo "$total_size_bytes" > current-build-size.txt
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Analyse par type de fichier
+          echo "#### 📊 Size by file type" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | Total Size | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------------|-------|" >> $GITHUB_STEP_SUMMARY
+
+          # JavaScript files
+          js_size=$(find dist -name "*.js" -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          js_count=$(find dist -name "*.js" | wc -l)
+          echo "| JavaScript | \`$js_size\` | $js_count |" >> $GITHUB_STEP_SUMMARY
+
+          # CSS files
+          css_size=$(find dist -name "*.css" -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          css_count=$(find dist -name "*.css" | wc -l)
+          echo "| CSS | \`$css_size\` | $css_count |" >> $GITHUB_STEP_SUMMARY
+
+          # Images
+          img_size=$(find dist \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" \) -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          img_count=$(find dist \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" \) | wc -l)
+          echo "| Images | \`$img_size\` | $img_count |" >> $GITHUB_STEP_SUMMARY
+
+          # Fonts
+          font_size=$(find dist \( -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          font_count=$(find dist \( -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) | wc -l)
+          echo "| Fonts | \`$font_size\` | $font_count |" >> $GITHUB_STEP_SUMMARY
+
+          # Other files
+          other_size=$(find dist -type f ! \( -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" -o -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          other_count=$(find dist -type f ! \( -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" -o -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) | wc -l)
+          echo "| Other | \`$other_size\` | $other_count |" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Top 15 des plus gros fichiers
+          echo "#### 🔍 Largest files (top 15)" >> $GITHUB_STEP_SUMMARY
           echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
           echo "|------|------|" >> $GITHUB_STEP_SUMMARY
-          find dist -name "*.js" -o -name "*.css" | head -10 | while read file; do
-            size=$(du -h "$file" | cut -f1)
-            echo "| $file | $size |" >> $GITHUB_STEP_SUMMARY
+          find dist -type f -exec du -h {} + | sort -hr | head -15 | while read size file; do
+            echo "| \`${file#dist/}\` | \`$size\` |" >> $GITHUB_STEP_SUMMARY
           done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Alerte pour les fichiers volumineux (>500KB)
+          large_files=$(find dist -type f -size +500k)
+          if [ -n "$large_files" ]; then
+            echo "#### ⚠️ Large files (>500KB)" >> $GITHUB_STEP_SUMMARY
+            echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+            echo "$large_files" | while read file; do
+              size=$(du -h "$file" | cut -f1)
+              echo "| \`${file#dist/}\` | \`$size\` |" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Alerte pour les fichiers très volumineux (>1MB)
+          huge_files=$(find dist -type f -size +1M)
+          if [ -n "$huge_files" ]; then
+            echo "#### 🚨 Very large files (>1MB)" >> $GITHUB_STEP_SUMMARY
+            echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+            echo "$huge_files" | while read file; do
+              size=$(du -h "$file" | cut -f1)
+              echo "| \`${file#dist/}\` | \`$size\` |" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> 💡 **Tip:** Consider code splitting, lazy loading, or asset optimization for files >1MB" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Suggestions d'optimisation
+          echo "#### 💡 Optimization suggestions" >> $GITHUB_STEP_SUMMARY
+          total_size_bytes=$(du -sb dist | cut -f1)
+          if [ $total_size_bytes -gt 5242880 ]; then # > 5MB
+            echo "- 📦 Total build size is quite large (>5MB). Consider:" >> $GITHUB_STEP_SUMMARY
+            echo "  - Code splitting and lazy loading" >> $GITHUB_STEP_SUMMARY
+            echo "  - Tree shaking unused code" >> $GITHUB_STEP_SUMMARY
+            echo "  - Bundle analysis with tools like webpack-bundle-analyzer" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Comparaison avec les recommandations
+          js_size_bytes=$(find dist -name "*.js" -exec du -sb {} + 2>/dev/null | awk '{sum+=$1} END {print sum}' || echo "0")
+          if [ $js_size_bytes -gt 1048576 ]; then # > 1MB
+            echo "- 📜 JavaScript bundle is large (>1MB). Consider code splitting." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          css_size_bytes=$(find dist -name "*.css" -exec du -sb {} + 2>/dev/null | awk '{sum+=$1} END {print sum}' || echo "0")
+          if [ $css_size_bytes -gt 262144 ]; then # > 256KB
+            echo "- 🎨 CSS bundle is large (>256KB). Consider purging unused styles." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "### 📦 Build Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Taille totale du build
+          total_size=$(du -sh dist | cut -f1)
+          echo "**Total build size:** \`$total_size\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Analyse par type de fichier
+          echo "#### 📊 Size by file type" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | Total Size | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------------|-------|" >> $GITHUB_STEP_SUMMARY
+
+          # JavaScript files
+          js_size=$(find dist -name "*.js" -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          js_count=$(find dist -name "*.js" | wc -l)
+          echo "| JavaScript | \`$js_size\` | $js_count |" >> $GITHUB_STEP_SUMMARY
+
+          # CSS files
+          css_size=$(find dist -name "*.css" -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          css_count=$(find dist -name "*.css" | wc -l)
+          echo "| CSS | \`$css_size\` | $css_count |" >> $GITHUB_STEP_SUMMARY
+
+          # Images
+          img_size=$(find dist \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" \) -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          img_count=$(find dist \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" \) | wc -l)
+          echo "| Images | \`$img_size\` | $img_count |" >> $GITHUB_STEP_SUMMARY
+
+          # Fonts
+          font_size=$(find dist \( -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          font_count=$(find dist \( -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) | wc -l)
+          echo "| Fonts | \`$font_size\` | $font_count |" >> $GITHUB_STEP_SUMMARY
+
+          # Other files
+          other_size=$(find dist -type f ! \( -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" -o -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) -exec du -ch {} + 2>/dev/null | tail -1 | cut -f1 || echo "0")
+          other_count=$(find dist -type f ! \( -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" -o -name "*.gif" -o -name "*.webp" -o -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" -o -name "*.otf" \) | wc -l)
+          echo "| Other | \`$other_size\` | $other_count |" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Top 15 des plus gros fichiers
+          echo "#### 🔍 Largest files (top 15)" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          find dist -type f -exec du -h {} + | sort -hr | head -15 | while read size file; do
+            echo "| \`${file#dist/}\` | \`$size\` |" >> $GITHUB_STEP_SUMMARY
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Alerte pour les fichiers volumineux (>500KB)
+          large_files=$(find dist -type f -size +500k)
+          if [ -n "$large_files" ]; then
+            echo "#### ⚠️ Large files (>500KB)" >> $GITHUB_STEP_SUMMARY
+            echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+            echo "$large_files" | while read file; do
+              size=$(du -h "$file" | cut -f1)
+              echo "| \`${file#dist/}\` | \`$size\` |" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Alerte pour les fichiers très volumineux (>1MB)
+          huge_files=$(find dist -type f -size +1M)
+          if [ -n "$huge_files" ]; then
+            echo "#### 🚨 Very large files (>1MB)" >> $GITHUB_STEP_SUMMARY
+            echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+            echo "$huge_files" | while read file; do
+              size=$(du -h "$file" | cut -f1)
+              echo "| \`${file#dist/}\` | \`$size\` |" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> 💡 **Tip:** Consider code splitting, lazy loading, or asset optimization for files >1MB" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Suggestions d'optimisation
+          echo "#### 💡 Optimization suggestions" >> $GITHUB_STEP_SUMMARY
+          total_size_bytes=$(du -sb dist | cut -f1)
+          if [ $total_size_bytes -gt 5242880 ]; then # > 5MB
+            echo "- 📦 Total build size is quite large (>5MB). Consider:" >> $GITHUB_STEP_SUMMARY
+            echo "  - Code splitting and lazy loading" >> $GITHUB_STEP_SUMMARY
+            echo "  - Tree shaking unused code" >> $GITHUB_STEP_SUMMARY
+            echo "  - Bundle analysis with tools like webpack-bundle-analyzer" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Comparaison avec les recommandations
+          js_size_bytes=$(find dist -name "*.js" -exec du -sb {} + 2>/dev/null | awk '{sum+=$1} END {print sum}' || echo "0")
+          if [ $js_size_bytes -gt 1048576 ]; then # > 1MB
+            echo "- 📜 JavaScript bundle is large (>1MB). Consider code splitting." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          css_size_bytes=$(find dist -name "*.css" -exec du -sb {} + 2>/dev/null | awk '{sum+=$1} END {print sum}' || echo "0")
+          if [ $css_size_bytes -gt 262144 ]; then # > 256KB
+            echo "- 🎨 CSS bundle is large (>256KB). Consider purging unused styles." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
