@@ -217,3 +217,4 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
 };
 
 export default CustomButton;
+export { TypeButton, WidthButton } from "./button.types";
