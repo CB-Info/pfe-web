@@ -1,15 +1,13 @@
 import { FormEvent, useEffect, useState, useMemo } from "react";
 import BorderContainer from "../../../style/border.container.style";
-import { TextInput } from "../../../components/input/textInput";
-import TextfieldList from "../../../components/input/textfield.list";
-import CustomButton, {
-  TypeButton,
-  WidthButton,
-} from "../../../components/buttons/custom.button";
+import { TextInput } from "../../input/textInput";
+import TextfieldList from "../../input/textfield.list";
+import CustomButton from "../../buttons/custom.button";
+import { TypeButton, WidthButton } from "../../buttons/button.types";
 import TitleStyle from "../../../style/title.style";
-import IngredientsLister from "../../../components/ingredientsLister/ingredients.lister";
+import IngredientsLister from "../../ingredientsLister/ingredients.lister";
 import { Ingredient } from "../../../../data/models/ingredient.model";
-import { NumberInput } from "../../../components/input/number.input";
+import { NumberInput } from "../../input/number.input";
 import { CircularProgress } from "@mui/material";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import {
