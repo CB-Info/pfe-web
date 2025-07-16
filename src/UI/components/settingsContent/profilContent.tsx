@@ -4,10 +4,7 @@ import {
   useUsersListerStateContext,
 } from "../../../reducers/auth.reducer";
 import { UserRepositoryImpl } from "../../../network/repositories/user.respository";
-import CustomButton, {
-  TypeButton,
-  WidthButton,
-} from "../buttons/custom.button";
+import CustomButton, { TypeButton, WidthButton } from "../buttons";
 import { useState } from "react";
 import { useAlerts } from "../../../hooks/useAlerts";
 

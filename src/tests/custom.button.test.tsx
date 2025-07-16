@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import CustomButton, {
   TypeButton,
   WidthButton,
-} from "../UI/components/buttons/custom.button";
+} from "../UI/components/buttons";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 
 describe("CustomButton Component", () => {

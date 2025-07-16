@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import CustomButton, {
   TypeButton,
   WidthButton,
-} from "../UI/components/buttons/custom.button";
+} from "../UI/components/buttons";
 
 test("renders learn react link", () => {
   render(
