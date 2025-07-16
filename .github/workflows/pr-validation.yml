@@ -49,8 +49,19 @@ jobs:
           echo "- **Lines added**: $ADDED_LINES" >> $GITHUB_STEP_SUMMARY
           echo "- **Lines removed**: $REMOVED_LINES" >> $GITHUB_STEP_SUMMARY
 
+          # Seuils différents selon la branche cible
+          if [ "${{ github.base_ref }}" = "main" ]; then
+            FILE_THRESHOLD=50
+            LINE_THRESHOLD=1000
+            echo "- **Context**: Merge to main (relaxed thresholds)" >> $GITHUB_STEP_SUMMARY
+          else
+            FILE_THRESHOLD=20
+            LINE_THRESHOLD=500
+            echo "- **Context**: Feature branch (standard thresholds)" >> $GITHUB_STEP_SUMMARY
+          fi
+
           # Alerte si la PR est trop grosse
-          if [ $CHANGED_FILES -gt 20 ] || [ $ADDED_LINES -gt 500 ]; then
+          if [ $CHANGED_FILES -gt $FILE_THRESHOLD ] || [ $ADDED_LINES -gt $LINE_THRESHOLD ]; then
             echo "⚠️ **Large PR detected!** Consider breaking it into smaller chunks." >> $GITHUB_STEP_SUMMARY
           else
             echo "✅ **Good PR size!**" >> $GITHUB_STEP_SUMMARY
@@ -147,9 +158,7 @@ jobs:
           cache-dependency-path: "package-lock.json"
 
       - name: Clean npm cache
-        run: |
-          npm cache verify
-          rm -rf node_modules
+        run: npm cache verify
 
       - name: Install dependencies
         run: |
@@ -159,21 +168,10 @@ jobs:
           echo "- **npm**: $(npm --version)" >> $GITHUB_STEP_SUMMARY
           echo "- **Platform**: $(uname -a)" >> $GITHUB_STEP_SUMMARY
 
-      - name: Clear TypeScript cache
-        run: |
-          echo "🧹 Clearing TypeScript and build caches..."
-          # Supprimer les fichiers de cache TypeScript
-          find . -name "*.tsbuildinfo" -delete 2>/dev/null || true
-          # Nettoyer le cache node_modules
-          rm -rf node_modules/.cache 2>/dev/null || true
-          # Nettoyer le cache npm TypeScript
-          npm cache clean --force 2>/dev/null || true
-          echo "✅ TypeScript cache cleared"
-
       - name: Type check
         run: |
           echo "### TypeScript Compilation" >> $GITHUB_STEP_SUMMARY
-          if npx tsc --noEmit --skipLibCheck --incremental false; then
+          if npx tsc --noEmit; then
             echo "✅ TypeScript compilation successful" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ TypeScript compilation failed" >> $GITHUB_STEP_SUMMARY
@@ -201,10 +199,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-validation
     steps:
+      - name: Determine comparison base
+        id: comparison-base
+        run: |
+          if [ "${{ github.base_ref }}" = "main" ]; then
+            # Pour les merges vers main, essayer de comparer avec le dernier tag
+            COMPARISON_REF=$(git ls-remote --tags origin | grep -v '\^{}' | sort -V | tail -1 | cut -f2 | sed 's/refs\/tags\///' 2>/dev/null || echo "main")
+            echo "ref=$COMPARISON_REF" >> $GITHUB_OUTPUT
+            echo "context=merge-to-main" >> $GITHUB_OUTPUT
+          else
+            echo "ref=${{ github.base_ref }}" >> $GITHUB_OUTPUT
+            echo "context=feature-branch" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout base branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.ref }}
+          ref: ${{ steps.comparison-base.outputs.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -217,14 +228,7 @@ jobs:
         run: npm ci --prefer-offline --no-audit --progress=false
 
       - name: Build base version
-        run: |
-          # Build de la branche de base avec tolérance aux erreurs TypeScript
-          # (la branche de base peut avoir des erreurs en cours de correction)
-          echo "Building base branch for size comparison..."
-          npm run build || {
-            echo "⚠️ Base branch has TypeScript errors, building with Vite only for size comparison..."
-            npx vite build
-          }
+        run: npm run build
 
       - name: Get base build size
         id: base-size
@@ -252,23 +256,43 @@ jobs:
         run: |
           BASE_SIZE=${{ steps.base-size.outputs.size }}
           PR_SIZE=$(du -sb dist | cut -f1)
+          CONTEXT="${{ steps.comparison-base.outputs.context }}"
+          COMPARISON_REF="${{ steps.comparison-base.outputs.ref }}"
 
           # Calculer la différence
           DIFF=$((PR_SIZE - BASE_SIZE))
           DIFF_PERCENT=$(echo "scale=2; ($DIFF * 100) / $BASE_SIZE" | bc -l)
 
-
-          echo "### Build Size Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Build Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Comparison base**: $COMPARISON_REF" >> $GITHUB_STEP_SUMMARY
           echo "- **Base build**: $(echo $BASE_SIZE | awk '{print int($1/1024/1024) " MB (" int($1/1024) " KB)"}')" >> $GITHUB_STEP_SUMMARY
           echo "- **PR build**: $(echo $PR_SIZE | awk '{print int($1/1024/1024) " MB (" int($1/1024) " KB)"}')" >> $GITHUB_STEP_SUMMARY
           echo "- **Difference**: $(echo $DIFF | awk '{if($1>=0) print "+" int($1/1024) " KB"; else print int($1/1024) " KB"}') (${DIFF_PERCENT}%)" >> $GITHUB_STEP_SUMMARY
 
-          # Alerte si augmentation significative
-          if [ $DIFF -gt 100000 ]; then  # > 100KB
-            echo "⚠️ **Significant build size increase detected!**" >> $GITHUB_STEP_SUMMARY
-            echo "Consider reviewing the changes to reduce bundle size." >> $GITHUB_STEP_SUMMARY
-          elif [ $DIFF -lt -50000 ]; then  # < -50KB
-            echo "🎉 **Great! Build size decreased!**" >> $GITHUB_STEP_SUMMARY
+          # Seuils différents selon le contexte
+          if [ "$CONTEXT" = "merge-to-main" ]; then
+            THRESHOLD=500000  # 500KB - Plus tolérant pour develop -> main
+            echo "- **Context**: Merge to main (relaxed threshold: 500KB)" >> $GITHUB_STEP_SUMMARY
+            
+            if [ $DIFF -gt $THRESHOLD ]; then
+              echo "⚠️ **Significant build size increase detected!**" >> $GITHUB_STEP_SUMMARY
+              echo "This may be expected when merging develop into main with new features." >> $GITHUB_STEP_SUMMARY
+              echo "Please review if this increase is justified by the new functionality." >> $GITHUB_STEP_SUMMARY
+            elif [ $DIFF -lt -50000 ]; then  # < -50KB
+              echo "🎉 **Great! Build size decreased!**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ **Build size change is acceptable for a main merge**" >> $GITHUB_STEP_SUMMARY
+            fi
           else
-            echo "✅ **Build size change is acceptable**" >> $GITHUB_STEP_SUMMARY
+            THRESHOLD=100000  # 100KB - Plus strict pour les feature branches
+            echo "- **Context**: Feature branch (standard threshold: 100KB)" >> $GITHUB_STEP_SUMMARY
+            
+            if [ $DIFF -gt $THRESHOLD ]; then
+              echo "⚠️ **Significant build size increase detected!**" >> $GITHUB_STEP_SUMMARY
+              echo "Consider reviewing the changes to reduce bundle size." >> $GITHUB_STEP_SUMMARY
+            elif [ $DIFF -lt -50000 ]; then  # < -50KB
+              echo "🎉 **Great! Build size decreased!**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ **Build size change is acceptable**" >> $GITHUB_STEP_SUMMARY
+            fi
           fi
