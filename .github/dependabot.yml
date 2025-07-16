@@ -1,0 +1,91 @@
+version: 2
+updates:
+  # Configuration pour npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "web-erp-team"
+    assignees:
+      - "web-erp-team"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    # Grouper les mises à jour par type
+    groups:
+      # Groupe pour les mises à jour majeures
+      major-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+      # Groupe pour React et écosystème
+      react-ecosystem:
+        patterns:
+          - "react*"
+          - "@types/react*"
+          - "@testing-library/react*"
+        update-types:
+          - "minor"
+          - "patch"
+      # Groupe pour les outils de développement
+      dev-tools:
+        patterns:
+          - "vite*"
+          - "vitest*"
+          - "eslint*"
+          - "typescript"
+          - "@typescript-eslint/*"
+          - "tailwindcss"
+          - "postcss*"
+          - "autoprefixer"
+        update-types:
+          - "minor"
+          - "patch"
+      # Groupe pour les utilitaires et UI
+      ui-utilities:
+        patterns:
+          - "@mui/*"
+          - "@emotion/*"
+          - "@headlessui/*"
+          - "framer-motion"
+          - "lucide-react"
+          - "daisyui"
+          - "styled-components"
+          - "tailwind-styled-components"
+        update-types:
+          - "minor"
+          - "patch"
+    # Ignorer certaines dépendances si nécessaire
+    ignore:
+      # Exemple: ignorer les versions beta
+      - dependency-name: "*"
+        versions: ["*-beta", "*-alpha", "*-rc"]
+
+  # Configuration pour GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "ci"
+      - "automated"
+    reviewers:
+      - "web-erp-team"
+    assignees:
+      - "web-erp-team"

@@ -45,7 +45,6 @@ export const FIREBASE_SECURITY_CONFIG = {
     passwordMinLength: 8,
     requireStrongPassword: true,
     
-    // Session timeout (in minutes)
     sessionTimeout: 60,
     
     // Maximum login attempts before temporary lockout
