@@ -1,7 +1,7 @@
 import React from "react";
 import { NavBarCell } from "./NavBarCell";
 import SpaceDashboardRoundedIcon from "@mui/icons-material/SpaceDashboardRounded";
-import InventoryRoundedIcon from "@mui/icons-material/InventoryRounded";
+import { Package } from "lucide-react";
 import StyleRoundedIcon from "@mui/icons-material/StyleRounded";
 import LocalDiningRoundedIcon from "@mui/icons-material/LocalDiningRounded";
 
@@ -15,7 +15,7 @@ const items = [
     label: "Dashboard",
     path: "/dashboard",
   },
-  { icon: <InventoryRoundedIcon />, label: "Stock", path: "/stock" },
+  { icon: <Package className="w-6 h-6" />, label: "Stock", path: "/stock" },
   { icon: <StyleRoundedIcon />, label: "Cards", path: "/cards" },
   { icon: <LocalDiningRoundedIcon />, label: "Dishes", path: "/dishes" },
 ];

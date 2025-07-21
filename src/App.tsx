@@ -4,6 +4,7 @@ import { NavBar } from "./UI/components/navigation/NavBar";
 const DashboardPage = lazy(() => import("./UI/pages/dashboard/dashboard.page"));
 const DishesPage = lazy(() => import("./UI/pages/dishes/dishes.page"));
 const CardsPage = lazy(() => import("./UI/pages/cards/cards.page"));
+const StockPage = lazy(() => import("./UI/pages/stock/stock.page"));
 import { lightTheme, darkTheme } from "./applications/theme/theme";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import AlertsProvider from "./contexts/alerts.context";
@@ -62,6 +63,7 @@ const ThemedApp = () => {
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/stock" element={<StockPage />} />
                   <Route path="/dishes" element={<DishesPage />} />
                   <Route path="/cards" element={<CardsPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
