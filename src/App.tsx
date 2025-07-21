@@ -4,7 +4,6 @@ import { NavBar } from "./UI/components/navigation/NavBar";
 const DashboardPage = lazy(() => import("./UI/pages/dashboard/dashboard.page"));
 const DishesPage = lazy(() => import("./UI/pages/dishes/dishes.page"));
 const CardsPage = lazy(() => import("./UI/pages/cards/cards.page"));
-const StockPage = lazy(() => import("./UI/pages/stock/stock.page"));
 import { lightTheme, darkTheme } from "./applications/theme/theme";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import AlertsProvider from "./contexts/alerts.context";
@@ -65,7 +64,6 @@ const ThemedApp = () => {
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/dishes" element={<DishesPage />} />
                   <Route path="/cards" element={<CardsPage />} />
-                  <Route path="/stock" element={<StockPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   {/* Redirect old /home route to dashboard */}
                   <Route path="/home" element={<DashboardPage />} />
