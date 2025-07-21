@@ -38,8 +38,13 @@ const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ t
 ]);
 
 const Textarea = styled(BaseInput).attrs({ as: 'textarea' })`
-  height: 150px; 
+  min-height: 120px;
+  max-height: 200px;
   resize: none;
+  
+  @media (max-width: 1024px) {
+    min-height: 100px;
+  }
 `;
 
 export const TextInput: React.FC<TextInputProps> = ({ name = undefined, label, type = "text", $isError, $isDisabled, value, onChange }) => {
@@ -55,6 +60,8 @@ export const TextInput: React.FC<TextInputProps> = ({ name = undefined, label, t
             $isDisabled={$isDisabled} 
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => { onChange(e.target.value) }} 
             $isError={$isError} 
+            aria-invalid={$isError ? 'true' : 'false'}
+            aria-describedby={$isError ? `${name}-error` : undefined}
           />
         ) : (
           <BaseInput 
@@ -65,6 +72,8 @@ export const TextInput: React.FC<TextInputProps> = ({ name = undefined, label, t
             $isDisabled={$isDisabled}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { onChange(e.target.value) }} 
             $isError={$isError} 
+            aria-invalid={$isError ? 'true' : 'false'}
+            aria-describedby={$isError ? `${name}-error` : undefined}
           />
         )
       }

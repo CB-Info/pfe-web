@@ -63,6 +63,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, labe
           $isDisabled={$isDisabled}
           onChange={handleOnChange}
           $isError={$isError}
+          aria-invalid={$isError ? 'true' : 'false'}
+          aria-describedby={$isError ? `${name}-error` : undefined}
         />
         <div className="p-2.5 h-full text-sm font-medium text-slate-400 bg-slate-100 rounded-e-lg border border-primary-color focus:outline-none">
           <EuroRoundedIcon className="opacity-70" />
