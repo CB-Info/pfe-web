@@ -188,7 +188,7 @@ const DishForm: React.FC<DishFormProps> = ({
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto px-4 sm:px-6 py-4 gap-6 z-50">
+    <div className="flex flex-1 flex-col overflow-y-auto px-5 py-4 gap-4 z-50">
       <TitleStyle>Mon plat</TitleStyle>
 
       {isLoading ? (
@@ -197,10 +197,9 @@ const DishForm: React.FC<DishFormProps> = ({
         </div>
       ) : (
         <BorderContainer>
-          <div className="flex flex-col h-full px-4 sm:px-6 py-6 justify-between">
+          <div className="flex flex-col h-full px-5 py-6 justify-between items-center">
             <form className="flex flex-1 flex-col" onSubmit={handleOnSubmit}>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
-                {/* Première ligne: Nom et Prix */}
+              <div className="flex flex-1 flex-col gap-3">
                 <TextInput
                   name="dishName"
                   label={"Nom"}
@@ -209,17 +208,6 @@ const DishForm: React.FC<DishFormProps> = ({
                   $isError={inputError === InputError.NAME}
                   $isDisabled={false}
                 />
-                
-                <NumberInput
-                  name="dishPrice"
-                  label={"Prix"}
-                  value={dishPrice}
-                  onChange={(newValue) => setDishPrice(newValue)}
-                  $isError={inputError === InputError.PRICE}
-                  $isDisabled={false}
-                />
-                
-                {/* Deuxième ligne: Description et Catégorie */}
                 <TextInput
                   name="dishDescription"
                   type="textarea"
@@ -229,33 +217,33 @@ const DishForm: React.FC<DishFormProps> = ({
                   $isError={inputError === InputError.DESCRIPTION}
                   $isDisabled={false}
                 />
-                
                 <TextfieldList
                   valuesToDisplay={Object.values(DishCategoryLabels)}
                   onClicked={handleOnClickOnCellCategory}
                   label={"Catégorie"}
                   defaultValue={DishCategoryLabels[dishCategory]}
                 />
-                
-                {/* Ingrédients sur toute la largeur */}
-                <div className="lg:col-span-2">
+                <NumberInput
+                  name="dishPrice"
+                  label={"Prix"}
+                  value={dishPrice}
+                  onChange={(newValue) => setDishPrice(newValue)}
+                  $isError={inputError === InputError.PRICE}
+                  $isDisabled={false}
+                />
                 <IngredientsLister
                   ingredients={allIngredients}
                   currentIngredients={ingredientsDish}
                   setCurrentIngredients={(ings) => setIngredientsDish(ings)}
                   setIngredients={(ings) => setAllIngredients(ings)}
                 />
-                </div>
               </div>
-              
-              {/* Boutons d'action */}
-              <div className="flex flex-col sm:flex-row justify-between gap-3 mt-6 pt-4 border-t border-gray-200">
+              <div className="flex justify-between mt-4">
                 <CustomButton
                   type={TypeButton.TEXT}
                   onClick={onCancel}
                   width={WidthButton.SMALL}
                   isLoading={false}
-                  ariaLabel="Annuler la création du plat"
                 >
                   Annuler
                 </CustomButton>
@@ -265,7 +253,6 @@ const DishForm: React.FC<DishFormProps> = ({
                   onClick={() => {}}
                   width={WidthButton.SMALL}
                   isLoading={isLoadingCreationDish}
-                  ariaLabel={mode === DishFormMode.CREATE ? "Créer le plat" : "Modifier le plat"}
                 >
                   {mode === DishFormMode.CREATE ? "Créer" : "Modifier"}
                 </CustomButton>

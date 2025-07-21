@@ -21,15 +21,9 @@ export const IngredientsLister: React.FC<IngredientsListerProps> = ({ ingredient
             <IngredientsListerDispatchContext.Provider value={dispatch}>
                 <div className='flex flex-col w-full'>
                     <LabelStyle >Ingrédients</LabelStyle>
-                    <div className='flex flex-wrap pb-2 gap-2 items-start'>
+                    <div className='flex flex-wrap pb-2 gap-2'>
                         <div className='flex relative'>
-                            <DotButton 
-                                type='button' 
-                                onClick={() => dispatch({ type: "SET_NAVIGATION_MODAL", payload: NavigationModal.HOME })}
-                                aria-label="Ajouter un ingrédient au plat"
-                            >
-                                Ajouter
-                            </DotButton>
+                            <DotButton type='button' onClick={() => dispatch({ type: "SET_NAVIGATION_MODAL", payload: NavigationModal.HOME })}>Ajouter</DotButton>
                             <IngredientsModal ingredientsDisplay={ingredients} currentIngredients={currentIngredients} setCurrentIngredients={setCurrentIngredients} setIngredientsDisplay={setIngredients} />
                         </div>
                         {currentIngredients.map((ingredient, index) => {

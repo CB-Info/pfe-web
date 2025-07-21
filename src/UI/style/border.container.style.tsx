@@ -6,7 +6,6 @@ const BorderContainerStyle = styled.div(({ theme }) => [
         rounded-2xl
         flex
         flex-1
-        min-h-0
     `,
     css`
         border: 2px solid ${theme.borderColor}
