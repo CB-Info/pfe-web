@@ -17,7 +17,7 @@ const AddDishPage: React.FC<AddDishPageProps> = ({ onClickOnConfirm }) => {
   }
 
   return (
-    <>
+    <div className="h-full">
       <DishForm
         mode={DishFormMode.CREATE}
         onSubmitSuccess={() => {
@@ -28,7 +28,7 @@ const AddDishPage: React.FC<AddDishPageProps> = ({ onClickOnConfirm }) => {
           handleOnClosePage();
         }}
       />
-    </>
+    </div>
   );
 };
 

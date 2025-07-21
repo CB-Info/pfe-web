@@ -10,10 +10,18 @@ export const ContainerDrawer = styled.div<ContainerDrawerProps>(({ theme, width 
     tw`
         menu
         h-full
+        flex
+        flex-col
     `,
     css`
         background-color: ${theme.backgroundColor};
-        width: ${width}px;
+        width: 100%;
+        max-width: ${width}px;
+        
+        @media (max-width: 768px) {
+            max-width: 100vw;
+            width: 100vw;
+        }
     `,
 ]);
 

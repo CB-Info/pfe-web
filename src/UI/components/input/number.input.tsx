@@ -28,6 +28,11 @@ const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ t
         w-full
         rounded-l-lg
         border
+        transition-all
+        duration-200
+        focus:ring-2
+        focus:ring-blue-500
+        focus:border-blue-500
       `,
   css`
         border-color: ${getBorderColor(theme, $isError, $isDisabled)};
@@ -36,7 +41,8 @@ const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ t
         cursor: ${$isDisabled ? 'not-allowed' : 'text'};
         opacity: ${$isDisabled ? '0.6' : '1'};
         &:focus{
-          outline: ${$isError ? 'none' : ''};
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {
@@ -63,8 +69,10 @@ export const NumberInput: React.FC<NumberInputProps> = ({ name = undefined, labe
           $isDisabled={$isDisabled}
           onChange={handleOnChange}
           $isError={$isError}
+          aria-invalid={$isError}
+          aria-describedby={$isError ? `${name}-error` : undefined}
         />
-        <div className="p-2.5 h-full text-sm font-medium text-slate-400 bg-slate-100 rounded-e-lg border border-primary-color focus:outline-none">
+        <div className="p-2.5 h-full text-sm font-medium text-slate-400 bg-slate-100 rounded-e-lg border border-gray-300 focus:outline-none">
           <EuroRoundedIcon className="opacity-70" />
         </div>
       </div>

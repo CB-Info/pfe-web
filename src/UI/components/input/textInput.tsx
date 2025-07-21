@@ -27,6 +27,11 @@ const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ t
         w-full
         rounded-lg
         border
+        transition-all
+        duration-200
+        focus:ring-2
+        focus:ring-blue-500
+        focus:border-blue-500
       `,
   css`
         border-color: ${getBorderColor(theme, $isError, $isDisabled)};
@@ -34,12 +39,20 @@ const BaseInput = styled.input<{ $isError: boolean, $isDisabled: boolean }>(({ t
         background-color: ${$isDisabled ? theme.disabledBackgroundColor : '#FFFFFF'};
         cursor: ${$isDisabled ? 'not-allowed' : 'text'};
         opacity: ${$isDisabled ? '0.6' : '1'};
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
       `,
 ]);
 
 const Textarea = styled(BaseInput).attrs({ as: 'textarea' })`
-  height: 150px; 
+  min-height: 120px; 
   resize: none;
+  
+  @media (max-width: 768px) {
+    min-height: 100px;
+  }
 `;
 
 export const TextInput: React.FC<TextInputProps> = ({ name = undefined, label, type = "text", $isError, $isDisabled, value, onChange }) => {
@@ -55,6 +68,8 @@ export const TextInput: React.FC<TextInputProps> = ({ name = undefined, label, t
             $isDisabled={$isDisabled} 
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => { onChange(e.target.value) }} 
             $isError={$isError} 
+            aria-invalid={$isError}
+            aria-describedby={$isError ? `${name}-error` : undefined}
           />
         ) : (
           <BaseInput 
@@ -65,6 +80,8 @@ export const TextInput: React.FC<TextInputProps> = ({ name = undefined, label, t
             $isDisabled={$isDisabled}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { onChange(e.target.value) }} 
             $isError={$isError} 
+            aria-invalid={$isError}
+            aria-describedby={$isError ? `${name}-error` : undefined}
           />
         )
       }

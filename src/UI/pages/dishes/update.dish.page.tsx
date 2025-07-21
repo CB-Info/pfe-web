@@ -23,7 +23,7 @@ const UpdateDishPage: React.FC<UpdateDishPageProps> = ({
   }
 
   return (
-    <>
+    <div className="h-full">
       <DishForm
         mode={DishFormMode.UPDATE}
         dish={dish}
@@ -34,7 +34,7 @@ const UpdateDishPage: React.FC<UpdateDishPageProps> = ({
           handleOnClosePage();
         }}
       />
-    </>
+    </div>
   );
 };
 
