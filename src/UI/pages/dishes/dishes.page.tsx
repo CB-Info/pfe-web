@@ -1,7 +1,7 @@
 import DrawerButton, { ContainerDrawer } from "../../components/drawer";
 import AddDishPage from "./add.dish.page";
 import { useEffect, useState, useMemo } from "react";
-import { CircularProgress } from "@mui/material";
+import Loading from "../../components/common/loading.component";
 import { SearchInput } from "../../components/input/searchInput";
 import TextfieldList from "../../components/input/textfield.list";
 import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
@@ -15,11 +15,7 @@ import { BaseContent } from "../../components/contents/base.content";
 import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
 import { PanelContent } from "../../components/contents/panel.content";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Plus, 
-  Filter, 
-  RotateCcw, 
-} from "lucide-react";
+import { Plus, Filter, RotateCcw } from "lucide-react";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { ChefHat } from "lucide-react";
 
@@ -30,10 +26,14 @@ export default function DishesPage() {
   const [selectedDish, setSelectedDish] = useState<Dish | undefined>(undefined);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<DishCategory | "Toutes">("Toutes");
-  const [selectedStatus, setSelectedStatus] = useState<'Tous' | 'Actif' | 'Inactif'>('Tous');
+  const [selectedCategory, setSelectedCategory] = useState<
+    DishCategory | "Toutes"
+  >("Toutes");
+  const [selectedStatus, setSelectedStatus] = useState<
+    "Tous" | "Actif" | "Inactif"
+  >("Tous");
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const sortOptions: DishSortOption[] = [
     "Date de création (Descendant)",
     "Date de création (Ascendant)",
@@ -42,8 +42,10 @@ export default function DishesPage() {
     "Prix (Ascendant)",
     "Prix (Descendant)",
   ];
-  const [selectedSort, setSelectedSort] = useState<DishSortOption>(sortOptions[0]);
-  
+  const [selectedSort, setSelectedSort] = useState<DishSortOption>(
+    sortOptions[0]
+  );
+
   const { addAlert } = useAlerts();
   const dishRepository = useMemo(() => new DishesRepositoryImpl(), []);
   const statusOptions = ["Tous", "Actif", "Inactif"];
@@ -53,7 +55,9 @@ export default function DishesPage() {
     if (label === "Toutes") {
       setSelectedCategory("Toutes");
     } else {
-      const entry = Object.entries(DishCategoryLabels).find(([, l]) => l === label);
+      const entry = Object.entries(DishCategoryLabels).find(
+        ([, l]) => l === label
+      );
       if (entry) {
         setSelectedCategory(entry[0] as DishCategory);
       }
@@ -61,7 +65,7 @@ export default function DishesPage() {
   };
 
   const handleStatusChange = (status: string) => {
-    setSelectedStatus(status as 'Tous' | 'Actif' | 'Inactif');
+    setSelectedStatus(status as "Tous" | "Actif" | "Inactif");
   };
 
   const handleSortChange = (sort: string) => {
@@ -75,7 +79,8 @@ export default function DishesPage() {
     setSelectedSort(sortOptions[0]);
   };
 
-  const hasActiveFilters = searchQuery || selectedCategory !== "Toutes" || selectedStatus !== "Tous";
+  const hasActiveFilters =
+    searchQuery || selectedCategory !== "Toutes" || selectedStatus !== "Tous";
 
   const fetchDishes = async () => {
     try {
@@ -135,7 +140,9 @@ export default function DishesPage() {
           description="Gérez votre menu et vos plats en toute simplicité"
           showCreateButton={true}
           onCreateClick={() => {
-            const drawerCheckbox = document.getElementById("add-drawer-dish") as HTMLInputElement;
+            const drawerCheckbox = document.getElementById(
+              "add-drawer-dish"
+            ) as HTMLInputElement;
             if (drawerCheckbox) {
               drawerCheckbox.checked = true;
             }
@@ -147,10 +154,7 @@ export default function DishesPage() {
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex flex-1 items-center justify-center h-full">
-              <div className="text-center">
-                <CircularProgress className="mb-4" />
-                <p className="text-gray-600">Chargement des plats...</p>
-              </div>
+              <Loading size="medium" text="Chargement des plats..." />
             </div>
           ) : (
             <div className="flex flex-col h-full">
@@ -174,12 +178,14 @@ export default function DishesPage() {
                       onClick={() => setShowFilters(!showFilters)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
                         showFilters || hasActiveFilters
-                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? "bg-blue-100 text-blue-700 border border-blue-200"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
                       <Filter className="w-4 h-4" />
-                      <span className="text-sm font-medium hidden sm:inline">Filtres</span>
+                      <span className="text-sm font-medium hidden sm:inline">
+                        Filtres
+                      </span>
                       {hasActiveFilters && (
                         <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                           !
@@ -193,7 +199,9 @@ export default function DishesPage() {
                         className="flex items-center gap-1 px-2 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
                       >
                         <RotateCcw className="w-4 h-4" />
-                        <span className="text-sm font-medium hidden sm:inline">Reset</span>
+                        <span className="text-sm font-medium hidden sm:inline">
+                          Reset
+                        </span>
                       </button>
                     )}
                   </div>
@@ -204,7 +212,7 @@ export default function DishesPage() {
                   {showFilters && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
+                      animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
                       className="mt-4 pt-4 border-t border-gray-200 overflow-visible relative z-40"
@@ -220,14 +228,14 @@ export default function DishesPage() {
                               : DishCategoryLabels[selectedCategory]
                           }
                         />
-                        
+
                         <TextfieldList
                           valuesToDisplay={statusOptions}
                           onClicked={handleStatusChange}
                           label="Statut"
                           defaultValue={selectedStatus}
                         />
-                        
+
                         <TextfieldList
                           valuesToDisplay={sortOptions}
                           onClicked={handleSortChange}
@@ -268,10 +276,9 @@ export default function DishesPage() {
                                 Aucun plat trouvé
                               </h3>
                               <p className="text-gray-600 mb-4">
-                                {hasActiveFilters 
+                                {hasActiveFilters
                                   ? "Aucun plat ne correspond à vos critères de recherche"
-                                  : "Commencez par ajouter votre premier plat"
-                                }
+                                  : "Commencez par ajouter votre premier plat"}
                               </p>
                               {hasActiveFilters ? (
                                 <button
@@ -322,7 +329,7 @@ export default function DishesPage() {
         {/* Hidden Drawer for Create Dish */}
         <DrawerButton
           width={360}
-          defaultChildren={<div style={{ display: 'none' }} />}
+          defaultChildren={<div style={{ display: "none" }} />}
           drawerId={"add-drawer-dish"}
         >
           <AddDishPage
