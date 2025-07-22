@@ -1,8 +1,8 @@
-import { CircularProgress } from "@mui/material";
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import tw from "twin.macro";
 import { TypeButton, WidthButton } from "./button.types";
+import Loading from "../common/loading.component";
 
 interface CustomButtonProps {
   inputType?: "submit" | "reset" | "button" | undefined;
@@ -170,7 +170,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
           $isLoading={isLoading}
           aria-label={ariaLabel}
         >
-          {isLoading ? <CircularProgress size={20} /> : children}
+          {isLoading ? <Loading size="small" /> : children}
         </PrimaryButton>
       );
 
@@ -190,7 +190,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
           $isLoading={isLoading}
           aria-label={ariaLabel}
         >
-          {isLoading ? <CircularProgress size={20} /> : children}
+          {isLoading ? <Loading size="small" /> : children}
         </SecondaryButton>
       );
 
@@ -210,7 +210,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
           $isLoading={isLoading}
           aria-label={ariaLabel}
         >
-          {isLoading ? <CircularProgress size={20} /> : children}
+          {isLoading ? <Loading size="small" /> : children}
         </TextButton>
       );
   }

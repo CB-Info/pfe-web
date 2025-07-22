@@ -8,7 +8,7 @@ import TitleStyle from "../../../style/title.style";
 import IngredientsLister from "../../ingredientsLister/ingredients.lister";
 import { Ingredient } from "../../../../data/models/ingredient.model";
 import { NumberInput } from "../../input/number.input";
-import { CircularProgress } from "@mui/material";
+import Loading from "../../common/loading.component";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import {
   DishCategory,
@@ -193,7 +193,7 @@ const DishForm: React.FC<DishFormProps> = ({
 
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
-          <CircularProgress />
+          <Loading size="medium" text="Chargement du formulaire..." />
         </div>
       ) : (
         <BorderContainer>

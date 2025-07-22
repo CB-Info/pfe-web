@@ -11,6 +11,7 @@ import AuthProvider from "./contexts/auth.provider";
 const SettingsPage = lazy(() => import("./UI/pages/settings/settings.page"));
 import { ThemeProvider } from "./contexts/theme.context";
 import { useTheme } from "./hooks/useTheme";
+import Loading from "./UI/components/common/loading.component";
 
 const ThemedApp = () => {
   const { isDarkMode } = useTheme();
@@ -58,7 +59,13 @@ const ThemedApp = () => {
               />
             )}
             <div className="flex-1 overflow-auto">
-              <Suspense fallback={<div className="flex items-center justify-center h-full">Chargement...</div>}>
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-full">
+                    <Loading size="medium" text="Chargement de la page..." />
+                  </div>
+                }
+              >
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
