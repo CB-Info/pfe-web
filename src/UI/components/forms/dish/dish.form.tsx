@@ -1,16 +1,20 @@
 import { FormEvent, useEffect, useState, useMemo } from "react";
 import BorderContainer from "../../../style/border.container.style";
-import { TextInput } from "../../../components/input/textInput";
-import TextfieldList from "../../../components/input/textfield.list";
-import CustomButton, { TypeButton, WidthButton } from "../../../components/buttons/custom.button";
+import { TextInput } from "../../input/textInput";
+import TextfieldList from "../../input/textfield.list";
+import { CustomButton } from "../../buttons/custom.button";
+import { TypeButton, WidthButton } from "../../buttons/button.types";
 import TitleStyle from "../../../style/title.style";
-import IngredientsLister from "../../../components/ingredientsLister/ingredients.lister";
+import IngredientsLister from "../../ingredientsLister/ingredients.lister";
 import { Ingredient } from "../../../../data/models/ingredient.model";
-import { NumberInput } from "../../../components/input/number.input";
-import { CircularProgress } from "@mui/material";
+import { NumberInput } from "../../input/number.input";
+import Loading from "../../common/loading.component";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
-import { DishCategory, DishCategoryLabels } from "../../../../data/dto/dish.dto";
-import { useAlerts } from "../../../../contexts/alerts.context";
+import {
+  DishCategory,
+  DishCategoryLabels,
+} from "../../../../data/dto/dish.dto";
+import { useAlerts } from "../../../../hooks/useAlerts";
 import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
 import { DishFormProps, DishFormMode } from "./dish.form.props";
 
@@ -36,7 +40,9 @@ const DishForm: React.FC<DishFormProps> = ({
     mode === DishFormMode.UPDATE && dish ? String(dish.price) : ""
   );
   const [dishCategory, setDishCategory] = useState<DishCategory>(
-    mode === DishFormMode.UPDATE && dish ? dish.category : DishCategory.MAIN_DISHES
+    mode === DishFormMode.UPDATE && dish
+      ? dish.category
+      : DishCategory.MAIN_DISHES
   );
 
   const defaultIngredients =
@@ -52,9 +58,8 @@ const DishForm: React.FC<DishFormProps> = ({
         )
       : [];
 
-  const [ingredientsDish, setIngredientsDish] = useState<Ingredient[]>(
-    defaultIngredients
-  );
+  const [ingredientsDish, setIngredientsDish] =
+    useState<Ingredient[]>(defaultIngredients);
   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingCreationDish, setIsLoadingCreationDish] = useState(false);
@@ -73,7 +78,8 @@ const DishForm: React.FC<DishFormProps> = ({
       } catch {
         addAlert({
           severity: "error",
-          message: "Une erreur est survenue lors de la récupération des données",
+          message:
+            "Une erreur est survenue lors de la récupération des données",
           timeout: 10,
         });
       } finally {
@@ -106,12 +112,20 @@ const DishForm: React.FC<DishFormProps> = ({
   const validateForm = (): boolean => {
     if (!dishName) {
       setInputError(InputError.NAME);
-      addAlert({ severity: "error", message: "Le nom est obligatoire", timeout: 5 });
+      addAlert({
+        severity: "error",
+        message: "Le nom est obligatoire",
+        timeout: 5,
+      });
       return false;
     }
     if (!dishDescription) {
       setInputError(InputError.DESCRIPTION);
-      addAlert({ severity: "error", message: "La description est obligatoire", timeout: 5 });
+      addAlert({
+        severity: "error",
+        message: "La description est obligatoire",
+        timeout: 5,
+      });
       return false;
     }
     if (!dishPrice || Number(dishPrice) <= 0) {
@@ -149,13 +163,18 @@ const DishForm: React.FC<DishFormProps> = ({
         isAvailable: false,
       };
 
+      let successMessage = "";
+
       if (mode === DishFormMode.CREATE) {
         await dishesRepository.create(payload);
+        successMessage = `Le plat "${payload.name}" a été créé avec succès`;
       } else {
         await dishesRepository.update(payload);
+        successMessage = `Le plat "${payload.name}" a été mis à jour avec succès`;
       }
 
       resetForm();
+      addAlert({ severity: "success", message: successMessage, timeout: 3 });
       setIsLoadingCreationDish(false);
       onSubmitSuccess();
     } catch (error) {
@@ -174,7 +193,7 @@ const DishForm: React.FC<DishFormProps> = ({
 
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
-          <CircularProgress />
+          <Loading size="medium" text="Chargement du formulaire..." />
         </div>
       ) : (
         <BorderContainer>

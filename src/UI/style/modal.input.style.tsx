@@ -5,7 +5,7 @@ interface ModalInputProps {
     type?: 'text' | 'number';
 }
 
-const ModalInput = styled.input<ModalInputProps>(() => [
+const ModalInput = styled.input<ModalInputProps>(({ type }) => [
     tw`
         font-inter
     `,
@@ -22,7 +22,7 @@ const ModalInput = styled.input<ModalInputProps>(() => [
         cursor: text;
         padding: 3px 6px;
         height: 28px;
-        ${({ type }) => type === 'number' && css`
+        ${type === 'number' && css`
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {
          -webkit-appearance: none;

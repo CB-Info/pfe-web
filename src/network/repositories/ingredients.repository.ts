@@ -8,7 +8,7 @@ export interface Data<T> {
 }
 
 export class IngredientRepositoryImpl {
-  private url: string = "https://pfe-api-fbyd.onrender.com/ingredients";
+  private url: string = `${import.meta.env.VITE_API_BASE_URL}/ingredients`;
 
   async createOne(newIngredient: IngredientDto): Promise<Ingredient> {
     try {

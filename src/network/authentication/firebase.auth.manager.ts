@@ -1,8 +1,5 @@
-import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, User, Auth } from "firebase/auth";
-import firebaseConfig from '../../credentials.json';
-
-const app = initializeApp(firebaseConfig);
+import { app } from '../../config/firebase.config';
 
 class FirebaseAuthManager {
     private static instance: FirebaseAuthManager;
@@ -25,7 +22,17 @@ class FirebaseAuthManager {
             return userCredential.user;
         } catch (error) {
             console.error("Erreur de connexion: ", error);
-            return null;
+            throw error;
+        }
+    }
+
+    async sendPasswordResetEmail(email: string): Promise<void> {
+        try {
+            const { sendPasswordResetEmail } = await import("firebase/auth");
+            await sendPasswordResetEmail(this.auth, email);
+        } catch (error) {
+            console.error("Erreur lors de l'envoi de l'email de réinitialisation: ", error);
+            throw error;
         }
     }
 

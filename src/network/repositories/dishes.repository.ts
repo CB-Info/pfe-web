@@ -7,7 +7,7 @@ import { Ingredient } from "../../data/models/ingredient.model";
 import { Data } from "./ingredients.repository";
 
 export class DishesRepositoryImpl {
-  private url: string = "https://pfe-api-fbyd.onrender.com/dishes";
+  private url: string = `${import.meta.env.VITE_API_BASE_URL}/dishes`;
 
   async getTopIngredients(): Promise<Ingredient[]> {
     try {
@@ -31,7 +31,8 @@ export class DishesRepositoryImpl {
           )
       );
     } catch (error) {
-      throw new Error("");
+      console.error("Error fetching top ingredients:", error);
+      throw new Error(`Failed to fetch top ingredients: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -47,7 +48,8 @@ export class DishesRepositoryImpl {
         body: JSON.stringify(newDish),
       });
     } catch (error) {
-      throw new Error("");
+      console.error("Error creating dish:", error);
+      throw new Error(`Failed to create dish: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -77,7 +79,8 @@ export class DishesRepositoryImpl {
         body: JSON.stringify(dish),
       });
     } catch (error) {
-      throw new Error("");
+      console.error("Error updating dish:", error);
+      throw new Error(`Failed to update dish: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

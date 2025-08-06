@@ -1,225 +1,205 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ConfirmationModal } from '../../components/modals/confirmation.modal';
-import { TextInput } from '../../components/input/textInput';
-import { DishesRepositoryImpl } from '../../../network/repositories/dishes.repository';
-import { CardsRepositoryImpl } from '../../../network/repositories/cards.repository';
-import { useAlerts } from '../../../contexts/alerts.context';
-import { Dish } from '../../../data/models/dish.model';
-import { CardDto } from '../../../data/dto/card.dto';
-import { CircularProgress } from '@mui/material';
-import { SearchInput } from '../../components/input/searchInput';
+import { useState, useEffect } from "react";
+import { FullScreenModal } from "../../components/modals/full-screen-modal";
+import { TextInput } from "../../components/input/textInput";
+import { CardsRepositoryImpl } from "../../../network/repositories/cards.repository";
+import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
+import { useAlerts } from "../../../hooks/useAlerts";
+import { Dish } from "../../../data/models/dish.model";
+import { CardDto } from "../../../data/dto/card.dto";
+import Loading from "../../components/common/loading.component";
+import { EnhancedDishSelection } from "../../components/cards/dish-selection/enhanced-dish-selection.component";
+import { Save, X } from "lucide-react";
 
 interface CreateCardModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onCardCreated: (card: CardDto) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onCardCreated: (card: CardDto) => void;
 }
 
 export const CreateCardModal: React.FC<CreateCardModalProps> = ({
-    isOpen,
-    onClose,
-    onCardCreated
+  isOpen,
+  onClose,
+  onCardCreated,
 }) => {
-    const [name, setName] = useState('');
-    const [dishes, setDishes] = useState<Dish[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedDishes, setSelectedDishes] = useState<Set<string>>(new Set());
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState('');
-    
-    const { addAlert } = useAlerts();
-    const dishesRepository = new DishesRepositoryImpl();
-    const cardsRepository = new CardsRepositoryImpl();
+  const [name, setName] = useState("");
+  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [selectedDishes, setSelectedDishes] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        const fetchDishes = async () => {
-            try {
-                const fetchedDishes = await dishesRepository.getAll();
-                // Tri alphabétique des plats
-                const sortedDishes = fetchedDishes.sort((a, b) => 
-                    a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
-                );
-                setDishes(sortedDishes);
-            } catch (error) {
-                setError("Erreur lors de la récupération des plats");
-            } finally {
-                setIsLoading(false);
-            }
-        };
+  const { addAlert } = useAlerts();
+  const dishesRepository = new DishesRepositoryImpl();
+  const cardsRepository = new CardsRepositoryImpl();
 
-        if (isOpen) {
-            fetchDishes();
-        }
-    }, [isOpen]);
-
-    // Filtrage des plats en fonction de la recherche
-    const filteredDishes = useMemo(() => {
-        if (!searchQuery.trim()) return dishes;
-        
-        return dishes.filter(dish => 
-            dish.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [dishes, searchQuery]);
-
-    const handleClose = () => {
-        setName('');
-        setSelectedDishes(new Set());
-        setSearchQuery('');
-        setError('');
-        onClose();
+  useEffect(() => {
+    const fetchDishes = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedDishes = await dishesRepository.getAll();
+        setDishes(fetchedDishes);
+      } catch (error) {
+        setError("Erreur lors de la récupération des plats");
+        addAlert({
+          severity: "error",
+          message: "Erreur lors de la récupération des plats",
+          timeout: 5,
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    const toggleDish = (dishId: string) => {
-        const newSelection = new Set(selectedDishes);
-        if (newSelection.has(dishId)) {
-            newSelection.delete(dishId);
-        } else {
-            newSelection.add(dishId);
-        }
-        setSelectedDishes(newSelection);
-    };
+    if (isOpen) {
+      fetchDishes();
+    }
+  }, [isOpen]);
 
-    const toggleAll = () => {
-        if (selectedDishes.size === filteredDishes.length) {
-            // Désélectionne uniquement les plats filtrés
-            const newSelection = new Set(selectedDishes);
-            filteredDishes.forEach(dish => newSelection.delete(dish._id));
-            setSelectedDishes(newSelection);
-        } else {
-            // Sélectionne tous les plats filtrés
-            const newSelection = new Set(selectedDishes);
-            filteredDishes.forEach(dish => newSelection.add(dish._id));
-            setSelectedDishes(newSelection);
-        }
-    };
+  const handleClose = () => {
+    setName("");
+    setSelectedDishes(new Set());
+    setError("");
+    onClose();
+  };
 
-    const handleSubmit = async () => {
-        if (!name.trim()) {
-            setError("Le nom de la carte est requis");
-            return;
-        }
-        if (selectedDishes.size === 0) {
-            setError("Sélectionnez au moins un plat");
-            return;
-        }
+  const handleSubmit = async () => {
+    // Validation
+    if (!name.trim()) {
+      setError("Le nom de la carte est requis");
+      addAlert({
+        severity: "error",
+        message: "Le nom de la carte est requis",
+        timeout: 3,
+      });
+      return;
+    }
 
-        setIsSubmitting(true);
-        try {
-            const newCard = await cardsRepository.create({
-                name: name.trim(),
-                dishesId: Array.from(selectedDishes),
-                isActive: false
-            });
-            
-            addAlert({
-                severity: 'success',
-                message: 'La carte a été créée avec succès',
-                timeout: 3
-            });
-            
-            onCardCreated(newCard);
-            handleClose();
-        } catch (error) {
-            setError("Erreur lors de la création de la carte");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+    if (selectedDishes.size === 0) {
+      setError("Sélectionnez au moins un plat");
+      addAlert({
+        severity: "error",
+        message: "Sélectionnez au moins un plat pour créer la carte",
+        timeout: 3,
+      });
+      return;
+    }
 
-    return (
-        <ConfirmationModal
-            modalName="create-card-modal"
-            isOpen={isOpen}
-            onClose={handleClose}
-        >
-            <div className="p-6">
-                <h2 className="text-xl font-semibold mb-6">Créer une nouvelle carte</h2>
-                
-                <div className="space-y-6">
-                    <TextInput
-                        name="cardName"
-                        label="Nom de la carte"
-                        value={name}
-                        onChange={setName}
-                        $isError={!!error && !name.trim()}
-                        $isDisabled={false}
-                    />
+    setIsSubmitting(true);
+    setError("");
 
-                    {error && (
-                        <p className="text-red-500 text-sm">{error}</p>
-                    )}
+    try {
+      const newCard = await cardsRepository.create({
+        name: name.trim(),
+        dishesId: Array.from(selectedDishes),
+        isActive: false,
+      });
 
-                    <div>
-                        <div className="flex flex-col gap-4">
-                            <SearchInput
-                                label="Rechercher un plat"
-                                name="search"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                error={false}
-                            />
+      addAlert({
+        severity: "success",
+        message: `La carte "${newCard.name}" a été créée avec succès`,
+        timeout: 3,
+      });
 
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-medium">Sélection des plats</h3>
-                                <button
-                                    onClick={toggleAll}
-                                    className="text-sm text-blue-600 hover:text-blue-700"
-                                >
-                                    {selectedDishes.size === filteredDishes.length ? 'Tout décocher' : 'Sélectionner tout'}
-                                </button>
-                            </div>
-                        </div>
+      onCardCreated(newCard);
+      handleClose();
+    } catch (error) {
+      const errorMessage = "Erreur lors de la création de la carte";
+      setError(errorMessage);
+      addAlert({
+        severity: "error",
+        message: errorMessage,
+        timeout: 5,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-                        {isLoading ? (
-                            <div className="flex justify-center py-4">
-                                <CircularProgress size={24} />
-                            </div>
-                        ) : filteredDishes.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">
-                                Aucun plat ne correspond à votre recherche
-                            </div>
-                        ) : (
-                            <div className="max-h-64 overflow-y-auto border rounded-lg divide-y mt-2">
-                                {filteredDishes.map(dish => (
-                                    <label
-                                        key={dish._id}
-                                        className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedDishes.has(dish._id)}
-                                            onChange={() => toggleDish(dish._id)}
-                                            className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                        />
-                                        <span className="ml-3">{dish.name}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+  return (
+    <FullScreenModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Créer une nouvelle carte"
+      maxWidth="6xl"
+    >
+      <div className="flex flex-col h-full">
+        {/* Form Section */}
+        <div className="p-6 border-b border-gray-200 bg-gray-50">
+          <div className="max-w-md">
+            <TextInput
+              name="cardName"
+              label="Nom de la carte"
+              value={name}
+              onChange={setName}
+              $isError={!!error && !name.trim()}
+              $isDisabled={isSubmitting}
+            />
 
-                    <div className="flex justify-end gap-3 pt-4">
-                        <button
-                            onClick={handleClose}
-                            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                        >
-                            Annuler
-                        </button>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={isSubmitting || !name.trim() || selectedDishes.size === 0}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isSubmitting ? (
-                                <CircularProgress size={20} color="inherit" />
-                            ) : (
-                                'Créer'
-                            )}
-                        </button>
-                    </div>
-                </div>
+            {error && (
+              <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Dish Selection Section */}
+        <div className="flex-1 p-6 overflow-hidden">
+          <div className="h-full">
+            <EnhancedDishSelection
+              dishes={dishes}
+              selectedDishIds={selectedDishes}
+              onSelectionChange={setSelectedDishes}
+              isLoading={isLoading}
+            />
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-gray-200 bg-gray-50">
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-gray-600">
+              {selectedDishes.size > 0 && (
+                <span>
+                  {selectedDishes.size} plat{selectedDishes.size > 1 ? "s" : ""}{" "}
+                  sélectionné{selectedDishes.size > 1 ? "s" : ""}
+                </span>
+              )}
             </div>
-        </ConfirmationModal>
-    );
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleClose}
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <X className="w-4 h-4" />
+                Annuler
+              </button>
+
+              <button
+                onClick={handleSubmit}
+                disabled={
+                  isSubmitting || !name.trim() || selectedDishes.size === 0
+                }
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loading size="small" />
+                    Création en cours...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    Créer la carte
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </FullScreenModal>
+  );
 };

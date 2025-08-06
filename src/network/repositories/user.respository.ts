@@ -4,7 +4,7 @@ import { User } from "../../data/models/user.model";
 import FirebaseAuthManager from "../authentication/firebase.auth.manager";
 
 export class UserRepositoryImpl {
-  private url: string = "https://pfe-api-fbyd.onrender.com/users";
+  private url: string = `${import.meta.env.VITE_API_BASE_URL}/users`;
 
   async login(email: string, password: string) {
     await FirebaseAuthManager.getInstance().login(email, password);
