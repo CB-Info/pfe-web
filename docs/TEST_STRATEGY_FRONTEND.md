@@ -19,6 +19,10 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: "./src/setupTests.ts",
+    exclude: ["**/e2e/**", "**/node_modules/**", "**/dist/**"],
+    env: {
+      MODE: "test",
+    },
   },
 });
 ```
@@ -37,11 +41,18 @@ export default defineConfig({
 - **Comportement UI** : Clicks, états, props
 - **Rendering conditionnel** : Loading states, erreurs
 
-### 3. Tests d'Intégration (Sommet)
+### 3. Tests d'Intégration (Milieu)
 
-- **Pages complètes** : Dashboard, Dishes, Cards
-- **Flux utilisateur** : Login → Navigation → Actions
-- **Intégration API** : Mocks des appels réseau
+- **Contextes + Hooks** : ThemeProvider + useTheme ✅
+- **Composants multi-dépendances** : Intégrations simples ✅
+- **Flux de données** : Context → Hook → Component
+
+### 4. Tests E2E (Sommet)
+
+- **Parcours utilisateur complets** : Navigation, formulaires ✅
+- **Tests cross-browser** : Chromium, Firefox, Safari ✅
+- **Tests responsive** : Desktop, mobile ✅
+- **Playwright configuré** : 16 tests fonctionnels ✅
 
 ## Conventions de Nommage
 

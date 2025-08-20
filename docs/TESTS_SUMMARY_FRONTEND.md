@@ -8,6 +8,7 @@
 - **Environnement** : jsdom
 - **Setup** : setupTests.ts
 - **Scripts disponibles** : test, test:ui, test:coverage, test:e2e, test:all
+- **CI/CD** : ✅ Compatible (TypeScript, ESLint, variables d'environnement corrigées)
 
 ### Tests Existants
 

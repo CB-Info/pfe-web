@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { vi, describe, test, expect, beforeEach, afterEach } from "vitest";
 import AuthProvider from "../contexts/auth.provider";
 import FirebaseAuthManager from "../network/authentication/firebase.auth.manager";
+import { User, Auth } from "firebase/auth";
 
 // Mock FirebaseAuthManager
 vi.mock("../network/authentication/firebase.auth.manager");
@@ -37,11 +38,16 @@ vi.mock("../reducers/auth.reducer", () => ({
 describe("AuthProvider", () => {
   const mockFirebaseAuthManager = {
     monitorAuthState: vi.fn(),
+    auth: {} as Auth,
+    login: vi.fn(),
+    sendPasswordResetEmail: vi.fn(),
+    getToken: vi.fn(),
+    logout: vi.fn(),
   };
 
   beforeEach(() => {
     vi.mocked(FirebaseAuthManager.getInstance).mockReturnValue(
-      mockFirebaseAuthManager as any
+      mockFirebaseAuthManager as unknown as FirebaseAuthManager
     );
   });
 
@@ -126,7 +132,7 @@ describe("AuthProvider", () => {
   });
 
   test("handles auth state changes correctly", async () => {
-    let authCallback: ((user: any) => void) | null = null;
+    let authCallback: ((user: User | null) => void) | undefined;
 
     // Capture the callback function
     mockFirebaseAuthManager.monitorAuthState.mockImplementation((callback) => {
@@ -144,18 +150,14 @@ describe("AuthProvider", () => {
     expect(screen.getByTestId("loading-component")).toBeInTheDocument();
 
     // Simulate user login
-    if (authCallback) {
-      authCallback({ uid: "test-user", email: "test@example.com" });
-    }
+    authCallback?.({ uid: "test-user", email: "test@example.com" } as User);
 
     await waitFor(() => {
       expect(screen.getByTestId("protected-content")).toBeInTheDocument();
     });
 
     // Simulate user logout
-    if (authCallback) {
-      authCallback(null);
-    }
+    authCallback?.(null);
 
     await waitFor(() => {
       expect(screen.getByTestId("login-page")).toBeInTheDocument();

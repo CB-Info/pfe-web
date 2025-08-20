@@ -71,7 +71,7 @@ npm run test:e2e        # Tests End-to-End (16 tests ✅)
 npm run test:all        # Tous les tests (67 tests ✅)
 
 # CI
-npm run ci:check        # Lint + Test + Build
+npm run ci:check        # Lint + Test + Build (✅ CI Ready)
 ```
 
 ## 🔗 API Backend

@@ -6,6 +6,9 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   getAuth,
+  UserCredential,
+  Auth,
+  User,
 } from "firebase/auth";
 
 // Mock Firebase auth functions
@@ -25,11 +28,11 @@ vi.mock("../config/firebase.config", () => ({
 describe("FirebaseAuthManager", () => {
   let authManager: FirebaseAuthManager;
   const mockAuth = {
-    currentUser: null,
+    currentUser: null as User | null,
   };
 
   beforeEach(() => {
-    vi.mocked(getAuth).mockReturnValue(mockAuth as any);
+    vi.mocked(getAuth).mockReturnValue(mockAuth as Auth);
     authManager = FirebaseAuthManager.getInstance();
   });
 
@@ -52,7 +55,7 @@ describe("FirebaseAuthManager", () => {
       const mockUserCredential = { user: mockUser };
 
       vi.mocked(signInWithEmailAndPassword).mockResolvedValue(
-        mockUserCredential as any
+        mockUserCredential as UserCredential
       );
 
       const result = await authManager.login("test@example.com", "password123");
@@ -142,8 +145,10 @@ describe("FirebaseAuthManager", () => {
       const mockToken = "mock-jwt-token";
       const mockUser = {
         getIdToken: vi.fn().mockResolvedValue(mockToken),
+        uid: "test-uid",
+        email: "test@example.com",
       };
-      mockAuth.currentUser = mockUser as any;
+      mockAuth.currentUser = mockUser as unknown as User;
 
       const result = await authManager.getToken();
 
@@ -201,17 +206,17 @@ describe("FirebaseAuthManager", () => {
 
     test("callback receives user updates", () => {
       const mockCallback = vi.fn();
-      let capturedCallback: any;
+      let capturedCallback: ((user: User | null) => void) | undefined;
 
-      vi.mocked(onAuthStateChanged).mockImplementation((auth, callback) => {
-        capturedCallback = callback;
+      vi.mocked(onAuthStateChanged).mockImplementation((_auth, callback) => {
+        capturedCallback = callback as (user: User | null) => void;
         return vi.fn(); // unsubscribe
       });
 
       authManager.monitorAuthState(mockCallback);
 
       const mockUser = { uid: "test-uid", email: "test@example.com" };
-      capturedCallback(mockUser);
+      capturedCallback?.(mockUser as User);
 
       expect(mockCallback).toHaveBeenCalledWith(mockUser);
     });

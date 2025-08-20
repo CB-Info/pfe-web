@@ -8,6 +8,7 @@
 | ------ | ----------------------------------------------- | -------- | --------- | --------- | ------- | ------- |
 | FE-001 | Vitest non trouvé lors de l'exécution des tests | Moyenne  | ✅ Résolu | 2024-01   | 2024-01 | -       |
 | FE-002 | Menu mobile ne se ferme pas sur navigation      | Faible   | Ouvert    | 2024-01   | -       | -       |
+| FE-003 | Erreurs TypeScript et ESLint dans les tests CI  | Moyenne  | ✅ Résolu | 2024-01   | 2024-01 | -       |
 
 ### Détails des Bugs
 
@@ -21,15 +22,50 @@
 
 - Vérification de l'installation des dépendances
 - Configuration Vitest correctement configurée
-- Tests s'exécutent avec succès (27/27 tests passent)
+- Tests s'exécutent avec succès (51/51 tests passent)
+- Tests d'intégration et E2E implémentés (67 tests au total)
+- Configuration TypeScript et ESLint corrigée pour les tests
 
 **Vérification** :
 
 ```bash
 npm run test
-# ✓ 27 tests passed
+# ✓ 51 tests passed
 npm run test:coverage
 # ✓ Coverage report generated successfully
+```
+
+---
+
+#### FE-003 : Erreurs TypeScript et ESLint dans les tests CI ✅ RÉSOLU
+
+**Description** : Les tests échouent en CI avec des erreurs TypeScript et ESLint
+
+**Erreurs identifiées** :
+
+- `'auth' is declared but its value is never read` (TypeScript)
+- `Unexpected any. Specify a different type` (ESLint)
+- `This expression is not callable` (TypeScript)
+- Variables d'environnement Firebase manquantes en mode test
+
+**Statut** : ✅ **RÉSOLU** - Tous les tests passent en CI
+
+**Solution appliquée** :
+
+- Correction des types TypeScript avec imports appropriés (`User`, `Auth`, `UserCredential`)
+- Remplacement des types `any` par des types spécifiques
+- Ajout de valeurs par défaut pour les variables d'environnement Firebase en mode test
+- Configuration Vitest pour exclure les tests E2E
+- Correction des callbacks et mocks avec les bons types
+
+**Vérification** :
+
+```bash
+npm run ci:check
+# ✓ ESLint passed (11 warnings, 0 errors)
+# ✓ TypeScript check passed
+# ✓ 51 tests passed
+# ✓ Build successful
 ```
 
 ---

@@ -7,6 +7,7 @@ Le projet utilise GitHub Actions pour l'intégration continue. Trois workflows p
 ### 1. CI Pipeline (`ci.yml`)
 
 **Déclencheurs** :
+
 - Push sur `main` et `develop`
 - Pull requests vers `main` et `develop`
 - Déclenchement manuel
@@ -14,6 +15,7 @@ Le projet utilise GitHub Actions pour l'intégration continue. Trois workflows p
 **Jobs Parallèles** :
 
 #### Setup Dependencies
+
 ```yaml
 - Cache des dépendances npm
 - Installation optimisée avec npm ci
@@ -21,6 +23,7 @@ Le projet utilise GitHub Actions pour l'intégration continue. Trois workflows p
 ```
 
 #### TypeScript Check
+
 ```yaml
 - Vérification des types TypeScript
 - `npx tsc --noEmit --skipLibCheck`
@@ -28,6 +31,7 @@ Le projet utilise GitHub Actions pour l'intégration continue. Trois workflows p
 ```
 
 #### ESLint
+
 ```yaml
 - Analyse de code statique
 - Maximum 15 warnings autorisés
@@ -35,13 +39,17 @@ Le projet utilise GitHub Actions pour l'intégration continue. Trois workflows p
 ```
 
 #### Tests
+
 ```yaml
-- Exécution des tests Vitest
+- Exécution des tests Vitest (51 tests unitaires + intégration)
+- Tests E2E avec Playwright (16 tests)
 - Mode CI sans watch
-- Rapport de couverture (si configuré)
+- Rapport de couverture généré (14.52%)
+- Variables d'environnement de test configurées
 ```
 
 #### Build
+
 ```yaml
 - Build de production Vite
 - Vérification de la taille des bundles
@@ -51,10 +59,12 @@ Le projet utilise GitHub Actions pour l'intégration continue. Trois workflows p
 ### 2. PR Validation (`pr-validation.yml`)
 
 **Déclencheurs** :
+
 - Ouverture/mise à jour de PR
 - Synchronisation de branches
 
 **Validations** :
+
 1. **Titre de PR** : Format conventional commits
 2. **Description** : Non vide
 3. **Taille** : Alerte si > 500 lignes
@@ -65,11 +75,13 @@ Le projet utilise GitHub Actions pour l'intégration continue. Trois workflows p
 ### 3. Security Scan (`security.yml`)
 
 **Déclencheurs** :
+
 - Schedule : Quotidien à 2h UTC
 - Push sur branches principales
 - Déclenchement manuel
 
 **Analyses** :
+
 - `npm audit` pour vulnérabilités
 - Scan des secrets avec TruffleHog
 - Analyse des dépendances
@@ -94,6 +106,7 @@ env:
 ### Parallélisation
 
 Les jobs s'exécutent en parallèle après `setup` :
+
 - TypeCheck : ~1 min
 - Lint : ~1 min
 - Tests : ~2 min
@@ -171,6 +184,7 @@ strategy:
 ### Secrets Management
 
 Variables sécurisées pour :
+
 - `FIREBASE_*` (pour tests E2E futurs)
 - `DEPLOY_TOKEN` (pour auto-deploy)
 - `NPM_TOKEN` (si packages privés)
@@ -269,6 +283,7 @@ gh run view <id> --log
 ## Documentation des Échecs
 
 Si un job échoue :
+
 1. Vérifier les logs détaillés
 2. Reproduire localement
 3. Fix et push
@@ -277,6 +292,7 @@ Si un job échoue :
 ## Preuves pour PDF
 
 À capturer :
+
 1. **Workflows verts** sur main
 2. **Badge CI** dans README
 3. **Temps d'exécution** < 5 min

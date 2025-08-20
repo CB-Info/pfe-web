@@ -23,7 +23,6 @@ test.describe("Application Structure Tests", () => {
     await page.goto("/");
 
     // Vérifier que les styles Tailwind sont appliqués
-    const body = page.locator("body");
 
     // Attendre que les styles se chargent
     await page.waitForLoadState("networkidle");
