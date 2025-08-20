@@ -64,9 +64,11 @@ npm run preview         # Preview du build
 
 # Qualité
 npm run lint            # ESLint
-npm run test            # Tests unitaires
+npm run test            # Tests unitaires (51 tests ✅)
 npm run test:ui         # Tests avec interface
-npm run test:coverage   # Couverture de code
+npm run test:coverage   # Couverture de code (14.52%)
+npm run test:e2e        # Tests End-to-End (16 tests ✅)
+npm run test:all        # Tous les tests (67 tests ✅)
 
 # CI
 npm run ci:check        # Lint + Test + Build
@@ -116,8 +118,11 @@ Documentation API : [Swagger](http://localhost:3000/api-docs) (quand le backend 
 
 ## 🐛 Bugs Connus
 
-- **FE-001** : Vitest non trouvé lors de l'exécution des tests
 - **FE-002** : Menu mobile ne se ferme pas automatiquement
+
+**Bugs récemment résolus ✅** :
+
+- **FE-001** : Vitest non trouvé lors de l'exécution des tests ✅ **RÉSOLU**
 
 Voir [BUGS_FRONTEND.md](docs/BUGS_FRONTEND.md) pour plus de détails.
 

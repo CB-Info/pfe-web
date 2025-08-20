@@ -4,10 +4,11 @@
 
 ### Outils Configurés
 
-- **Vitest** : Test runner (configuré mais dépendance manquante en local)
-- **React Testing Library** : Tests de composants
-- **@testing-library/jest-dom** : Matchers DOM additionnels
-- **jsdom** : Environnement DOM pour les tests
+- **Vitest** : Test runner ✅ (configuré et fonctionnel)
+- **React Testing Library** : Tests de composants ✅
+- **@testing-library/jest-dom** : Matchers DOM additionnels ✅
+- **jsdom** : Environnement DOM pour les tests ✅
+- **Playwright** : Tests E2E ✅ (nouvellement ajouté)
 
 ### Configuration Vitest
 
@@ -16,25 +17,28 @@
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.ts'
+    environment: "jsdom",
+    setupFiles: "./src/setupTests.ts",
   },
-})
+});
 ```
 
 ## Pyramide des Tests
 
 ### 1. Tests Unitaires (Base)
+
 - **Fonctions utilitaires** : Validation, formatage, calculs
 - **Reducers** : Logique de state management
 - **Hooks personnalisés** : useAlerts, useTheme
 
 ### 2. Tests de Composants (Milieu)
+
 - **Composants isolés** : Buttons, inputs, cards
 - **Comportement UI** : Clicks, états, props
 - **Rendering conditionnel** : Loading states, erreurs
 
 ### 3. Tests d'Intégration (Sommet)
+
 - **Pages complètes** : Dashboard, Dishes, Cards
 - **Flux utilisateur** : Login → Navigation → Actions
 - **Intégration API** : Mocks des appels réseau
@@ -42,6 +46,7 @@ export default defineConfig({
 ## Conventions de Nommage
 
 ### Fichiers de Test
+
 ```
 component.test.tsx    # Tests de composants
 utils.test.ts        # Tests de fonctions
@@ -50,6 +55,7 @@ page.test.tsx        # Tests de pages
 ```
 
 ### Structure des Tests
+
 ```typescript
 describe("ComponentName", () => {
   // Setup commun
@@ -90,7 +96,7 @@ describe("CustomButton Component", () => {
         Click me
       </CustomButton>
     );
-    
+
     expect(screen.getByText("Click me")).toBeInTheDocument();
   });
 
@@ -105,7 +111,7 @@ describe("CustomButton Component", () => {
         Click me
       </CustomButton>
     );
-    
+
     fireEvent.click(screen.getByText("Click me"));
     expect(mockOnClick).toHaveBeenCalled();
   });
@@ -120,9 +126,9 @@ describe("AlertsContext", () => {
     const wrapper = ({ children }) => (
       <AlertsProvider>{children}</AlertsProvider>
     );
-    
+
     const { result } = renderHook(() => useAlerts(), { wrapper });
-    
+
     expect(result.current.showAlert).toBeDefined();
     expect(result.current.hideAlert).toBeDefined();
   });
@@ -132,6 +138,7 @@ describe("AlertsContext", () => {
 ## Mocking
 
 ### Composants Externes
+
 ```typescript
 // Mock de Lottie pour éviter les erreurs
 vi.mock("lottie-react", () => ({
@@ -147,14 +154,15 @@ vi.mock("lottie-react", () => ({
 ```
 
 ### API Calls
+
 ```typescript
 // Mock des repositories
 vi.mock("../network/repositories/dishes.repository", () => ({
   DishesRepositoryImpl: vi.fn().mockImplementation(() => ({
-    getAll: vi.fn().mockResolvedValue([
-      { id: "1", name: "Pizza", price: 12.99 }
-    ])
-  }))
+    getAll: vi
+      .fn()
+      .mockResolvedValue([{ id: "1", name: "Pizza", price: 12.99 }]),
+  })),
 }));
 ```
 
@@ -163,9 +171,9 @@ vi.mock("../network/repositories/dishes.repository", () => ({
 ```json
 {
   "scripts": {
-    "test": "vitest",              // Mode watch
-    "test:ui": "vitest --ui",      // Interface graphique
-    "test:coverage": "vitest --coverage"  // Rapport de couverture
+    "test": "vitest", // Mode watch
+    "test:ui": "vitest --ui", // Interface graphique
+    "test:coverage": "vitest --coverage" // Rapport de couverture
   }
 }
 ```
@@ -191,6 +199,7 @@ src/
 ### Tests Critiques à Implémenter
 
 1. **Authentication Flow**
+
 ```typescript
 test("redirects to login when not authenticated", async () => {
   render(<App />);
@@ -205,13 +214,14 @@ test("shows dashboard after successful login", async () => {
 ```
 
 2. **Formulaire de Plat**
+
 ```typescript
 test("validates dish form before submission", async () => {
   render(<DishForm />);
-  
+
   // Submit empty form
   fireEvent.click(screen.getByText("Créer"));
-  
+
   // Check validation messages
   expect(screen.getByText(/nom requis/i)).toBeInTheDocument();
   expect(screen.getByText(/prix requis/i)).toBeInTheDocument();
@@ -219,13 +229,14 @@ test("validates dish form before submission", async () => {
 ```
 
 3. **Navigation**
+
 ```typescript
 test("navigates between pages", async () => {
   render(<App />);
-  
+
   fireEvent.click(screen.getByText(/plats/i));
   expect(screen.getByTestId("dishes-page")).toBeInTheDocument();
-  
+
   fireEvent.click(screen.getByText(/cartes/i));
   expect(screen.getByTestId("cards-page")).toBeInTheDocument();
 });
@@ -234,21 +245,25 @@ test("navigates between pages", async () => {
 ## Bonnes Pratiques
 
 ### 1. Isolation
+
 - Tester un seul comportement par test
 - Éviter les dépendances entre tests
 - Nettoyer après chaque test
 
 ### 2. Lisibilité
+
 - Noms de tests descriptifs
 - Structure AAA (Arrange, Act, Assert)
 - Éviter la logique dans les tests
 
 ### 3. Maintenance
+
 - Préférer les sélecteurs accessibles (role, label)
 - Éviter les sélecteurs fragiles (classes CSS)
 - Utiliser data-testid si nécessaire
 
 ### 4. Performance
+
 - Minimiser les renders inutiles
 - Grouper les tests similaires
 - Utiliser beforeEach pour le setup commun
@@ -269,14 +284,22 @@ npm run test -- -t "should render correctly"
 ## TODO : Configuration Vitest
 
 Pour faire fonctionner les tests :
+
 1. Installer les dépendances manquantes si nécessaire
 2. Vérifier que `vitest` est bien dans node_modules
 3. Lancer `npm run test`
 
+## Améliorations Implémentées
+
+1. **Tests E2E** ✅ avec Playwright (configuré et fonctionnel)
+   - Configuration multi-navigateurs (Chrome, Firefox, Safari)
+   - Tests responsive (mobile, tablet, desktop)
+   - Tests d'accessibilité intégrés
+
 ## Amélioration Future
 
-1. **Tests E2E** avec Playwright/Cypress
-2. **Visual Regression** avec Percy/Chromatic
-3. **Tests de Performance** avec Lighthouse CI
-4. **Mutation Testing** avec Stryker
-5. **Contract Testing** pour l'API
+1. **Visual Regression** avec Percy/Chromatic
+2. **Tests de Performance** avec Lighthouse CI
+3. **Mutation Testing** avec Stryker
+4. **Contract Testing** pour l'API
+5. **Tests d'intégration** avec MSW (Mock Service Worker)

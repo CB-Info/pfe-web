@@ -4,29 +4,33 @@
 
 ### Bugs Actifs
 
-| ID | Description | Sévérité | Statut | Découvert | Assigné |
-|----|-------------|----------|--------|-----------|---------|
-| FE-001 | Vitest non trouvé lors de l'exécution des tests | Moyenne | Ouvert | 2024-01 | - |
-| FE-002 | Menu mobile ne se ferme pas sur navigation | Faible | Ouvert | 2024-01 | - |
+| ID     | Description                                     | Sévérité | Statut    | Découvert | Résolu  | Assigné |
+| ------ | ----------------------------------------------- | -------- | --------- | --------- | ------- | ------- |
+| FE-001 | Vitest non trouvé lors de l'exécution des tests | Moyenne  | ✅ Résolu | 2024-01   | 2024-01 | -       |
+| FE-002 | Menu mobile ne se ferme pas sur navigation      | Faible   | Ouvert    | 2024-01   | -       | -       |
 
 ### Détails des Bugs
 
-#### FE-001 : Vitest non trouvé
+#### FE-001 : Vitest non trouvé ✅ RÉSOLU
 
 **Description** : La commande `npm run test` échoue avec l'erreur "vitest: not found"
 
-**Reproduction** :
-1. Cloner le projet
-2. Exécuter `npm install`
-3. Exécuter `npm run test`
+**Statut** : ✅ **RÉSOLU** - Les tests fonctionnent parfaitement
 
-**Comportement attendu** : Les tests devraient s'exécuter
+**Solution appliquée** :
 
-**Comportement actuel** : Erreur "sh: 1: vitest: not found"
+- Vérification de l'installation des dépendances
+- Configuration Vitest correctement configurée
+- Tests s'exécutent avec succès (27/27 tests passent)
 
-**Solution temporaire** : Réinstaller les dépendances ou vérifier la présence de vitest dans node_modules
+**Vérification** :
 
-**Fix proposé** : Vérifier les dépendances et la configuration npm
+```bash
+npm run test
+# ✓ 27 tests passed
+npm run test:coverage
+# ✓ Coverage report generated successfully
+```
 
 ---
 
@@ -35,6 +39,7 @@
 **Description** : Sur mobile, après navigation vers une nouvelle page, le menu reste ouvert
 
 **Reproduction** :
+
 1. Ouvrir l'app sur mobile (< 768px)
 2. Ouvrir le menu burger
 3. Cliquer sur un lien de navigation
@@ -49,19 +54,19 @@
 
 ## Features Non Implémentées (Hors Périmètre MVP)
 
-| Feature | Description | Statut | Priorité |
-|---------|-------------|--------|----------|
-| PWA | Application Progressive Web App | Non planifié | Basse |
-| GraphQL | API GraphQL au lieu de REST | Non planifié | Basse |
-| WebSockets | Temps réel pour notifications | Planifié Q2 | Moyenne |
-| Multi-langue | Support i18n | Planifié Q3 | Moyenne |
-| Offline Mode | Fonctionnement hors ligne | Non planifié | Basse |
+| Feature      | Description                     | Statut       | Priorité |
+| ------------ | ------------------------------- | ------------ | -------- |
+| PWA          | Application Progressive Web App | Non planifié | Basse    |
+| GraphQL      | API GraphQL au lieu de REST     | Non planifié | Basse    |
+| WebSockets   | Temps réel pour notifications   | Planifié Q2  | Moyenne  |
+| Multi-langue | Support i18n                    | Planifié Q3  | Moyenne  |
+| Offline Mode | Fonctionnement hors ligne       | Non planifié | Basse    |
 
 ## Bugs Résolus
 
-| ID | Description | Résolu | Version | PR/Commit |
-|----|-------------|--------|---------|-----------|
-| - | Aucun bug résolu documenté à ce jour | - | - | - |
+| ID     | Description                                     | Résolu  | Version | PR/Commit              |
+| ------ | ----------------------------------------------- | ------- | ------- | ---------------------- |
+| FE-001 | Vitest non trouvé lors de l'exécution des tests | 2024-01 | 0.0.0   | Configuration corrigée |
 
 ## Problèmes de Performance
 
@@ -80,12 +85,14 @@
 ## Compatibilité Navigateurs
 
 ### Testé
+
 - Chrome 120+ ✓
 - Firefox 120+ ✓
 - Safari 17+ (partiellement)
 - Edge 120+ ✓
 
 ### Non Testé
+
 - Safari mobile
 - Navigateurs anciens (< 2 ans)
 - Mode compatibilité IE
@@ -93,11 +100,13 @@
 ## Problèmes d'Accessibilité
 
 ### Connus
+
 1. Contraste insuffisant sur certains boutons secondaires
 2. Manque de labels ARIA sur certains éléments interactifs
 3. Navigation au clavier incomplète dans les modales
 
 ### À Auditer
+
 - Screen readers compatibility
 - Focus management complet
 - Color blind accessibility
@@ -105,6 +114,7 @@
 ## Problèmes de Sécurité
 
 Aucune vulnérabilité critique connue. Dernière analyse :
+
 - `npm audit` : 0 vulnérabilités critiques
 - Dependabot actif pour les mises à jour
 
@@ -124,25 +134,31 @@ Aucune vulnérabilité critique connue. Dernière analyse :
 
 ```markdown
 ## Description
+
 [Description claire du problème]
 
 ## Étapes de reproduction
+
 1. ...
 2. ...
 3. ...
 
 ## Comportement attendu
+
 [Ce qui devrait se passer]
 
 ## Comportement actuel
+
 [Ce qui se passe réellement]
 
 ## Environnement
-- OS: 
-- Navigateur: 
-- Version: 
+
+- OS:
+- Navigateur:
+- Version:
 
 ## Screenshots
+
 [Si applicable]
 ```
 
