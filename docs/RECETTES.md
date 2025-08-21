@@ -358,39 +358,66 @@
 
 Les scénarios suivants sont maintenant couverts par des tests automatisés Playwright :
 
-1. **Authentification complète** (`auth-flow.spec.ts`)
+1. **Tests de Structure d'Application** (`app-structure.spec.ts`)
 
+   - ✅ Structure HTML et méta tags
+   - ✅ Chargement CSS et styles Tailwind
+   - ✅ Responsive design mobile
+   - ✅ Gestion des erreurs et boundaries
+   - ✅ Rechargement de page
+
+2. **Tests d'Interactions de Base** (`basic-interactions.spec.ts`)
+
+   - ✅ Saisie dans les champs de formulaire
+   - ✅ Effacement des champs
+   - ✅ Option de réinitialisation de mot de passe
+   - ✅ Design responsive
+   - ✅ Interactions clavier
+
+3. **Tests d'Interface de Connexion** (`login-ui.spec.ts`)
+
+   - ✅ Affichage des éléments du formulaire
+   - ✅ Validation du format email
+   - ✅ Structure du formulaire
+   - ✅ Icônes et placeholders
+
+4. **Tests de Navigation** (`navigation.spec.ts`)
    - ✅ Affichage de la page de connexion
-   - ✅ Validation des champs (email, mot de passe)
-   - ✅ Toggle de visibilité du mot de passe
-   - ✅ Indicateur de force du mot de passe
-   - ✅ Navigation vers réinitialisation mot de passe
-   - ✅ États de chargement et erreurs
-   - ✅ Tests d'accessibilité (navigation clavier, ARIA)
-   - ✅ Tests responsive (mobile, tablet)
-
-2. **Gestion des Plats** (`dishes-management.spec.ts`)
-   - ✅ Chargement et affichage de la liste
-   - ✅ Recherche et filtrage
-   - ✅ Création/édition/suppression de plats
-   - ✅ Validation des formulaires
-   - ✅ Gestion des erreurs réseau
-   - ✅ Tests responsive et accessibilité
+   - ✅ Titre et méta tags de page
+   - ✅ Chargement correct de l'application
 
 ### Scénarios en Cours d'Implémentation 🔧
 
 Les tests d'intégration suivants sont implémentés mais en cours de finalisation :
 
-3. **Consultation du Dashboard** (`dashboard.integration.test.tsx`)
-4. **Gestion des Cartes/Menus** (planifié)
-5. **Consultation Menu Client (QR Code)** (planifié)
+5. **Consultation du Dashboard** (`dashboard.integration.test.tsx`)
+6. **Gestion des Cartes/Menus** (planifié)
+7. **Consultation Menu Client (QR Code)** (planifié)
 
 ### Scénarios à Implémenter
 
-6. **Upload d'Image pour un Plat**
-7. **Export de Données**
-8. **Notifications en Temps Réel**
-9. **Performance - Chargement Initial**
+8. **Gestion des Plats - Consultation** (planifié)
+9. **Création d'un Nouveau Plat** (planifié)
+10. **Gestion des Cartes/Menus** (planifié)
+11. **Upload d'Image pour un Plat** (planifié)
+12. **Export de Données** (planifié)
+13. **Notifications en Temps Réel** (planifié)
+14. **Performance - Chargement Initial** (planifié)
+
+## Configuration Playwright
+
+### Navigateurs Testés
+
+- **Desktop** : Chrome, Firefox, Safari
+- **Mobile** : Chrome Mobile, Safari Mobile
+- **CI/CD** : Compatible avec retry automatique
+
+### Fonctionnalités
+
+- **Screenshots** : Automatiques en cas d'échec
+- **Vidéos** : Enregistrement des échecs
+- **Traces** : Debugging avancé
+- **Serveur local** : Démarrage automatique du dev server
 
 ## Prochaines Recettes (Roadmap)
 

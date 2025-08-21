@@ -292,20 +292,124 @@ npm run test custom.button.test.tsx
 npm run test -- -t "should render correctly"
 ```
 
-## TODO : Configuration Vitest
-
-Pour faire fonctionner les tests :
-
-1. Installer les dépendances manquantes si nécessaire
-2. Vérifier que `vitest` est bien dans node_modules
-3. Lancer `npm run test`
-
 ## Améliorations Implémentées
 
 1. **Tests E2E** ✅ avec Playwright (configuré et fonctionnel)
    - Configuration multi-navigateurs (Chrome, Firefox, Safari)
    - Tests responsive (mobile, tablet, desktop)
    - Tests d'accessibilité intégrés
+
+## Tests E2E avec Playwright
+
+### Configuration Actuelle
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  testDir: "./src/tests/e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: "html",
+
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "webkit", use: { ...devices["Desktop Safari"] } },
+    { name: "Mobile Chrome", use: { ...devices["Pixel 5"] } },
+    { name: "Mobile Safari", use: { ...devices["iPhone 12"] } },
+  ],
+
+  webServer: {
+    command: "npm run dev",
+    url: "http://localhost:5173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+  },
+});
+```
+
+### Scripts NPM E2E
+
+```json
+{
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm run test && npm run test:e2e"
+  }
+}
+```
+
+### Tests E2E Implémentés
+
+#### 1. Structure d'Application (`app-structure.spec.ts`)
+
+- **5 tests** : Structure HTML, CSS, responsive, erreurs, rechargement
+- **Couverture** : Métadonnées, styles, mobile, error boundaries
+
+#### 2. Interactions de Base (`basic-interactions.spec.ts`)
+
+- **5 tests** : Formulaires, saisie, clavier, responsive
+- **Couverture** : UX de base, accessibilité, mobile
+
+#### 3. Interface de Connexion (`login-ui.spec.ts`)
+
+- **3 tests** : Formulaire, validation email, structure
+- **Couverture** : Login UI, validation, placeholders
+
+#### 4. Navigation (`navigation.spec.ts`)
+
+- **3 tests** : Page de connexion, métadonnées, chargement
+- **Couverture** : Routing, SEO, performance
+
+**Total E2E** : **4 fichiers, 16 tests** ✅
+
+### Commandes E2E
+
+```bash
+# Lancer tous les tests E2E
+npm run test:e2e
+
+# Interface graphique Playwright
+npm run test:e2e:ui
+
+# Tests complets (unitaires + E2E)
+npm run test:all
+
+# Tests E2E avec debug
+npx playwright test --debug
+
+# Tests E2E sur un navigateur spécifique
+npx playwright test --project=chromium
+
+# Générer le rapport HTML
+npx playwright show-report
+```
+
+### Fonctionnalités Avancées
+
+- **Screenshots automatiques** en cas d'échec
+- **Vidéos** des tests qui échouent
+- **Traces** pour le debugging avancé
+- **Serveur local** démarré automatiquement
+- **Retry automatique** en CI/CD
+- **Tests parallèles** pour la performance
+
+### Intégration CI/CD
+
+```yaml
+# .github/workflows/ci.yml
+- name: Run E2E Tests
+  run: npm run test:e2e
+
+- name: Upload Playwright results
+  uses: actions/upload-artifact@v3
+  with:
+    name: playwright-report
+    path: playwright-report/
+```
 
 ## Amélioration Future
 

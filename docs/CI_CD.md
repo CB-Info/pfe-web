@@ -215,21 +215,18 @@ permissions:
 
 ### Court Terme
 
-1. **Fix Vitest** : Résoudre l'erreur d'exécution
-2. **Coverage Reports** : Intégrer Codecov
-3. **Bundle Analysis** : Commenter la taille sur PR
+1. **Coverage Reports** : Intégrer Codecov
+2. **Bundle Analysis** : Commenter la taille sur PR
 
 ### Moyen Terme
 
-1. **E2E Tests** : Ajouter Playwright
-2. **Visual Tests** : Percy ou Chromatic
-3. **Performance Budget** : Lighthouse CI
+1. **Visual Tests** : Percy ou Chromatic
+2. **Performance Budget** : Lighthouse CI
 
 ### Long Terme
 
-1. **Multi-environnements** : Staging/Production
-2. **Canary Deployments** : Progressive rollout
-3. **A/B Testing** : Feature flags
+1. **Canary Deployments** : Progressive rollout
+2. **A/B Testing** : Feature flags
 
 ## Debugging CI
 
@@ -259,7 +256,7 @@ permissions:
 3. ✅ **Parallélisation** : Jobs indépendants
 4. ✅ **Caching** : Dépendances persistées
 5. ✅ **Security** : Scans automatiques
-6. ⚠️ **Tests** : À réparer (Vitest)
+6. ✅ **Tests** : Vitest fonctionnel
 
 ## Commandes Utiles
 
@@ -288,12 +285,3 @@ Si un job échoue :
 2. Reproduire localement
 3. Fix et push
 4. Vérifier la correction en CI
-
-## Preuves pour PDF
-
-À capturer :
-
-1. **Workflows verts** sur main
-2. **Badge CI** dans README
-3. **Temps d'exécution** < 5 min
-4. **Security scan** sans vulnérabilités critiques

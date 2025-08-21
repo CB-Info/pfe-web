@@ -6,9 +6,9 @@
 
 | ID     | Description                                     | Sévérité | Statut    | Découvert | Résolu  | Assigné |
 | ------ | ----------------------------------------------- | -------- | --------- | --------- | ------- | ------- |
-| FE-001 | Vitest non trouvé lors de l'exécution des tests | Moyenne  | ✅ Résolu | 2024-01   | 2024-01 | -       |
-| FE-002 | Menu mobile ne se ferme pas sur navigation      | Faible   | Ouvert    | 2024-01   | -       | -       |
-| FE-003 | Erreurs TypeScript et ESLint dans les tests CI  | Moyenne  | ✅ Résolu | 2024-01   | 2024-01 | -       |
+| FE-001 | Vitest non trouvé lors de l'exécution des tests | Moyenne  | ✅ Résolu | 2025-08   | 2025-08 | -       |
+| FE-002 | Menu mobile ne se ferme pas sur navigation      | Faible   | ✅ Résolu | 2025-07   | 2025-08 | -       |
+| FE-003 | Erreurs TypeScript et ESLint dans les tests CI  | Moyenne  | ✅ Résolu | 2025-07   | 2025-08 | -       |
 
 ### Détails des Bugs
 
@@ -37,39 +37,6 @@ npm run test:coverage
 
 ---
 
-#### FE-003 : Erreurs TypeScript et ESLint dans les tests CI ✅ RÉSOLU
-
-**Description** : Les tests échouent en CI avec des erreurs TypeScript et ESLint
-
-**Erreurs identifiées** :
-
-- `'auth' is declared but its value is never read` (TypeScript)
-- `Unexpected any. Specify a different type` (ESLint)
-- `This expression is not callable` (TypeScript)
-- Variables d'environnement Firebase manquantes en mode test
-
-**Statut** : ✅ **RÉSOLU** - Tous les tests passent en CI
-
-**Solution appliquée** :
-
-- Correction des types TypeScript avec imports appropriés (`User`, `Auth`, `UserCredential`)
-- Remplacement des types `any` par des types spécifiques
-- Ajout de valeurs par défaut pour les variables d'environnement Firebase en mode test
-- Configuration Vitest pour exclure les tests E2E
-- Correction des callbacks et mocks avec les bons types
-
-**Vérification** :
-
-```bash
-npm run ci:check
-# ✓ ESLint passed (11 warnings, 0 errors)
-# ✓ TypeScript check passed
-# ✓ 51 tests passed
-# ✓ Build successful
-```
-
----
-
 #### FE-002 : Menu mobile ne se ferme pas
 
 **Description** : Sur mobile, après navigation vers une nouvelle page, le menu reste ouvert
@@ -90,13 +57,12 @@ npm run ci:check
 
 ## Features Non Implémentées (Hors Périmètre MVP)
 
-| Feature      | Description                     | Statut       | Priorité |
-| ------------ | ------------------------------- | ------------ | -------- |
-| PWA          | Application Progressive Web App | Non planifié | Basse    |
-| GraphQL      | API GraphQL au lieu de REST     | Non planifié | Basse    |
-| WebSockets   | Temps réel pour notifications   | Planifié Q2  | Moyenne  |
-| Multi-langue | Support i18n                    | Planifié Q3  | Moyenne  |
-| Offline Mode | Fonctionnement hors ligne       | Non planifié | Basse    |
+| Feature      | Description                   | Statut       | Priorité |
+| ------------ | ----------------------------- | ------------ | -------- |
+| GraphQL      | API GraphQL au lieu de REST   | Non planifié | Basse    |
+| WebSockets   | Temps réel pour notifications | Planifié Q2  | Moyenne  |
+| Multi-langue | Support i18n                  | Planifié Q3  | Moyenne  |
+| Offline Mode | Fonctionnement hors ligne     | Non planifié | Basse    |
 
 ## Bugs Résolus
 
@@ -125,13 +91,11 @@ npm run ci:check
 - Chrome 120+ ✓
 - Firefox 120+ ✓
 - Safari 17+ (partiellement)
-- Edge 120+ ✓
 
 ### Non Testé
 
 - Safari mobile
 - Navigateurs anciens (< 2 ans)
-- Mode compatibilité IE
 
 ## Problèmes d'Accessibilité
 
@@ -207,8 +171,6 @@ Aucune vulnérabilité critique connue. Dernière analyse :
 
 ## Prochaines Actions
 
-1. [ ] Résoudre FE-001 (Vitest)
-2. [ ] Fix FE-002 (Menu mobile)
-3. [ ] Audit d'accessibilité complet
-4. [ ] Mesures de performance initiales
-5. [ ] Tests cross-browser systématiques
+1. [ ] Audit d'accessibilité complet
+2. [ ] Mesures de performance initiales
+3. [ ] Tests cross-browser systématiques
