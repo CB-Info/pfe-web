@@ -2,7 +2,7 @@
 
 ## Stack Technologique
 
-Le projet **pfe-web** utilise une stack moderne basée sur :
+Le projet **Eatopia** utilise une stack moderne basée sur :
 
 - **React 18.2** avec TypeScript pour le framework UI
 - **Vite 7.0** comme bundler et outil de développement
