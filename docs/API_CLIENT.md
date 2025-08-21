@@ -18,7 +18,7 @@ Les repositories encapsulent toute la logique d'appel API :
 ```
 src/network/repositories/
 ├── dishes.repository.ts      # Gestion des plats
-├── cards.repository.ts       # Gestion des cartes  
+├── cards.repository.ts       # Gestion des cartes
 ├── ingredients.repository.ts # Gestion des ingrédients
 └── user.repository.ts        # Gestion des utilisateurs
 ```
@@ -40,7 +40,7 @@ export class DishesRepositoryImpl {
         },
       });
       const data: Data<IngredientDto[]> = await response.json();
-      
+
       return data.data.map(
         (element) =>
           new Ingredient(
@@ -52,7 +52,11 @@ export class DishesRepositoryImpl {
       );
     } catch (error) {
       console.error("Error fetching top ingredients:", error);
-      throw new Error(`Failed to fetch top ingredients: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to fetch top ingredients: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 }
@@ -97,28 +101,32 @@ class FirebaseAuthManager {
 ```typescript
 try {
   const response = await fetch(url, options);
-  
+
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-  
+
   const data = await response.json();
   return data;
 } catch (error) {
   console.error("Error:", error);
   // Propagation avec message explicite
-  throw new Error(`Failed to ${action}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  throw new Error(
+    `Failed to ${action}: ${
+      error instanceof Error ? error.message : "Unknown error"
+    }`
+  );
 }
 ```
 
 ### Mapping des Erreurs HTTP
 
-| Status | Message UI | Action |
-|--------|------------|--------|
-| 401 | "Session expirée, veuillez vous reconnecter" | Redirection login |
-| 403 | "Accès non autorisé" | Affichage message |
-| 404 | "Ressource introuvable" | Affichage message |
-| 500 | "Erreur serveur, veuillez réessayer" | Retry possible |
+| Status | Message UI                                   | Action            |
+| ------ | -------------------------------------------- | ----------------- |
+| 401    | "Session expirée, veuillez vous reconnecter" | Redirection login |
+| 403    | "Accès non autorisé"                         | Affichage message |
+| 404    | "Ressource introuvable"                      | Affichage message |
+| 500    | "Erreur serveur, veuillez réessayer"         | Retry possible    |
 
 ## Typage et DTOs
 
@@ -153,7 +161,7 @@ export class Dish {
 DTO → Model dans les repositories :
 
 ```typescript
-return data.data.map((dto) => 
+return data.data.map((dto) =>
   new Dish(
     dto._id,
     dto.name,
@@ -168,6 +176,7 @@ return data.data.map((dto) =>
 ## Endpoints Principaux
 
 ### Dishes
+
 - `GET /dishes` - Liste des plats
 - `GET /dishes/top-ingredients` - Ingrédients populaires
 - `POST /dishes` - Création d'un plat
@@ -175,39 +184,43 @@ return data.data.map((dto) =>
 - `DELETE /dishes/:id` - Suppression
 
 ### Cards (Cartes de menu)
+
 - `GET /cards` - Liste des cartes
 - `POST /cards` - Création
 - `PUT /cards/:id` - Mise à jour
 - `DELETE /cards/:id` - Suppression
 
 ### Ingredients
+
 - `GET /ingredients` - Liste complète
 - `POST /ingredients` - Ajout
 
 ### Users
+
 - `GET /users/profile` - Profil utilisateur
 - `PUT /users/profile` - Mise à jour profil
 
 ## Interceptors et Middleware
 
 Actuellement, pas d'interceptor Axios global. Chaque repository gère :
+
 - L'ajout du token d'authentification
-- La gestion d'erreur spécifique
 - La transformation des données
 
 ### Amélioration Future
 
 Mise en place d'un interceptor Axios global pour :
+
 - Ajout automatique du token
-- Gestion centralisée des erreurs
 - Retry automatique sur erreur réseau
 - Loading state global
 
 ## Documentation Backend
 
 Pour les schémas détaillés des endpoints et des modèles, se référer à la documentation Swagger du backend :
-- **Développement** : `http://localhost:3000/api-docs`
-- **Production** : À définir
+
+- **Développement** : `http://localhost:3000/api`
+- **Production** : `https://pfe-api-fbyd.onrender.com/api`
 
 ## Sécurité des Appels API
 

@@ -69,14 +69,14 @@ graph TD
     B --> C[React Contexts]
     C --> D[Repositories]
     D --> E[API Backend]
-    
+
     F[User Action] --> A
     E --> G[Response]
     G --> D
     D --> C
     C --> H[State Update]
     H --> A
-    
+
     I[Firebase Auth] --> C
     C --> J[Auth State]
     J --> A
@@ -85,29 +85,37 @@ graph TD
 ## Patterns Architecturaux
 
 ### 1. Repository Pattern
+
 Les repositories dans `src/network/repositories/` encapsulent la logique d'accès aux données :
+
 - `dishes.repository.ts` : Gestion des plats
 - `cards.repository.ts` : Gestion des cartes
 - `ingredients.repository.ts` : Gestion des ingrédients
 - `user.repository.ts` : Gestion des utilisateurs
 
 ### 2. Context Pattern
+
 Utilisation de React Context pour l'état global :
+
 - **AuthProvider** : Gestion de l'authentification Firebase
 - **AlertsProvider** : Système de notifications centralisé
 - **ThemeProvider** : Gestion du thème dark/light
 
 ### 3. Custom Hooks
+
 Abstraction de la logique métier :
+
 - `useAlerts()` : Interface pour les notifications
 - `useTheme()` : Gestion du thème
 
 ### 4. Lazy Loading
+
 Chargement différé des pages avec `React.lazy()` et `Suspense` pour optimiser les performances.
 
 ## Conventions de Modules
 
 ### Imports
+
 1. Imports externes (React, bibliothèques)
 2. Imports de configuration/types
 3. Imports de composants
@@ -115,6 +123,7 @@ Chargement différé des pages avec `React.lazy()` et `Suspense` pour optimiser 
 5. Imports de styles
 
 ### Exports
+
 - Export par défaut pour les pages
 - Export nommé pour les composants réutilisables
 - Export de types depuis `data/dto/` et `data/models/`
@@ -122,12 +131,14 @@ Chargement différé des pages avec `React.lazy()` et `Suspense` pour optimiser 
 ## Gestion des Assets
 
 Les assets statiques sont organisés dans :
+
 - `public/` : Fichiers publics accessibles directement
 - `src/assets/` : Assets importés dans les modules
 
 ## Points d'Extension
 
 Le projet est conçu pour être extensible :
+
 1. Nouveaux repositories dans `network/repositories/`
 2. Nouvelles pages dans `UI/pages/`
 3. Nouveaux contexts dans `contexts/`
@@ -136,6 +147,7 @@ Le projet est conçu pour être extensible :
 ## Optimisations Build
 
 La configuration Vite inclut :
+
 - Plugin React SWC pour des builds plus rapides
 - Plugin Babel Macros pour twin.macro
 - Visualizer pour analyser la taille des bundles

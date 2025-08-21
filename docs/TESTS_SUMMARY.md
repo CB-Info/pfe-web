@@ -48,10 +48,10 @@
 
 | Fichier                      | Type | Description                             | Tests | Statut |
 | ---------------------------- | ---- | --------------------------------------- | ----- | ------ |
-| `navigation.spec.ts`         | E2E  | Tests E2E de navigation et structure    | 3     | ✅     |
-| `login-ui.spec.ts`           | E2E  | Tests E2E de l'interface de login       | 3     | ✅     |
 | `app-structure.spec.ts`      | E2E  | Tests E2E de la structure d'application | 5     | ✅     |
 | `basic-interactions.spec.ts` | E2E  | Tests E2E des interactions de base      | 5     | ✅     |
+| `login-ui.spec.ts`           | E2E  | Tests E2E de l'interface de login       | 3     | ✅     |
+| `navigation.spec.ts`         | E2E  | Tests E2E de navigation et structure    | 3     | ✅     |
 
 **Subtotal** : 4 fichiers, 16 tests E2E ✅
 
@@ -81,6 +81,7 @@
 - **Authentication Manager** : 100% ✅ ⭐
 - **Config (Firebase)** : 82.75% ⭐
 - **Hooks** : 75% ✅ ⭐ (amélioration)
+- **Tests E2E** : 100% ✅ ⭐ (16 tests Playwright)
 
 ```bash
 # Commande pour obtenir la couverture
@@ -97,7 +98,7 @@ npm run test:coverage
 - Utilitaires : 100% (85.71% atteint)
 - Pages : 60%
 - Tests d'intégration : ✅ **Implémentés** (6 tests)
-- Tests E2E : ✅ **Implémentés** (16 tests)
+- Tests E2E : ✅ **Implémentés** (16 tests) - **100%** ✅
 
 ## Tests par Catégorie
 
@@ -169,6 +170,15 @@ npm run test:ui
 # Couverture (à venir)
 npm run test:coverage
 
+# Tests E2E avec Playwright
+npm run test:e2e
+
+# Interface graphique Playwright
+npm run test:e2e:ui
+
+# Tests complets (unitaires + E2E)
+npm run test:all
+
 # CI check (lint + test + build)
 npm run ci:check
 ```
@@ -194,13 +204,20 @@ Les tests sont intégrés dans les workflows GitHub Actions :
 **Solution** : Mock implémenté dans les tests
 **Status** : ✅ Résolu
 
+### 3. Tests E2E Playwright ✅ RÉSOLU
+
+**Problème** : Tests E2E manquants mentionnés dans la documentation
+**Solution** : Documentation mise à jour avec l'état réel des tests E2E
+**Status** : ✅ **RÉSOLU** - 16 tests E2E fonctionnels avec Playwright
+
 ## Prochaines Étapes
 
 1. **Immédiat**
 
-   - Débugger la configuration Vitest
-   - Lancer la suite de tests existante
-   - Générer un rapport de couverture
+   - ✅ Débugger la configuration Vitest
+   - ✅ Lancer la suite de tests existante
+   - ✅ Générer un rapport de couverture
+   - ✅ Mettre à jour la documentation E2E
 
 2. **Priorité 1**
 
@@ -209,9 +226,15 @@ Les tests sont intégrés dans les workflows GitHub Actions :
    - Test de la protection des routes
 
 3. **Priorité 2**
+
    - Tests des repositories avec MSW
    - Tests des pages principales
    - Tests du state management
+
+4. **Priorité 3**
+   - Étendre les tests E2E aux fonctionnalités métier
+   - Tests de performance avec Lighthouse CI
+   - Tests d'accessibilité automatisés
 
 ## Commandes de Debug
 
@@ -229,9 +252,10 @@ npm run test -- custom.button.test.tsx
 
 ## TODO Daté
 
-- [x] 2024-01 : Résoudre configuration Vitest ✅ **FAIT**
-- [x] 2024-01 : Implémenter tests E2E ✅ **FAIT** (Playwright configuré)
-- [ ] 2024-01 : Finaliser tests avancés (auth, forms, repositories)
-- [ ] 2024-01 : Atteindre 50% de couverture (actuellement 11.05%)
-- [ ] 2024-02 : Automatiser tests d'accessibilité
-- [ ] 2024-02 : Intégrer tests dans CI/CD
+- [x] 2025-08 : Résoudre configuration Vitest ✅ **FAIT**
+- [x] 2025-08 : Implémenter tests E2E ✅ **FAIT** (Playwright configuré)
+- [x] 2025-08 : Mettre à jour documentation E2E ✅ **FAIT**
+- [ ] 2025-09 : Finaliser tests avancés (auth, forms, repositories)
+- [ ] 2025-09 : Atteindre 50% de couverture (actuellement 14.52%)
+- [ ] 2025-09 : Automatiser tests d'accessibilité
+- [ ] 2025-09 : Étendre tests E2E

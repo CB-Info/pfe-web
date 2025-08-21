@@ -1,10 +1,11 @@
 # Accessibility — C2.2.3
 
-## Pratiques d'Accessibilité Appliquées
+## Pratiques d'Accessibilité Appliquées / Prévues
 
 ### 1. Sémantique HTML
 
 #### Structure de Page
+
 ```typescript
 // Navigation avec landmark
 <nav aria-label="Navigation principale">
@@ -24,12 +25,14 @@
 ```
 
 #### Boutons vs Liens
+
 - **Boutons** : Actions (submit, toggle, delete)
 - **Liens** : Navigation (routes, external)
 
 ### 2. ARIA Labels et Attributs
 
 #### Labels Explicites
+
 ```typescript
 // Bouton menu mobile
 <button
@@ -51,6 +54,7 @@
 ```
 
 #### États et Propriétés
+
 ```typescript
 // Modal overlay
 <div
@@ -72,6 +76,7 @@
 ### 3. Gestion du Focus
 
 #### Focus Visible
+
 ```css
 /* Via Tailwind */
 .focus:outline-none
@@ -81,11 +86,13 @@
 ```
 
 #### Ordre de Tabulation
+
 - Navigation logique du haut vers le bas
 - Skip links (à implémenter)
 - Focus trap dans les modales
 
 #### Focus Management
+
 ```typescript
 // Retour du focus après fermeture modale
 const previousFocus = useRef<HTMLElement>();
@@ -102,19 +109,22 @@ useEffect(() => {
 ### 4. Contrastes et Couleurs
 
 #### Ratios de Contraste
+
 - Texte principal : 4.5:1 minimum ✓
 - Texte large : 3:1 minimum ✓
 - Éléments interactifs : 3:1 minimum ✓
 
 #### Couleurs Accessibles
+
 ```css
 /* Couleurs avec bon contraste */
---primary-color: #3C7FD0; /* Ratio 4.7:1 sur blanc */
---text-dark: #1a1a1a;     /* Ratio 12.6:1 sur blanc */
---error-color: #dc2626;   /* Ratio 4.5:1 sur blanc */
+--primary-color: #3c7fd0; /* Ratio 4.7:1 sur blanc */
+--text-dark: #1a1a1a; /* Ratio 12.6:1 sur blanc */
+--error-color: #dc2626; /* Ratio 4.5:1 sur blanc */
 ```
 
 #### Ne Pas Dépendre Uniquement de la Couleur
+
 ```typescript
 // Erreur avec icône + couleur
 <div className="text-red-600">
@@ -126,16 +136,17 @@ useEffect(() => {
 ### 5. Images et Médias
 
 #### Textes Alternatifs
+
 ```typescript
 // Image informative
-<img 
-  src="/dish.jpg" 
+<img
+  src="/dish.jpg"
   alt="Pizza Margherita avec tomates fraîches et basilic"
 />
 
 // Image décorative
-<img 
-  src="/decoration.svg" 
+<img
+  src="/decoration.svg"
   alt=""
   role="presentation"
 />
@@ -150,42 +161,41 @@ useEffect(() => {
 ### 6. Navigation au Clavier
 
 #### Raccourcis Standards
+
 - `Tab` : Navigation entre éléments
 - `Enter` : Activer boutons/liens
 - `Space` : Cocher/décocher
 - `Esc` : Fermer modales
 
 #### Implementation
+
 ```typescript
 // Fermeture modale avec Escape
 useEffect(() => {
   const handleEscape = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && isOpen) {
+    if (e.key === "Escape" && isOpen) {
       onClose();
     }
   };
-  
-  document.addEventListener('keydown', handleEscape);
-  return () => document.removeEventListener('keydown', handleEscape);
+
+  document.addEventListener("keydown", handleEscape);
+  return () => document.removeEventListener("keydown", handleEscape);
 }, [isOpen, onClose]);
 ```
 
 ### 7. Formulaires Accessibles
 
 #### Labels Associés
+
 ```typescript
 <label htmlFor="dish-name">
   Nom du plat
-  <input
-    id="dish-name"
-    type="text"
-    required
-    aria-required="true"
-  />
+  <input id="dish-name" type="text" required aria-required="true" />
 </label>
 ```
 
 #### Groupes de Champs
+
 ```typescript
 <fieldset>
   <legend>Informations du plat</legend>
@@ -194,49 +204,51 @@ useEffect(() => {
 ```
 
 #### Messages d'Erreur
+
 ```typescript
-{errors.email && (
-  <span 
-    id="email-error"
-    className="text-red-600"
-    role="alert"
-    aria-live="polite"
-  >
-    {errors.email}
-  </span>
-)}
+{
+  errors.email && (
+    <span
+      id="email-error"
+      className="text-red-600"
+      role="alert"
+      aria-live="polite"
+    >
+      {errors.email}
+    </span>
+  );
+}
 ```
 
-### 8. Responsive et Zoom
+### 8. Responsive et Zoom (Prévu)
 
 #### Support du Zoom
+
 - Pas de `maximum-scale=1` dans viewport
 - Layout fluide jusqu'à 200% zoom
 - Texte redimensionnable
 
-#### Viewport Meta
+#### Viewport Meta (Implémenté)
+
 ```html
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 ```
 
-### 9. Screen Readers
+### 9. Screen Readers (Prévu)
 
 #### Annonces Dynamiques
+
 ```typescript
 // Notifications accessibles
-const [announcement, setAnnouncement] = useState('');
+const [announcement, setAnnouncement] = useState("");
 
-<div 
-  role="status"
-  aria-live="polite"
-  aria-atomic="true"
-  className="sr-only"
->
+<div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
   {announcement}
-</div>
+</div>;
 ```
 
 #### Classe Utilitaire
+
 ```css
 .sr-only {
   position: absolute;
@@ -251,26 +263,29 @@ const [announcement, setAnnouncement] = useState('');
 }
 ```
 
-## Tests d'Accessibilité
+## Tests d'Accessibilité (Prévus)
 
 ### Tests Manuels
+
 1. Navigation clavier complète
 2. Zoom à 200%
 3. Mode contraste élevé
 4. Sans CSS (contenu structuré)
 
-### Outils Utilisés
+### Outils
+
 - Chrome DevTools Lighthouse
 - axe DevTools extension
 - WAVE (WebAIM)
 - Contrast ratio checkers
 
 ### Tests Automatisés (Planifiés)
+
 ```typescript
 // Avec React Testing Library
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { axe, toHaveNoViolations } from "jest-axe";
 
-test('no accessibility violations', async () => {
+test("no accessibility violations", async () => {
   const { container } = render(<App />);
   const results = await axe(container);
   expect(results).toHaveNoViolations();
@@ -280,47 +295,35 @@ test('no accessibility violations', async () => {
 ## Conformité WCAG
 
 ### Niveau A (Minimum)
+
 - ✅ Images avec alt text
 - ✅ Structure de page logique
 - ✅ Navigation au clavier
 - ⚠️ Transcriptions vidéo (si applicable)
 
 ### Niveau AA (Cible)
+
 - ✅ Contraste 4.5:1
 - ✅ Texte redimensionnable
 - ✅ Focus visible
 - ⚠️ Skip navigation (à ajouter)
 
 ### Niveau AAA (Idéal)
+
 - ⚠️ Contraste 7:1
 - ⚠️ Langue des sections
 - ❌ Interprétation langue des signes
 
-## TODOs Accessibilité
-
-### Priorité Haute
-1. [ ] Ajouter skip navigation links
-2. [ ] Améliorer les annonces de changement de route
-3. [ ] Focus trap complet dans modales
-
-### Priorité Moyenne
-1. [ ] Landmarks ARIA sur toutes les pages
-2. [ ] Améliorer les messages d'erreur vocaux
-3. [ ] Tester avec vrais screen readers
-
-### Priorité Basse
-1. [ ] Support complet des préférences système
-2. [ ] Mode haute contrast dédié
-3. [ ] Documentation accessibilité pour contributeurs
-
 ## Ressources
 
 ### Guidelines
+
 - [WCAG 2.1](https://www.w3.org/WAI/WCAG21/quickref/)
 - [MDN Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
 - [React Accessibility](https://react.dev/reference/react-dom/components/common#accessibility-attributes)
 
 ### Testing
+
 - [axe DevTools](https://www.deque.com/axe/devtools/)
 - [WAVE](https://wave.webaim.org/)
 - [NVDA Screen Reader](https://www.nvaccess.org/)

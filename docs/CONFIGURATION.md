@@ -6,23 +6,23 @@ Le projet utilise des variables d'environnement préfixées par `VITE_` pour la 
 
 ### Variables Requises
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `VITE_FIREBASE_API_KEY` | Clé API Firebase (publique) | `AIzaSyD...` |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Domaine d'authentification Firebase | `mon-projet.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECT_ID` | ID du projet Firebase | `mon-projet-12345` |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Bucket de stockage Firebase | `mon-projet.appspot.com` |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | ID de l'expéditeur pour la messagerie | `123456789012` |
-| `VITE_FIREBASE_APP_ID` | ID de l'application Firebase | `1:123456789012:web:abc...` |
-| `VITE_API_BASE_URL` | URL de base de l'API backend | `http://localhost:3000/api` |
+| Variable                            | Description                           | Exemple                      |
+| ----------------------------------- | ------------------------------------- | ---------------------------- |
+| `VITE_FIREBASE_API_KEY`             | Clé API Firebase (publique)           | `AIzaSyD...`                 |
+| `VITE_FIREBASE_AUTH_DOMAIN`         | Domaine d'authentification Firebase   | `mon-projet.firebaseapp.com` |
+| `VITE_FIREBASE_PROJECT_ID`          | ID du projet Firebase                 | `mon-projet-12345`           |
+| `VITE_FIREBASE_STORAGE_BUCKET`      | Bucket de stockage Firebase           | `mon-projet.appspot.com`     |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | ID de l'expéditeur pour la messagerie | `123456789012`               |
+| `VITE_FIREBASE_APP_ID`              | ID de l'application Firebase          | `1:123456789012:web:abc...`  |
+| `VITE_API_BASE_URL`                 | URL de base de l'API backend          | `http://localhost:3000/api`  |
 
 ### Variables Optionnelles
 
-| Variable | Description | Défaut |
-|----------|-------------|--------|
-| `VITE_FIREBASE_MEASUREMENT_ID` | ID Google Analytics | - |
-| `VITE_RECAPTCHA_SITE_KEY` | Clé publique reCAPTCHA | - |
-| `NODE_ENV` | Environnement Node.js | `development` |
+| Variable                       | Description            | Défaut        |
+| ------------------------------ | ---------------------- | ------------- |
+| `VITE_FIREBASE_MEASUREMENT_ID` | ID Google Analytics    | -             |
+| `VITE_RECAPTCHA_SITE_KEY`      | Clé publique reCAPTCHA | -             |
+| `NODE_ENV`                     | Environnement Node.js  | `development` |
 
 ## Configuration Locale
 
@@ -52,6 +52,7 @@ VITE_RECAPTCHA_SITE_KEY=6Lc...
 ### 3. Validation automatique
 
 Le script `npm run validate-env` vérifie automatiquement :
+
 - La présence du fichier `.env`
 - L'existence de toutes les variables requises
 - Le format valide de l'URL API
@@ -62,12 +63,14 @@ Le script `npm run validate-env` vérifie automatiquement :
 Le frontend est configuré pour communiquer avec l'API backend. Les règles CORS doivent être alignées :
 
 ### Développement Local
+
 - Frontend : `http://localhost:5173` (Vite par défaut)
 - Backend API : `http://localhost:3000/api`
 
 ### Production
-- Frontend : URL de déploiement (ex: `https://mon-app.vercel.app`)
-- Backend API : URL de production (ex: `https://api.mon-app.com`)
+
+- Frontend : `https://pfe-web-weld.vercel.app/`
+- Backend API : `https://pfe-api-fbyd.onrender.com`
 
 ## Accès aux Variables
 
@@ -96,18 +99,21 @@ En production, les variables doivent être définies dans l'environnement de bui
 
 ```bash
 # Build avec variables
-VITE_API_BASE_URL=https://api.production.com npm run build
+VITE_API_BASE_URL=https://api.production.com
 ```
 
 ### Hébergeurs
 
 #### Vercel
+
 Définir les variables dans le dashboard Vercel sous "Environment Variables".
 
 #### Netlify
+
 Définir dans "Site settings > Build & deploy > Environment variables".
 
 #### GitHub Pages
+
 Utiliser les secrets GitHub Actions dans le workflow de déploiement.
 
 ## Sécurité
@@ -122,6 +128,7 @@ Utiliser les secrets GitHub Actions dans le workflow de déploiement.
 ### Migration depuis credentials.json
 
 Le projet a migré d'un fichier `credentials.json` vers des variables d'environnement pour :
+
 - Meilleure sécurité (pas de fichier JSON à protéger)
 - Configuration par environnement
 - Compatibilité avec les hébergeurs modernes
