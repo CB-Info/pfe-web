@@ -131,7 +131,7 @@ jobs:
         run: npm ci --prefer-offline
 
       - name: Run tests
-        run: npm test -- --reporter=verbose --run
+        run: npm test -- --reporter=verbose
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
@@ -183,7 +183,7 @@ jobs:
           if [ -f "previous-build-size.txt" ]; then
             prev_size_bytes=$(cat previous-build-size.txt)
             diff_bytes=$((total_size_bytes - prev_size_bytes))
-            
+
             if [ $diff_bytes -ne 0 ]; then
               if [ $diff_bytes -gt 0 ]; then
                 diff_human=$(echo $diff_bytes | numfmt --to=iec)
