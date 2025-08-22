@@ -25,9 +25,9 @@ dist/
 └── favicon.ico
 ```
 
-## Hébergeurs utilisés et potentiels
+## Hébergeurs utilisés
 
-### Option 1 : Vercel (Utilisé & Recommandé)
+### Vercel
 
 **Configuration** :
 
@@ -49,42 +49,6 @@ dist/
 
 - Connecter repo GitHub
 - Deploy automatique sur push `main`
-
-### Option 2 : Netlify
-
-**netlify.toml** :
-
-```toml
-[build]
-  command = "npm run build"
-  publish = "dist"
-
-[build.environment]
-  NODE_VERSION = "18"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-```
-
-### Option 3 : GitHub Pages
-
-**Limitations** :
-
-- Pas de variables d'env au runtime
-- Build via GitHub Actions nécessaire
-
-**Workflow** :
-
-```yaml
-- name: Build
-  run: |
-    npm ci
-    npm run build
-  env:
-    VITE_API_BASE_URL: ${{ secrets.API_URL }}
-```
 
 ## Variables d'Environnement Production
 
@@ -191,8 +155,6 @@ Configurer sur hébergeur :
 La plupart des hébergeurs incluent CDN :
 
 - Vercel : Global Edge Network
-- Netlify : CDN intégré
-- GitHub Pages : Via Fastly
 
 ## Monitoring
 
@@ -233,8 +195,6 @@ La plupart des hébergeurs incluent CDN :
 ### Via Hébergeur
 
 - Vercel : Instant Rollback dans dashboard
-- Netlify : Deploy history avec rollback
-- Render : Rollback to previous deploy
 
 ## Checklist Déploiement
 
