@@ -197,8 +197,8 @@ return data.data.map((dto) =>
 
 ### Users
 
-- `GET /users/profile` - Profil utilisateur
-- `PUT /users/profile` - Mise à jour profil
+- `GET /users/me` - Profil utilisateur
+- `PATCH /users/:id` - Mise à jour profil
 
 ## Interceptors et Middleware
 
