@@ -1,4 +1,12 @@
-import { FC, ReactNode, useEffect, useReducer, useState } from "react";
+import {
+  FC,
+  ReactNode,
+  useEffect,
+  useReducer,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import FirebaseAuthManager from "../network/authentication/firebase.auth.manager";
 import {
   UsersListerDispatchContext,
@@ -8,6 +16,7 @@ import {
 } from "../reducers/auth.reducer";
 import LoginPage from "../UI/pages/authentication/login.page";
 import Loading from "../UI/components/common/loading.component";
+import { UserRepositoryImpl } from "../network/repositories/user.respository";
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -16,12 +25,53 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     usersListerlocalReducer,
     UsersListerInitialState
   );
-  const firebaseAuthManager = FirebaseAuthManager.getInstance();
+
+  // Instances stables pour éviter les re-créations
+  const firebaseAuthManager = useMemo(
+    () => FirebaseAuthManager.getInstance(),
+    []
+  );
+  const userRepository = useMemo(() => new UserRepositoryImpl(), []);
+
+  // Fonction stable pour charger les données utilisateur
+  const loadUserData = useCallback(async () => {
+    try {
+      const userData = await userRepository.getMe();
+      dispatch({ type: "UPDATE_USER", payload: userData });
+    } catch (error) {
+      console.warn(
+        "Erreur lors du chargement des données utilisateur, utilisation du fallback:",
+        error
+      );
+      // En cas d'erreur de l'API /me, créer un utilisateur par défaut avec le rôle CUSTOMER
+      const firebaseUser = firebaseAuthManager.getCurrentUser();
+      if (firebaseUser) {
+        const fallbackUser = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email || "unknown@example.com",
+          firstname: firebaseUser.displayName?.split(" ")[0] || "Utilisateur",
+          lastname: firebaseUser.displayName?.split(" ")[1] || "",
+          role: "CUSTOMER" as const,
+        };
+        dispatch({ type: "UPDATE_USER", payload: fallbackUser });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userRepository, firebaseAuthManager, dispatch]);
 
   useEffect(() => {
-    const unsubscribe = firebaseAuthManager.monitorAuthState((user) => {
+    const unsubscribe = firebaseAuthManager.monitorAuthState(async (user) => {
       setIsLogin(!!user);
-      setIsLoading(false);
+
+      if (user) {
+        // Si l'utilisateur est connecté, charger ses données
+        await loadUserData();
+      } else {
+        // Si l'utilisateur n'est pas connecté, nettoyer le contexte
+        dispatch({ type: "UPDATE_USER", payload: undefined });
+        setIsLoading(false);
+      }
     });
 
     return () => {
@@ -29,7 +79,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         unsubscribe();
       }
     };
-  }, [firebaseAuthManager]);
+  }, [firebaseAuthManager, loadUserData]);
 
   if (isLoading) {
     return (
@@ -37,7 +87,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         <Loading
           variant="sandy"
           size="large"
-          text="Authentification en cours..."
+          text="Chargement de votre espace..."
         />
       </div>
     );

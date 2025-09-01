@@ -4,6 +4,7 @@ import { NavBar } from "./UI/components/navigation/NavBar";
 const DashboardPage = lazy(() => import("./UI/pages/dashboard/dashboard.page"));
 const DishesPage = lazy(() => import("./UI/pages/dishes/dishes.page"));
 const CardsPage = lazy(() => import("./UI/pages/cards/cards.page"));
+const NotFoundPage = lazy(() => import("./UI/pages/NotFoundPage"));
 import { lightTheme, darkTheme } from "./applications/theme/theme";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import AlertsProvider from "./contexts/alerts.context";
@@ -12,6 +13,7 @@ const SettingsPage = lazy(() => import("./UI/pages/settings/settings.page"));
 import { ThemeProvider } from "./contexts/theme.context";
 import { useTheme } from "./hooks/useTheme";
 import Loading from "./UI/components/common/loading.component";
+import { RequireRole } from "./UI/components/guards/RequireRole";
 
 const ThemedApp = () => {
   const { isDarkMode } = useTheme();
@@ -69,11 +71,29 @@ const ThemedApp = () => {
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route path="/dishes" element={<DishesPage />} />
-                  <Route path="/cards" element={<CardsPage />} />
+                  <Route
+                    path="/dishes"
+                    element={
+                      <RequireRole
+                        allowed={["KITCHEN_STAFF", "MANAGER", "OWNER", "ADMIN"]}
+                      >
+                        <DishesPage />
+                      </RequireRole>
+                    }
+                  />
+                  <Route
+                    path="/cards"
+                    element={
+                      <RequireRole allowed={["MANAGER", "OWNER", "ADMIN"]}>
+                        <CardsPage />
+                      </RequireRole>
+                    }
+                  />
                   <Route path="/settings" element={<SettingsPage />} />
                   {/* Redirect old /home route to dashboard */}
                   <Route path="/home" element={<DashboardPage />} />
+                  {/* 404 Page */}
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </Suspense>
             </div>

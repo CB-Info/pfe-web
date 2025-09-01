@@ -7,6 +7,7 @@ import { ConfirmationModal } from "../../modals/confirmation.modal";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import { useAlerts } from "../../../../hooks/useAlerts";
 import { DishCategoryLabels } from "../../../../data/dto/dish.dto";
+import { handleApiError } from "../../../../utils/api.utils";
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
   STARTERS: { bg: "bg-yellow-100", text: "text-yellow-800" },
@@ -23,7 +24,12 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 
 const defaultCategoryColor = { bg: "bg-gray-100", text: "text-gray-800" };
 
-export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
+export const DishRow: React.FC<DishRowProps> = ({
+  row,
+  onClick,
+  onDelete,
+  canManage = true,
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { addAlert } = useAlerts();
@@ -62,11 +68,11 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
       });
       onDelete();
     } catch (error) {
-      addAlert({
-        severity: "error",
-        message: "Une erreur est survenue lors de la suppression du plat",
-        timeout: 3,
-      });
+      handleApiError(
+        error,
+        addAlert,
+        "Une erreur est survenue lors de la suppression du plat"
+      );
     }
     setIsDeleteModalOpen(false);
   };
@@ -105,32 +111,38 @@ export const DishRow: React.FC<DishRowProps> = ({ row, onClick, onDelete }) => {
         </DishTableCellStyled>
         <DishTableCellStyled align="right">{row.price} €</DishTableCellStyled>
         <DishTableCellStyled align="right">
-          <IconButton
-            size="small"
-            onClick={handleMenuClick}
-            aria-label="Options"
-            className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:bg-gray-200"
-          >
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem onClick={handleEditClick}>Modifier</MenuItem>
-            <MenuItem
-              onClick={handleDeleteClick}
-              sx={{
-                color: "#EF4444",
-                "&:hover": {
-                  backgroundColor: "rgba(239, 68, 68, 0.08)",
-                },
-              }}
-            >
-              Supprimer
-            </MenuItem>
-          </Menu>
+          {canManage ? (
+            <>
+              <IconButton
+                size="small"
+                onClick={handleMenuClick}
+                aria-label="Options"
+                className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:bg-gray-200"
+              >
+                <MoreVertIcon fontSize="small" />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleEditClick}>Modifier</MenuItem>
+                <MenuItem
+                  onClick={handleDeleteClick}
+                  sx={{
+                    color: "#EF4444",
+                    "&:hover": {
+                      backgroundColor: "rgba(239, 68, 68, 0.08)",
+                    },
+                  }}
+                >
+                  Supprimer
+                </MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <span className="text-gray-400 text-xs">Lecture seule</span>
+          )}
         </DishTableCellStyled>
       </DishTableRowStyled>
 

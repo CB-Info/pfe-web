@@ -22,21 +22,21 @@ vi.mock("../network/authentication/firebase.auth.manager", () => ({
         login: vi.fn().mockResolvedValue({}),
       };
     }
-  }
+  },
 }));
 
 // Mock Firebase config
 vi.mock("../config/firebase.config", () => ({
   app: {},
   appCheck: {},
-  default: {}
+  default: {},
 }));
 
 // Mock Firebase security config
 vi.mock("../config/firebase-security.config", () => ({
   initializeFirebaseAppCheck: vi.fn().mockReturnValue(null),
   FIREBASE_SECURITY_CONFIG: {},
-  SECURITY_HEADERS: {}
+  SECURITY_HEADERS: {},
 }));
 
 const Wrapper: FC<{ children: ReactNode }> = ({ children }) => {
@@ -67,6 +67,7 @@ function mockUser() {
     email: "test@example.com",
     firstname: "John",
     lastname: "Doe",
+    role: "CUSTOMER",
   });
 }
 
@@ -74,11 +75,11 @@ describe("NavBar collapsed state", () => {
   test("loads collapsed state from localStorage", async () => {
     localStorage.setItem("navCollapsed", "true");
     mockUser();
-    
+
     await act(async () => {
       render(<NavBar isOpen={true} onClose={() => {}} />, { wrapper: Wrapper });
     });
-    
+
     // Check that the Dashboard text is hidden (has the collapsed CSS classes)
     const dashboardText = screen.getByText("Dashboard");
     expect(dashboardText.parentElement).toHaveClass("w-0", "opacity-0");
@@ -87,17 +88,17 @@ describe("NavBar collapsed state", () => {
   test("toggle collapse on button click", async () => {
     localStorage.setItem("navCollapsed", "false");
     mockUser();
-    
+
     await act(async () => {
       render(<NavBar isOpen={true} onClose={() => {}} />, { wrapper: Wrapper });
     });
-    
+
     const btn = screen.getByLabelText("Réduire la navigation");
-    
+
     await act(async () => {
       fireEvent.click(btn);
     });
-    
+
     expect(localStorage.getItem("navCollapsed")).toBe("true");
   });
 });
