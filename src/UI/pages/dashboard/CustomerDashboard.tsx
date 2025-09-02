@@ -1,43 +1,79 @@
+import { useState, useEffect, useMemo } from "react";
 import { BaseContent } from "../../components/contents/base.content";
 import { PanelContent } from "../../components/contents/panel.content";
 import { motion } from "framer-motion";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { ShoppingCart, Clock, Star, Utensils } from "lucide-react";
+import { useAlerts } from "../../../hooks/useAlerts";
+import {
+  DashboardRepositoryImpl,
+  type CustomerSection,
+} from "../../../network/repositories/dashboard.repository";
+import Loading from "../../components/common/loading.component";
 
 export default function CustomerDashboard() {
-  console.log("🏠 Rendu CustomerDashboard");
+  const [isLoading, setIsLoading] = useState(true);
+  const [customerData, setCustomerData] = useState<CustomerSection | null>(
+    null
+  );
+  const { addAlert } = useAlerts();
 
-  // Données statiques pour éviter les problèmes de chargement
-  const stats = {
-    myOrders: 15,
-    favoriteCategory: "Pizza",
-    lastOrderTime: "Il y a 2 jours",
-    loyaltyPoints: 245,
-  };
+  const dashboardRepository = useMemo(() => new DashboardRepositoryImpl(), []);
 
-  const recentOrders = [
-    {
-      id: "1",
-      date: "2024-01-15",
-      items: ["Pizza Margherita", "Coca Cola"],
-      total: 18.5,
-      status: "completed" as const,
-    },
-    {
-      id: "2",
-      date: "2024-01-13",
-      items: ["Salade César", "Eau pétillante"],
-      total: 12.0,
-      status: "completed" as const,
-    },
-    {
-      id: "3",
-      date: "2024-01-10",
-      items: ["Pasta Carbonara", "Tiramisu"],
-      total: 22.5,
-      status: "completed" as const,
-    },
-  ];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        const dashboardData = await dashboardRepository.getDashboardData();
+
+        // Extraire les données de la section customer
+        if (dashboardData.sections.customer) {
+          setCustomerData(dashboardData.sections.customer);
+        } else {
+          addAlert({
+            severity: "warning",
+            message: "Données client non disponibles",
+            timeout: 5,
+          });
+        }
+      } catch (error) {
+        addAlert({
+          severity: "error",
+          message:
+            "Erreur lors de la récupération des données du tableau de bord",
+          timeout: 5,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [dashboardRepository]); // Suppression d'addAlert des dépendances pour éviter la boucle
+
+  if (isLoading) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <Loading size="medium" text="Chargement du tableau de bord..." />
+        </div>
+      </BaseContent>
+    );
+  }
+
+  if (!customerData) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center text-gray-500">
+            Aucune donnée disponible pour le moment
+          </div>
+        </div>
+      </BaseContent>
+    );
+  }
+
+  const { stats, recentOrders } = customerData;
 
   const getStatusColor = (status: string) => {
     switch (status) {

@@ -1,64 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BaseContent } from "../../components/contents/base.content";
 import { PanelContent } from "../../components/contents/panel.content";
 import { motion } from "framer-motion";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { ChefHat, Package, AlertTriangle, TrendingUp } from "lucide-react";
+import { useAlerts } from "../../../hooks/useAlerts";
+import {
+  DashboardRepositoryImpl,
+  type KitchenSection,
+} from "../../../network/repositories/dashboard.repository";
+import Loading from "../../components/common/loading.component";
 
-interface KitchenStats {
-  ordersInPreparation: number;
-  completedToday: number;
-  lowStockItems: number;
-  averagePreparationTime: number;
-}
-
-interface StockItem {
-  name: string;
-  quantity: number;
-  unit: string;
-  status: "low" | "medium" | "good";
-  threshold: number;
-}
+// Les interfaces sont maintenant importées depuis dashboard.repository.ts
 
 export default function KitchenDashboard() {
-  // Données statiques pour éviter les requêtes au chargement
-  const [stats] = useState<KitchenStats>({
-    ordersInPreparation: 7,
-    completedToday: 23,
-    lowStockItems: 4,
-    averagePreparationTime: 18,
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [kitchenData, setKitchenData] = useState<KitchenSection | null>(null);
+  const { addAlert } = useAlerts();
 
-  const [stockItems] = useState<StockItem[]>([
-    {
-      name: "Tomates",
-      quantity: 15,
-      unit: "kg",
-      status: "good",
-      threshold: 10,
-    },
-    { name: "Fromage", quantity: 5, unit: "kg", status: "low", threshold: 8 },
-    { name: "Pâtes", quantity: 2, unit: "kg", status: "low", threshold: 5 },
-    {
-      name: "Basilic",
-      quantity: 20,
-      unit: "pcs",
-      status: "good",
-      threshold: 15,
-    },
-  ]);
+  const dashboardRepository = useMemo(() => new DashboardRepositoryImpl(), []);
 
-  // useEffect commenté pour éviter les requêtes au chargement initial
-  /*
   useEffect(() => {
-    const fetchKitchenData = async () => {
-      // Logique de chargement des données en cas de besoin
-    };
-    fetchKitchenData();
-  }, [addAlert]);
-  */
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        const dashboardData = await dashboardRepository.getDashboardData();
 
-  // Pas de loading car données statiques
+        // Extraire les données de la section kitchen
+        if (dashboardData.sections.kitchen) {
+          setKitchenData(dashboardData.sections.kitchen);
+        } else {
+          addAlert({
+            severity: "warning",
+            message: "Données cuisine non disponibles",
+            timeout: 5,
+          });
+        }
+      } catch (error) {
+        addAlert({
+          severity: "error",
+          message:
+            "Erreur lors de la récupération des données du tableau de bord",
+          timeout: 5,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [dashboardRepository]); // Suppression d'addAlert des dépendances pour éviter la boucle
+
+  if (isLoading) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <Loading size="medium" text="Chargement du tableau de bord..." />
+        </div>
+      </BaseContent>
+    );
+  }
+
+  if (!kitchenData) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center text-gray-500">
+            Aucune donnée disponible pour le moment
+          </div>
+        </div>
+      </BaseContent>
+    );
+  }
+
+  const { stats, stock: stockItems } = kitchenData;
 
   const getStockColor = (status: string) => {
     switch (status) {

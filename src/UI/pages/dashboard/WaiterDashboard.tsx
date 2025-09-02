@@ -1,37 +1,80 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BaseContent } from "../../components/contents/base.content";
 import { PanelContent } from "../../components/contents/panel.content";
 import { motion } from "framer-motion";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { useAlerts } from "../../../hooks/useAlerts";
+import {
+  DashboardRepositoryImpl,
+  type WaiterSection,
+} from "../../../network/repositories/dashboard.repository";
+import Loading from "../../components/common/loading.component";
 
-interface WaiterStats {
-  tablesAssigned: number;
-  activeOrders: number;
-  completedOrders: number;
-  pendingOrders: number;
-}
+// Les interfaces sont maintenant importées depuis dashboard.repository.ts
 
 export default function WaiterDashboard() {
-  // Données statiques pour éviter les requêtes au chargement
-  const [stats] = useState<WaiterStats>({
-    tablesAssigned: 8,
-    activeOrders: 5,
-    completedOrders: 12,
-    pendingOrders: 3,
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [waiterData, setWaiterData] = useState<WaiterSection | null>(null);
+  const { addAlert } = useAlerts();
 
-  // useEffect commenté pour éviter les requêtes au chargement initial
-  /*
+  const dashboardRepository = useMemo(() => new DashboardRepositoryImpl(), []);
+
   useEffect(() => {
-    const fetchWaiterData = async () => {
-      // Logique de chargement des données en cas de besoin
-    };
-    fetchWaiterData();
-  }, [addAlert]);
-  */
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        const dashboardData = await dashboardRepository.getDashboardData();
 
-  // Pas de loading car données statiques
+        // Extraire les données de la section waiter
+        if (dashboardData.sections.waiter) {
+          setWaiterData(dashboardData.sections.waiter);
+        } else {
+          addAlert({
+            severity: "warning",
+            message: "Données serveur non disponibles",
+            timeout: 5,
+          });
+        }
+      } catch (error) {
+        addAlert({
+          severity: "error",
+          message:
+            "Erreur lors de la récupération des données du tableau de bord",
+          timeout: 5,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [dashboardRepository]); // Suppression d'addAlert des dépendances pour éviter la boucle
+
+  if (isLoading) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <Loading size="medium" text="Chargement du tableau de bord..." />
+        </div>
+      </BaseContent>
+    );
+  }
+
+  if (!waiterData) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center text-gray-500">
+            Aucune donnée disponible pour le moment
+          </div>
+        </div>
+      </BaseContent>
+    );
+  }
+
+  const { stats } = waiterData;
+  // tables sera utilisé plus tard pour l'affichage des tables
 
   return (
     <BaseContent>

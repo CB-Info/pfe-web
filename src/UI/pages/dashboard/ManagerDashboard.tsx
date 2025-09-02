@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BaseContent } from "../../components/contents/base.content";
 import { PanelContent } from "../../components/contents/panel.content";
 import { motion } from "framer-motion";
@@ -11,69 +11,76 @@ import {
   Target,
   BarChart3,
 } from "lucide-react";
+import { useAlerts } from "../../../hooks/useAlerts";
+import {
+  DashboardRepositoryImpl,
+  type ManagerSection,
+} from "../../../network/repositories/dashboard.repository";
+import Loading from "../../components/common/loading.component";
 
-interface ManagerStats {
-  totalStaff: number;
-  dailyRevenue: number;
-  ordersToday: number;
-  averageServiceTime: number;
-  customerSatisfaction: number;
-  activeStaff: number;
-}
-
-interface StaffMember {
-  name: string;
-  role: string;
-  status: "active" | "break" | "offline";
-  tablesAssigned?: number;
-}
+// Les interfaces sont maintenant importées depuis dashboard.repository.ts
 
 export default function ManagerDashboard() {
-  // Données statiques pour éviter les requêtes au chargement
-  const [stats] = useState<ManagerStats>({
-    totalStaff: 8,
-    activeStaff: 6,
-    dailyRevenue: 2450.8,
-    ordersToday: 34,
-    averageServiceTime: 22,
-    customerSatisfaction: 4.6,
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [managerData, setManagerData] = useState<ManagerSection | null>(null);
+  const { addAlert } = useAlerts();
 
-  const [staff] = useState<StaffMember[]>([
-    {
-      name: "Marie Dubois",
-      role: "Serveur",
-      status: "active",
-      tablesAssigned: 4,
-    },
-    {
-      name: "Pierre Martin",
-      role: "Serveur",
-      status: "active",
-      tablesAssigned: 3,
-    },
-    { name: "Sophie Leroy", role: "Cuisine", status: "active" },
-    { name: "Jean Moreau", role: "Cuisine", status: "break" },
-    { name: "Emma Petit", role: "Serveur", status: "break", tablesAssigned: 0 },
-    {
-      name: "Lucas Bernard",
-      role: "Serveur",
-      status: "offline",
-      tablesAssigned: 0,
-    },
-  ]);
+  const dashboardRepository = useMemo(() => new DashboardRepositoryImpl(), []);
 
-  // useEffect commenté pour éviter les requêtes au chargement initial
-  /*
   useEffect(() => {
-    const fetchManagerData = async () => {
-      // Logique de chargement des données en cas de besoin
-    };
-    fetchManagerData();
-  }, [addAlert]);
-  */
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        const dashboardData = await dashboardRepository.getDashboardData();
 
-  // Pas de loading car données statiques
+        // Extraire les données de la section manager
+        if (dashboardData.sections.manager) {
+          setManagerData(dashboardData.sections.manager);
+        } else {
+          addAlert({
+            severity: "warning",
+            message: "Données manager non disponibles",
+            timeout: 5,
+          });
+        }
+      } catch (error) {
+        addAlert({
+          severity: "error",
+          message:
+            "Erreur lors de la récupération des données du tableau de bord",
+          timeout: 5,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [dashboardRepository]); // Suppression d'addAlert des dépendances pour éviter la boucle
+
+  if (isLoading) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <Loading size="medium" text="Chargement du tableau de bord..." />
+        </div>
+      </BaseContent>
+    );
+  }
+
+  if (!managerData) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center text-gray-500">
+            Aucune donnée disponible pour le moment
+          </div>
+        </div>
+      </BaseContent>
+    );
+  }
+
+  const { stats, employees: staff } = managerData;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -129,7 +136,7 @@ export default function ManagerDashboard() {
                           Personnel actif
                         </p>
                         <p className="text-3xl font-bold text-green-600">
-                          {stats?.activeStaff}/{stats?.totalStaff}
+                          {stats?.activeEmployees}/{stats?.totalEmployees}
                         </p>
                       </div>
                       <div className="p-3 bg-green-100 rounded-full">

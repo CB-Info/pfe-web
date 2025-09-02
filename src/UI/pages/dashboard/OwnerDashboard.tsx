@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BaseContent } from "../../components/contents/base.content";
 import { PanelContent } from "../../components/contents/panel.content";
-import { DishCategory } from "../../../data/dto/dish.dto";
+// DishCategory supprimé car non utilisé
+import { useAlerts } from "../../../hooks/useAlerts";
+import {
+  DashboardRepositoryImpl,
+  type OwnerSection,
+} from "../../../network/repositories/dashboard.repository";
+import Loading from "../../components/common/loading.component";
 import {
   TrendingUp,
   TrendingDown,
@@ -13,147 +19,33 @@ import { motion } from "framer-motion";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { BarChart3 } from "lucide-react";
 
-interface DashboardStats {
-  totalDishes: number;
-  availableDishes: number;
-  totalCards: number;
-  activeCards: number;
-  topIngredients: Array<{ name: string; count: number }>;
-  categoryDistribution: Array<{ category: string; count: number }>;
-  averagePrice: number;
-}
-
-interface SimpleDish {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: DishCategory;
-  isAvailable: boolean;
-}
+// Les interfaces sont maintenant importées depuis dashboard.repository.ts
 
 export default function OwnerDashboard() {
-  // Données statiques pour éviter les requêtes en boucle (temporaire)
-  const [stats] = useState<DashboardStats>({
-    totalDishes: 24,
-    availableDishes: 18,
-    totalCards: 3,
-    activeCards: 2,
-    topIngredients: [
-      { name: "Tomate", count: 12 },
-      { name: "Mozzarella", count: 8 },
-      { name: "Basilic", count: 6 },
-    ],
-    categoryDistribution: [
-      { category: "Pizza", count: 8 },
-      { category: "Pasta", count: 6 },
-      { category: "Salade", count: 4 },
-      { category: "Dessert", count: 6 },
-    ],
-    averagePrice: 15.75,
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [ownerData, setOwnerData] = useState<OwnerSection | null>(null);
+  const { addAlert } = useAlerts();
 
-  const [recentDishes] = useState<SimpleDish[]>([
-    {
-      id: "1",
-      name: "Pizza Margherita",
-      description: "Pizza traditionnelle avec tomate, mozzarella et basilic",
-      price: 12.5,
-      category: DishCategory.MAIN_DISHES,
-      isAvailable: true,
-    },
-    {
-      id: "2",
-      name: "Pasta Carbonara",
-      description: "Pâtes crémeuses aux lardons et parmesan",
-      price: 14.0,
-      category: DishCategory.PASTA_RICE,
-      isAvailable: true,
-    },
-    {
-      id: "3",
-      name: "Salade César",
-      description: "Salade fraîche avec croûtons et sauce césar",
-      price: 9.5,
-      category: DishCategory.SALADS,
-      isAvailable: true,
-    },
-  ]);
+  const dashboardRepository = useMemo(() => new DashboardRepositoryImpl(), []);
 
-  // useEffect supprimé pour éviter les requêtes en boucle
-  // Les données sont maintenant statiques (temporaire)
-  /*
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
 
-        // Fetch dishes and cards data avec gestion d'erreur robuste
-        const [dishes, cards, topIngredients] = await Promise.all([
-          dishesRepository.getAll().catch((err) => {
-            console.warn("Erreur chargement plats:", err);
-            return [];
-          }),
-          cardsRepository.getAll().catch((err) => {
-            console.warn("Erreur chargement cartes:", err);
-            return [];
-          }),
-          dishesRepository.getTopIngredients().catch((err) => {
-            console.warn("Erreur chargement ingrédients:", err);
-            return [];
-          }),
-        ]);
+        const dashboardData = await dashboardRepository.getDashboardData();
 
-        // Calculate statistics
-        const availableDishes = dishes.filter(
-          (dish) => dish.isAvailable
-        ).length;
-        const activeCards = cards.filter((card) => card.isActive).length;
-
-        // Calculate average price
-        const averagePrice =
-          dishes.length > 0
-            ? dishes.reduce((sum, dish) => sum + dish.price, 0) / dishes.length
-            : 0;
-
-        // Get category distribution
-        const categoryCount = dishes.reduce((acc, dish) => {
-          const categoryLabel = DishCategoryLabels[dish.category];
-          acc[categoryLabel] = (acc[categoryLabel] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-
-        const categoryDistribution = Object.entries(categoryCount)
-          .map(([category, count]) => ({ category, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5);
-
-        // Get top ingredients
-        const ingredientCount = topIngredients.reduce((acc, ingredient) => {
-          acc[ingredient.name] = (acc[ingredient.name] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-
-        const topIngredientsData = Object.entries(ingredientCount)
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5);
-
-        setStats({
-          totalDishes: dishes.length,
-          availableDishes,
-          totalCards: cards.length,
-          activeCards,
-          topIngredients: topIngredientsData,
-          categoryDistribution,
-          averagePrice,
-        });
-
-        // Get recent dishes (last 5)
-        const sortedDishes = dishes.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-        setRecentDishes(sortedDishes.slice(0, 5));
+        // Extraire les données de la section owner
+        if (dashboardData.sections.owner) {
+          setOwnerData(dashboardData.sections.owner);
+        } else {
+          // Fallback si pas de section owner (ne devrait pas arriver pour OWNER/ADMIN)
+          addAlert({
+            severity: "warning",
+            message: "Données propriétaire non disponibles",
+            timeout: 5,
+          });
+        }
       } catch (error) {
         addAlert({
           severity: "error",
@@ -162,26 +54,36 @@ export default function OwnerDashboard() {
           timeout: 5,
         });
       } finally {
-        // setIsLoading(false) est géré dans le cleanup
-      }
-    };
-
-    // Éviter les recharges multiples avec un flag
-    let isMounted = true;
-
-    fetchDashboardData().finally(() => {
-      if (isMounted) {
         setIsLoading(false);
       }
-    });
-
-    return () => {
-      isMounted = false;
     };
-  }, [addAlert, cardsRepository, dishesRepository]);
-  */
 
-  // Pas de loading car données statiques
+    fetchDashboardData();
+  }, [dashboardRepository]); // Suppression d'addAlert des dépendances pour éviter la boucle
+
+  if (isLoading) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <Loading size="medium" text="Chargement du tableau de bord..." />
+        </div>
+      </BaseContent>
+    );
+  }
+
+  if (!ownerData) {
+    return (
+      <BaseContent>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center text-gray-500">
+            Aucune donnée disponible pour le moment
+          </div>
+        </div>
+      </BaseContent>
+    );
+  }
+
+  const { stats, recentDishes } = ownerData;
 
   return (
     <BaseContent>
