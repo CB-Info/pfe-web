@@ -4,6 +4,7 @@ import { NavBar } from "./UI/components/navigation/NavBar";
 const DashboardPage = lazy(() => import("./UI/pages/dashboard/dashboard.page"));
 const DishesPage = lazy(() => import("./UI/pages/dishes/dishes.page"));
 const CardsPage = lazy(() => import("./UI/pages/cards/cards.page"));
+const OrdersPage = lazy(() => import("./UI/pages/orders/orders.page"));
 const NotFoundPage = lazy(() => import("./UI/pages/NotFoundPage"));
 import { lightTheme, darkTheme } from "./applications/theme/theme";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
@@ -71,6 +72,16 @@ const ThemedApp = () => {
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route
+                    path="/orders"
+                    element={
+                      <RequireRole
+                        allowed={["WAITER", "MANAGER", "OWNER", "ADMIN"]}
+                      >
+                        <OrdersPage />
+                      </RequireRole>
+                    }
+                  />
                   <Route
                     path="/dishes"
                     element={

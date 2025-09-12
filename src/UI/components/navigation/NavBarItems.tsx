@@ -4,6 +4,7 @@ import SpaceDashboardRoundedIcon from "@mui/icons-material/SpaceDashboardRounded
 import InventoryRoundedIcon from "@mui/icons-material/InventoryRounded";
 import StyleRoundedIcon from "@mui/icons-material/StyleRounded";
 import LocalDiningRoundedIcon from "@mui/icons-material/LocalDiningRounded";
+import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import { useUsersListerStateContext } from "../../../reducers/auth.reducer";
 import { UserRole } from "../../../data/models/user.model";
 
@@ -24,6 +25,12 @@ const allItems: NavItem[] = [
     label: "Dashboard",
     path: "/dashboard",
     roles: ["CUSTOMER", "WAITER", "KITCHEN_STAFF", "MANAGER", "OWNER", "ADMIN"],
+  },
+  {
+    icon: <RestaurantMenuIcon />,
+    label: "Commandes",
+    path: "/orders",
+    roles: ["WAITER", "MANAGER", "OWNER", "ADMIN"],
   },
   {
     icon: <InventoryRoundedIcon />,

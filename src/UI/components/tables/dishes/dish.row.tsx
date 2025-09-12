@@ -3,7 +3,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { DishTableCellStyled, DishTableRowStyled } from "./dish.styled";
 import { DishRowProps } from "./dish.props";
 import { useState } from "react";
-import { ConfirmationModal } from "../../modals/confirmation.modal";
+import { DetailedConfirmationModal } from "../../modals/detailed-confirmation.modal";
 import { DishesRepositoryImpl } from "../../../../network/repositories/dishes.repository";
 import { useAlerts } from "../../../../hooks/useAlerts";
 import { DishCategoryLabels } from "../../../../data/dto/dish.dto";
@@ -146,36 +146,29 @@ export const DishRow: React.FC<DishRowProps> = ({
         </DishTableCellStyled>
       </DishTableRowStyled>
 
-      <ConfirmationModal
+      <DetailedConfirmationModal
         modalName={deleteModalId}
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-      >
-        <div className="flex flex-col items-center justify-center min-h-[200px] px-8">
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            Confirmer la suppression
-          </h3>
-          <p className="text-center text-gray-600 mb-8">
-            Êtes-vous sûr de vouloir supprimer ce plat ?
-            <br />
-            Cette action est irréversible.
-          </p>
-          <div className="flex gap-4 w-full justify-center">
-            <button
-              className="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
-              onClick={() => setIsDeleteModalOpen(false)}
-            >
-              Annuler
-            </button>
-            <button
-              className="px-6 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-200 font-medium"
-              onClick={handleConfirmDelete}
-            >
-              Supprimer
-            </button>
-          </div>
-        </div>
-      </ConfirmationModal>
+        onConfirm={handleConfirmDelete}
+        title="Supprimer le plat"
+        message={`Êtes-vous sûr de vouloir supprimer le plat "${row.name}" ?`}
+        details={[
+          { label: "Nom", value: row.name },
+          { label: "Catégorie", value: DishCategoryLabels[row.category] },
+          { label: "Prix", value: `${row.price} €` },
+          {
+            label: "Ingrédients",
+            value: row.ingredients.map((e) => e.ingredient.name).join(", "),
+          },
+          {
+            label: "Statut",
+            value: row.isAvailable ? "Disponible" : "Indisponible",
+          },
+        ]}
+        warningMessage="Cette action est irréversible et supprimera définitivement le plat de tous les menus."
+        confirmButtonText="Supprimer définitivement"
+      />
     </>
   );
 };

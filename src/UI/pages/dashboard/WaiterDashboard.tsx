@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { useAlerts } from "../../../hooks/useAlerts";
+import { useNavigate } from "react-router-dom";
 import {
   DashboardRepositoryImpl,
   type WaiterSection,
@@ -17,6 +18,7 @@ export default function WaiterDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [waiterData, setWaiterData] = useState<WaiterSection | null>(null);
   const { addAlert } = useAlerts();
+  const navigate = useNavigate();
 
   const dashboardRepository = useMemo(() => new DashboardRepositoryImpl(), []);
 
@@ -248,7 +250,10 @@ export default function WaiterDashboard() {
                     Actions Rapides
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors duration-200">
+                    <button
+                      onClick={() => navigate("/orders")}
+                      className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors duration-200"
+                    >
                       <div className="text-blue-600 font-semibold">
                         Prendre une commande
                       </div>
@@ -256,15 +261,21 @@ export default function WaiterDashboard() {
                         Nouvelle commande table
                       </div>
                     </button>
-                    <button className="p-4 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition-colors duration-200">
+                    <button
+                      onClick={() => navigate("/orders")}
+                      className="p-4 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 transition-colors duration-200"
+                    >
                       <div className="text-green-600 font-semibold">
-                        Marquer comme servie
+                        Gérer les commandes
                       </div>
                       <div className="text-sm text-green-500 mt-1">
-                        Finaliser une commande
+                        Voir et finaliser
                       </div>
                     </button>
-                    <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 transition-colors duration-200">
+                    <button
+                      onClick={() => navigate("/cards")}
+                      className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 transition-colors duration-200"
+                    >
                       <div className="text-purple-600 font-semibold">
                         Voir les menus
                       </div>
