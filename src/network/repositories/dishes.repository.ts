@@ -1,4 +1,7 @@
-import { DishCreationDto } from "../../data/dto/dish.creation.dto";
+import {
+  DishCreationDto,
+  DishUpdateDto,
+} from "../../data/dto/dish.creation.dto";
 import { DishDto } from "../../data/dto/dish.dto";
 import { IngredientDto } from "../../data/dto/ingredient.dto";
 import FirebaseAuthManager from "../authentication/firebase.auth.manager";
@@ -59,7 +62,7 @@ export class DishesRepositoryImpl {
     return body.data.map((dish) => Dish.fromDto(dish));
   }
 
-  async update(dish: DishCreationDto) {
+  async update(dish: DishUpdateDto) {
     const token = await FirebaseAuthManager.getInstance().getToken();
     const response = await fetch(`${this.url}/${dish._id}`, {
       method: "PUT",

@@ -15,7 +15,11 @@ import {
   DishCategoryLabels,
 } from "../../../../data/dto/dish.dto";
 import { useAlerts } from "../../../../hooks/useAlerts";
-import { DishIngredientCreationDto } from "../../../../data/dto/dish.creation.dto";
+import {
+  DishCreationDto,
+  DishUpdateDto,
+  DishIngredientCreationDto,
+} from "../../../../data/dto/dish.creation.dto";
 import { DishFormProps, DishFormMode } from "./dish.form.props";
 
 enum InputError {
@@ -147,8 +151,7 @@ const DishForm: React.FC<DishFormProps> = ({
     setIsLoadingCreationDish(true);
 
     try {
-      const payload = {
-        _id: mode === DishFormMode.UPDATE && dish ? dish._id : "",
+      const basePayload = {
         name: dishName,
         ingredients: ingredientsDish.map(
           (ing): DishIngredientCreationDto => ({
@@ -160,17 +163,26 @@ const DishForm: React.FC<DishFormProps> = ({
         price: Number(dishPrice),
         description: dishDescription,
         category: dishCategory,
-        isAvailable: false,
+        isAvailable:
+          mode === DishFormMode.CREATE ? true : dish?.isAvailable ?? false,
       };
 
       let successMessage = "";
 
       if (mode === DishFormMode.CREATE) {
-        await dishesRepository.create(payload);
-        successMessage = `Le plat "${payload.name}" a été créé avec succès`;
+        const createPayload: DishCreationDto = basePayload;
+        await dishesRepository.create(createPayload);
+        successMessage = `Le plat "${createPayload.name}" a été créé avec succès`;
       } else {
-        await dishesRepository.update(payload);
-        successMessage = `Le plat "${payload.name}" a été mis à jour avec succès`;
+        if (!dish?._id) {
+          throw new Error("ID du plat manquant pour la mise à jour");
+        }
+        const updatePayload: DishUpdateDto = {
+          ...basePayload,
+          _id: dish._id,
+        };
+        await dishesRepository.update(updatePayload);
+        successMessage = `Le plat "${updatePayload.name}" a été mis à jour avec succès`;
       }
 
       resetForm();
