@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -18,18 +18,22 @@ import {
   Checkbox,
   FormControlLabel,
   Grid,
+  Alert,
 } from "@mui/material";
 import {
   ExpandMore,
   TableRestaurant,
   RestaurantMenu,
+  StyleRounded,
 } from "@mui/icons-material";
 import { Table } from "../../../data/models/table.model";
 import { Dish } from "../../../data/models/dish.model";
 import { Order } from "../../../data/models/order.model";
 import { OrdersRepositoryImpl } from "../../../network/repositories/orders.repository";
+import { CardsRepositoryImpl } from "../../../network/repositories/cards.repository";
 import { CreateOrderDto, OrderStatus } from "../../../data/dto/order.dto";
 import { DishCategory, DishCategoryLabels } from "../../../data/dto/dish.dto";
+import { CardDto } from "../../../data/dto/card.dto";
 import { useAlerts } from "../../../hooks/useAlerts";
 import Loading from "../../components/common/loading.component";
 
@@ -51,15 +55,50 @@ export default function CreateOrderModal({
   const [selectedTableId, setSelectedTableId] = useState<string>("");
   const [selectedDishIds, setSelectedDishIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeCard, setActiveCard] = useState<CardDto | null>(null);
+  const [isLoadingCard, setIsLoadingCard] = useState(false);
   const { addAlert } = useAlerts();
 
   const ordersRepository = useMemo(() => new OrdersRepositoryImpl(), []);
+  const cardsRepository = useMemo(() => new CardsRepositoryImpl(), []);
 
-  // Organiser les plats par catégorie
+  // Charger la carte active quand le modal s'ouvre
+  useEffect(() => {
+    const loadActiveCard = async () => {
+      if (!isOpen) return;
+
+      try {
+        setIsLoadingCard(true);
+        const card = await cardsRepository.getActiveCard();
+        setActiveCard(card);
+      } catch (error) {
+        console.warn("Erreur lors du chargement de la carte active:", error);
+        // Ne pas afficher d'erreur si aucune carte active - c'est normal
+        setActiveCard(null);
+      } finally {
+        setIsLoadingCard(false);
+      }
+    };
+
+    loadActiveCard();
+  }, [isOpen, cardsRepository]);
+
+  // Filtrer les plats selon la carte active (si elle existe)
+  const filteredDishes = useMemo(() => {
+    if (!activeCard || !activeCard.dishesId.length) {
+      // Aucune carte active ou carte vide : afficher tous les plats
+      return dishes;
+    }
+
+    // Carte active : filtrer les plats selon la carte
+    return dishes.filter((dish) => activeCard.dishesId.includes(dish._id));
+  }, [dishes, activeCard]);
+
+  // Organiser les plats filtrés par catégorie
   const dishesByCategory = useMemo(() => {
     const categoryMap = new Map<DishCategory, Dish[]>();
 
-    dishes.forEach((dish) => {
+    filteredDishes.forEach((dish) => {
       if (!categoryMap.has(dish.category)) {
         categoryMap.set(dish.category, []);
       }
@@ -72,7 +111,7 @@ export default function CreateOrderModal({
         category,
         dishes: dishes.sort((a, b) => a.name.localeCompare(b.name)),
       }));
-  }, [dishes]);
+  }, [filteredDishes]);
 
   // Calculer le prix total
   const totalPrice = useMemo(() => {
@@ -147,6 +186,7 @@ export default function CreateOrderModal({
     if (!isLoading) {
       setSelectedTableId("");
       setSelectedDishIds([]);
+      setActiveCard(null);
       onClose();
     }
   };
@@ -167,6 +207,37 @@ export default function CreateOrderModal({
           Prendre une nouvelle commande
         </Box>
       </DialogTitle>
+
+      {/* Indicateur de carte active */}
+      {isLoadingCard ? (
+        <Box sx={{ px: 3, py: 1 }}>
+          <Alert severity="info" icon={<Loading size="small" />}>
+            Chargement de la carte active...
+          </Alert>
+        </Box>
+      ) : activeCard ? (
+        <Box sx={{ px: 3, py: 1 }}>
+          <Alert severity="success" icon={<StyleRounded />}>
+            <Box>
+              <Typography variant="body2">
+                <strong>Carte active:</strong> {activeCard.name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {filteredDishes.length} plat(s) disponible(s) dans cette carte
+              </Typography>
+            </Box>
+          </Alert>
+        </Box>
+      ) : (
+        <Box sx={{ px: 3, py: 1 }}>
+          <Alert severity="info" icon={<RestaurantMenu />}>
+            <Typography variant="body2">
+              Aucune carte active - Tous les plats sont disponibles (
+              {dishes.length} plats)
+            </Typography>
+          </Alert>
+        </Box>
+      )}
 
       <DialogContent dividers>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>

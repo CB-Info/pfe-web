@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { BaseContent } from "../../components/contents/base.content";
-import { motion } from "framer-motion";
-import { PageHeader } from "../../components/layout/page-header.component";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Restaurant as ChefHat,
   Schedule as Clock,
@@ -11,6 +10,8 @@ import {
   Timer,
 } from "@mui/icons-material";
 import { useAlerts } from "../../../hooks/useAlerts";
+import { useSSENotifications } from "../../../hooks/useSSENotifications";
+import { useNotificationManager } from "../../../hooks/useNotificationManager";
 import Loading from "../../components/common/loading.component";
 import { OrdersRepositoryImpl } from "../../../network/repositories/orders.repository";
 import { TablesRepositoryImpl } from "../../../network/repositories/tables.repository";
@@ -19,17 +20,119 @@ import { Order } from "../../../data/models/order.model";
 import { Table } from "../../../data/models/table.model";
 import { Dish } from "../../../data/models/dish.model";
 import { OrderStatus } from "../../../data/dto/order.dto";
+import { NotificationEvent } from "../../../types/notifications.types";
+import {
+  ConnectionStatus,
+  NotificationPanel,
+  OrderNotification,
+} from "../../components/notifications";
 
 export default function KitchenOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState<Order[]>([]);
   const [tables, setTables] = useState<Table[]>([]);
   const [dishes, setDishes] = useState<Dish[]>([]);
+  const [liveNotifications, setLiveNotifications] = useState<
+    NotificationEvent[]
+  >([]);
   const { addAlert } = useAlerts();
 
   const ordersRepository = useMemo(() => new OrdersRepositoryImpl(), []);
   const tablesRepository = useMemo(() => new TablesRepositoryImpl(), []);
   const dishesRepository = useMemo(() => new DishesRepositoryImpl(), []);
+
+  // Gestionnaire de notifications UI (doit être déclaré avant le hook SSE)
+  const notificationManager = useNotificationManager({
+    maxNotifications: 20,
+    soundEnabled: true,
+    soundVolume: 0.7,
+  });
+
+  // Hook SSE pour les notifications temps réel
+  const sseNotifications = useSSENotifications({
+    target: "kitchen",
+    enabled: true,
+    onEvent: useCallback(
+      (event: NotificationEvent) => {
+        console.log("[KitchenOrdersPage] Nouvel événement SSE:", event);
+
+        // Ajouter à la liste des notifications live
+        setLiveNotifications((prev) => [event, ...prev.slice(0, 4)]); // Garder seulement les 5 dernières
+
+        // Traiter l'événement directement ici pour éviter la dépendance circulaire
+        (async () => {
+          try {
+            switch (event.type) {
+              case "order_created": {
+                const newOrders = await ordersRepository.getAll();
+                setOrders(newOrders);
+                notificationManager.createNotificationFromEvent(event);
+                break;
+              }
+              case "order_status_updated":
+                setOrders((prev) =>
+                  prev.map((order) =>
+                    order._id === event.payload.orderId
+                      ? {
+                          ...order,
+                          status: event.payload.status as OrderStatus,
+                        }
+                      : order
+                  )
+                );
+                if (event.payload.status === "READY") {
+                  notificationManager.createNotificationFromEvent(event);
+                }
+                break;
+              case "order_ready_to_serve":
+                setOrders((prev) =>
+                  prev.map((order) =>
+                    order._id === event.payload.orderId
+                      ? { ...order, status: "READY" as OrderStatus }
+                      : order
+                  )
+                );
+                notificationManager.createNotificationFromEvent(event);
+                break;
+            }
+          } catch (error) {
+            console.error(
+              "[KitchenOrdersPage] Erreur lors du traitement de l'événement SSE:",
+              error
+            );
+          }
+        })();
+      },
+      [ordersRepository, notificationManager]
+    ),
+    onConnect: useCallback(() => {
+      console.log("[KitchenOrdersPage] Connexion SSE établie");
+      addAlert({
+        severity: "success",
+        message: "Connexion temps réel établie",
+        timeout: 3,
+      });
+    }, [addAlert]),
+    onDisconnect: useCallback(() => {
+      console.log("[KitchenOrdersPage] Connexion SSE perdue");
+      addAlert({
+        severity: "warning",
+        message: "Connexion temps réel interrompue",
+        timeout: 5,
+      });
+    }, [addAlert]),
+    onError: useCallback(
+      (error: string) => {
+        console.error("[KitchenOrdersPage] Erreur SSE:", error);
+        addAlert({
+          severity: "error",
+          message: `Erreur de connexion: ${error}`,
+          timeout: 5,
+        });
+      },
+      [addAlert]
+    ),
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -206,12 +309,73 @@ export default function KitchenOrdersPage() {
   return (
     <BaseContent>
       <div>
-        <PageHeader
-          title="Cuisine"
-          description="Gestion des commandes en cours"
-          icon={<ChefHat />}
-        />
+        <div className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <ChefHat />
+              </div>
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  Cuisine
+                </h1>
+                <p className="text-gray-600 text-sm mt-1">
+                  Gestion des commandes en cours
+                </p>
+              </div>
+            </div>
+
+            {/* Indicateurs de connexion et notifications dans le header */}
+            <div className="flex items-center gap-4">
+              <ConnectionStatus
+                status={sseNotifications.status}
+                target="kitchen"
+                size="small"
+              />
+              <NotificationPanel
+                notifications={notificationManager.notifications}
+                unreadCount={notificationManager.unreadCount}
+                onMarkAsRead={notificationManager.markAsRead}
+                onMarkAllAsRead={notificationManager.markAllAsRead}
+                onRemove={notificationManager.removeNotification}
+                onClearAll={notificationManager.clearAll}
+                soundEnabled={notificationManager.soundEnabled}
+                onToggleSound={notificationManager.setSoundEnabled}
+                soundVolume={notificationManager.soundVolume}
+                onVolumeChange={notificationManager.setSoundVolume}
+              />
+            </div>
+          </div>
+        </div>
         <div className="p-6">
+          {/* Notifications live en haut */}
+          <AnimatePresence>
+            {liveNotifications.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mb-6"
+              >
+                <div className="space-y-2">
+                  {liveNotifications.map((notification, index) => (
+                    <OrderNotification
+                      key={`${notification.payload.orderId}-${notification.timestamp}`}
+                      event={notification}
+                      autoHide={true}
+                      duration={8000}
+                      onDismiss={() => {
+                        setLiveNotifications((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        );
+                      }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Statistiques rapides */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <motion.div
