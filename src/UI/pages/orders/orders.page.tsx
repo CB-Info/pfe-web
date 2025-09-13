@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { BaseContent } from "../../components/contents/base.content";
 import { PanelContent } from "../../components/contents/panel.content";
-import { motion } from "framer-motion";
-import { PageHeader } from "../../components/layout/page-header.component";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   RestaurantMenu,
   Add,
@@ -12,6 +11,8 @@ import {
   AccessTime,
 } from "@mui/icons-material";
 import { useAlerts } from "../../../hooks/useAlerts";
+import { useSSENotifications } from "../../../hooks/useSSENotifications";
+import { useNotificationManager } from "../../../hooks/useNotificationManager";
 import Loading from "../../components/common/loading.component";
 import { OrdersRepositoryImpl } from "../../../network/repositories/orders.repository";
 import { TablesRepositoryImpl } from "../../../network/repositories/tables.repository";
@@ -20,8 +21,14 @@ import { Order } from "../../../data/models/order.model";
 import { Table } from "../../../data/models/table.model";
 import { Dish } from "../../../data/models/dish.model";
 import { OrderStatus, OrderStatusLabels } from "../../../data/dto/order.dto";
+import { NotificationEvent } from "../../../types/notifications.types";
 import CreateOrderModal from "./create-order.modal";
 import { DetailedConfirmationModal } from "../../components/modals/detailed-confirmation.modal";
+import {
+  ConnectionStatus,
+  NotificationPanel,
+  OrderNotification,
+} from "../../components/notifications";
 
 export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -31,11 +38,124 @@ export default function OrdersPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
+  const [liveNotifications, setLiveNotifications] = useState<
+    NotificationEvent[]
+  >([]);
   const { addAlert } = useAlerts();
 
   const ordersRepository = useMemo(() => new OrdersRepositoryImpl(), []);
   const tablesRepository = useMemo(() => new TablesRepositoryImpl(), []);
   const dishesRepository = useMemo(() => new DishesRepositoryImpl(), []);
+
+  // Gestionnaire de notifications UI (doit être déclaré avant le hook SSE)
+  const notificationManager = useNotificationManager({
+    maxNotifications: 20,
+    soundEnabled: true,
+    soundVolume: 0.8, // Volume plus fort pour les serveurs
+  });
+
+  // Hook SSE pour les notifications temps réel du service
+  const sseNotifications = useSSENotifications({
+    target: "service",
+    enabled: true,
+    onEvent: useCallback(
+      (event: NotificationEvent) => {
+        console.log("[OrdersPage] Nouvel événement SSE:", event);
+
+        // Ajouter à la liste des notifications live
+        // Prioriser order_ready_to_serve, ignorer order_status_updated vers READY pour éviter duplication
+        if (event.type === "order_ready_to_serve") {
+          setLiveNotifications((prev) => [event, ...prev.slice(0, 4)]);
+        } else if (
+          event.type === "order_status_updated" &&
+          event.payload.status === "DELIVERED" // Seulement DELIVERED, pas READY
+        ) {
+          setLiveNotifications((prev) => [event, ...prev.slice(0, 4)]);
+        }
+
+        // Traiter l'événement directement pour mettre à jour les commandes
+        (async () => {
+          try {
+            switch (event.type) {
+              case "order_ready_to_serve":
+                // Mettre à jour la commande spécifique
+                setOrders((prev) =>
+                  prev.map((order) =>
+                    order._id === event.payload.orderId
+                      ? { ...order, status: "READY" as OrderStatus }
+                      : order
+                  )
+                );
+
+                // Créer une notification UI importante (priorité sur order_status_updated)
+                notificationManager.createNotificationFromEvent(event);
+                break;
+
+              case "order_status_updated":
+                // Mettre à jour la commande spécifique
+                setOrders((prev) =>
+                  prev.map((order) =>
+                    order._id === event.payload.orderId
+                      ? {
+                          ...order,
+                          status: event.payload.status as OrderStatus,
+                        }
+                      : order
+                  )
+                );
+
+                // Créer une notification SEULEMENT pour DELIVERED
+                // (pas pour READY car order_ready_to_serve a la priorité)
+                if (event.payload.status === "DELIVERED") {
+                  notificationManager.createNotificationFromEvent(event);
+                }
+                break;
+
+              case "order_created": {
+                // Recharger les commandes pour inclure la nouvelle
+                const newOrders = await ordersRepository.getAll();
+                setOrders(newOrders);
+                break;
+              }
+            }
+          } catch (error) {
+            console.error(
+              "[OrdersPage] Erreur lors du traitement de l'événement SSE:",
+              error
+            );
+          }
+        })();
+      },
+      [ordersRepository, notificationManager]
+    ),
+    onConnect: useCallback(() => {
+      console.log("[OrdersPage] Connexion SSE service établie");
+      addAlert({
+        severity: "success",
+        message: "Connexion temps réel établie",
+        timeout: 3,
+      });
+    }, [addAlert]),
+    onDisconnect: useCallback(() => {
+      console.log("[OrdersPage] Connexion SSE service perdue");
+      addAlert({
+        severity: "warning",
+        message: "Connexion temps réel interrompue",
+        timeout: 5,
+      });
+    }, [addAlert]),
+    onError: useCallback(
+      (error: string) => {
+        console.error("[OrdersPage] Erreur SSE:", error);
+        addAlert({
+          severity: "error",
+          message: `Erreur de connexion: ${error}`,
+          timeout: 5,
+        });
+      },
+      [addAlert]
+    ),
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -279,14 +399,74 @@ export default function OrdersPage() {
   return (
     <BaseContent>
       <div className="flex flex-col h-full">
-        <PageHeader
-          icon={<RestaurantMenu className="w-6 h-6 text-blue-600" />}
-          title="Gestion des Commandes"
-          description="Créer et suivre les commandes des tables"
-        />
+        <div className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <RestaurantMenu className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  Gestion des Commandes
+                </h1>
+                <p className="text-gray-600 text-sm mt-1">
+                  Créer et suivre les commandes des tables
+                </p>
+              </div>
+            </div>
+
+            {/* Indicateurs de connexion et notifications dans le header */}
+            <div className="flex items-center gap-4">
+              <ConnectionStatus
+                status={sseNotifications.status}
+                target="service"
+                size="small"
+              />
+              <NotificationPanel
+                notifications={notificationManager.notifications}
+                unreadCount={notificationManager.unreadCount}
+                onMarkAsRead={notificationManager.markAsRead}
+                onMarkAllAsRead={notificationManager.markAllAsRead}
+                onRemove={notificationManager.removeNotification}
+                onClearAll={notificationManager.clearAll}
+                soundEnabled={notificationManager.soundEnabled}
+                onToggleSound={notificationManager.setSoundEnabled}
+                soundVolume={notificationManager.soundVolume}
+                onVolumeChange={notificationManager.setSoundVolume}
+              />
+            </div>
+          </div>
+        </div>
 
         <div className="flex-1 overflow-y-auto bg-gray-50">
           <div className="p-6 space-y-8">
+            {/* Notifications live en overlay */}
+            <AnimatePresence>
+              {liveNotifications.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-2"
+                >
+                  {liveNotifications.map((notification, index) => (
+                    <OrderNotification
+                      key={`${notification.payload.orderId}-${notification.timestamp}`}
+                      event={notification}
+                      autoHide={true}
+                      duration={10000} // 10 secondes pour les serveurs
+                      onDismiss={() => {
+                        setLiveNotifications((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        );
+                      }}
+                      className="border-2 border-green-300 shadow-lg" // Mise en évidence
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Bouton création de commande */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

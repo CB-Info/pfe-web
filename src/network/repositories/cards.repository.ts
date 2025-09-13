@@ -71,6 +71,26 @@ export class CardsRepositoryImpl {
     await handleApiResponse(response);
   }
 
+  async getActiveCard(): Promise<CardDto | null> {
+    const token = await FirebaseAuthManager.getInstance().getToken();
+    const response = await fetch(`${this.url}/active`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Si aucune carte active, retourner null au lieu de lever une erreur
+    if (response.status === 404) {
+      return null;
+    }
+
+    await handleApiResponse(response);
+    const data: Data<CardDto> = await response.json();
+    return data.data;
+  }
+
   async delete(cardId: string): Promise<void> {
     const token = await FirebaseAuthManager.getInstance().getToken();
     const response = await fetch(`${this.url}/${cardId}`, {
