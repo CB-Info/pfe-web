@@ -18,6 +18,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Filter, RotateCcw } from "lucide-react";
 import { PageHeader } from "../../components/layout/page-header.component";
 import { ChefHat } from "lucide-react";
+import { useUsersListerStateContext } from "../../../reducers/auth.reducer";
+import { canManageDishes } from "../../../utils/role.utils";
 
 export default function DishesPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,9 +49,13 @@ export default function DishesPage() {
   );
 
   const { addAlert } = useAlerts();
+  const { currentUser } = useUsersListerStateContext();
   const dishRepository = useMemo(() => new DishesRepositoryImpl(), []);
   const statusOptions = ["Tous", "Actif", "Inactif"];
   const categoryOptions = ["Toutes", ...Object.values(DishCategoryLabels)];
+
+  // Vérifier si l'utilisateur peut gérer les plats
+  const canManage = currentUser && canManageDishes(currentUser.role);
 
   const handleCategoryChange = (label: string) => {
     if (label === "Toutes") {
@@ -138,15 +144,19 @@ export default function DishesPage() {
           icon={<ChefHat className="w-6 h-6 text-blue-600" />}
           title="Gestion des plats"
           description="Gérez votre menu et vos plats en toute simplicité"
-          showCreateButton={true}
-          onCreateClick={() => {
-            const drawerCheckbox = document.getElementById(
-              "add-drawer-dish"
-            ) as HTMLInputElement;
-            if (drawerCheckbox) {
-              drawerCheckbox.checked = true;
-            }
-          }}
+          showCreateButton={canManage}
+          onCreateClick={
+            canManage
+              ? () => {
+                  const drawerCheckbox = document.getElementById(
+                    "add-drawer-dish"
+                  ) as HTMLInputElement;
+                  if (drawerCheckbox) {
+                    drawerCheckbox.checked = true;
+                  }
+                }
+              : undefined
+          }
           createButtonLabel="Nouveau plat"
         />
 
@@ -288,7 +298,7 @@ export default function DishesPage() {
                                   <RotateCcw className="w-4 h-4" />
                                   Réinitialiser les filtres
                                 </button>
-                              ) : (
+                              ) : canManage ? (
                                 <DrawerButton
                                   width={360}
                                   defaultChildren={
@@ -307,6 +317,11 @@ export default function DishesPage() {
                                     }}
                                   />
                                 </DrawerButton>
+                              ) : (
+                                <p className="text-gray-500 text-center">
+                                  Vous n'avez pas les permissions pour ajouter
+                                  des plats.
+                                </p>
                               )}
                             </div>
                           ) : (
@@ -314,6 +329,7 @@ export default function DishesPage() {
                               dishes={sortedDishes}
                               setSelectedDish={handleRowClick}
                               onDelete={handleDelete}
+                              canManage={canManage}
                             />
                           )}
                         </div>

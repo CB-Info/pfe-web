@@ -17,6 +17,8 @@ import { EditCardModal } from "./edit.card.modal";
 import { CustomerViewModal } from "../../components/cards/customer-view/customer-view-modal.component";
 import { PageHeader } from "../../components/layout/page-header.component";
 import StyleRoundedIcon from "@mui/icons-material/StyleRounded";
+import { useUsersListerStateContext } from "../../../reducers/auth.reducer";
+import { canManageCards } from "../../../utils/role.utils";
 
 export default function CardsPage() {
   const [cards, setCards] = useState<CardDto[]>([]);
@@ -28,8 +30,12 @@ export default function CardsPage() {
   const [isCustomerViewOpen, setIsCustomerViewOpen] = useState(false);
   const [cardDishes, setCardDishes] = useState<Dish[]>([]);
   const { addAlert } = useAlerts();
+  const { currentUser } = useUsersListerStateContext();
   const cardsRepository = new CardsRepositoryImpl();
   const dishesRepository = new DishesRepositoryImpl();
+
+  // Vérifier si l'utilisateur peut gérer les cartes
+  const canManage = currentUser && canManageCards(currentUser.role);
 
   const fetchCards = async () => {
     try {
@@ -191,6 +197,7 @@ export default function CardsPage() {
                           onEdit={handleEditCard}
                           onCustomerView={handleCustomerView}
                           isActive={true}
+                          canManage={canManage}
                         />
                       </PanelContent>
                     </motion.div>
@@ -213,14 +220,16 @@ export default function CardsPage() {
                   Toutes les cartes
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 transition-all duration-200 hover:shadow-md"
-                  >
-                    <AddIcon className="w-8 h-8 text-gray-400" />
-                  </motion.button>
+                  {canManage && (
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setIsCreateModalOpen(true)}
+                      className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 transition-all duration-200 hover:shadow-md"
+                    >
+                      <AddIcon className="w-8 h-8 text-gray-400" />
+                    </motion.button>
+                  )}
 
                   <AnimatePresence>
                     {inactiveCards.map((card) => (
@@ -240,6 +249,7 @@ export default function CardsPage() {
                             onEdit={handleEditCard}
                             onCustomerView={handleCustomerView}
                             isActive={false}
+                            canManage={canManage}
                           />
                         </PanelContent>
                       </motion.div>
@@ -320,6 +330,7 @@ interface CardItemProps {
   onEdit: (card: CardDto) => void;
   onCustomerView: (card: CardDto) => void;
   isActive: boolean;
+  canManage?: boolean;
 }
 
 const CardItem: React.FC<CardItemProps> = ({
@@ -329,6 +340,7 @@ const CardItem: React.FC<CardItemProps> = ({
   onEdit,
   onCustomerView,
   isActive,
+  canManage = true,
 }) => {
   const formattedDate = new Date(card.dateOfCreation).toLocaleDateString(
     "fr-FR",
@@ -365,15 +377,17 @@ const CardItem: React.FC<CardItemProps> = ({
         >
           <QrCode className="w-5 h-5 text-blue-600" />
         </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(card);
-          }}
-          className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 z-10"
-        >
-          <Pencil className="w-5 h-5 text-gray-600" />
-        </button>
+        {canManage && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(card);
+            }}
+            className="p-3 bg-gray-100 rounded-full shadow-md hover:bg-gray-200 transition-colors duration-200 z-10"
+          >
+            <Pencil className="w-5 h-5 text-gray-600" />
+          </button>
+        )}
         <div className="absolute inset-0 bg-white bg-opacity-50"></div>
       </div>
 
@@ -393,19 +407,23 @@ const CardItem: React.FC<CardItemProps> = ({
         >
           {card.isActive ? "Activée" : "Désactivée"}
         </span>
-        <Switch
-          checked={card.isActive}
-          onChange={() => onToggleActive(card)}
-          className={`${
-            card.isActive ? "bg-blue-600" : "bg-gray-200"
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-        >
-          <span
+        {canManage ? (
+          <Switch
+            checked={card.isActive}
+            onChange={() => onToggleActive(card)}
             className={`${
-              card.isActive ? "translate-x-6" : "translate-x-1"
-            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-          />
-        </Switch>
+              card.isActive ? "bg-blue-600" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+          >
+            <span
+              className={`${
+                card.isActive ? "translate-x-6" : "translate-x-1"
+              } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+            />
+          </Switch>
+        ) : (
+          <span className="text-gray-400 text-xs">Lecture seule</span>
+        )}
       </div>
     </div>
   );

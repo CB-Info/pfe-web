@@ -7,6 +7,19 @@ import { User, Auth } from "firebase/auth";
 // Mock FirebaseAuthManager
 vi.mock("../network/authentication/firebase.auth.manager");
 
+// Mock UserRepositoryImpl
+vi.mock("../network/repositories/user.respository", () => ({
+  UserRepositoryImpl: vi.fn().mockImplementation(() => ({
+    getMe: vi.fn().mockResolvedValue({
+      id: "test-id",
+      email: "test@example.com",
+      firstname: "Test",
+      lastname: "User",
+      role: "CUSTOMER",
+    }),
+  })),
+}));
+
 // Mock LoginPage component
 vi.mock("../UI/pages/authentication/login.page", () => ({
   default: () => <div data-testid="login-page">Login Page</div>,
@@ -43,6 +56,7 @@ describe("AuthProvider", () => {
     sendPasswordResetEmail: vi.fn(),
     getToken: vi.fn(),
     logout: vi.fn(),
+    getCurrentUser: vi.fn(),
   };
 
   beforeEach(() => {
@@ -69,7 +83,7 @@ describe("AuthProvider", () => {
 
     expect(screen.getByTestId("loading-component")).toBeInTheDocument();
     expect(
-      screen.getByText("Authentification en cours...")
+      screen.getByText("Chargement de votre espace...")
     ).toBeInTheDocument();
   });
 

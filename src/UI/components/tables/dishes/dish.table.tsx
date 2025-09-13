@@ -94,6 +94,7 @@ const DishesTable: React.FC<DishesTableProps> = ({
   dishes,
   setSelectedDish,
   onDelete,
+  canManage = true,
 }) => {
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 10;
@@ -115,7 +116,10 @@ const DishesTable: React.FC<DishesTableProps> = ({
   return (
     <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "visible" }}>
       <DishTableStyled>
-        <Table sx={{ minWidth: 700, tableLayout: "auto" }} aria-label="customized table">
+        <Table
+          sx={{ minWidth: 700, tableLayout: "auto" }}
+          aria-label="customized table"
+        >
           <TableHead>
             <TableRow>
               <DishTableCellStyled>Nom</DishTableCellStyled>
@@ -141,6 +145,7 @@ const DishesTable: React.FC<DishesTableProps> = ({
                 row={dish}
                 onClick={setSelectedDish}
                 onDelete={onDelete}
+                canManage={canManage}
               />
             ))}
             {emptyRows > 0 && (
@@ -152,7 +157,13 @@ const DishesTable: React.FC<DishesTableProps> = ({
           <TableFooter>
             <TableRow>
               <TableCell colSpan={6}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end", overflow: "visible" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    overflow: "visible",
+                  }}
+                >
                   <TablePagination
                     sx={{ borderBottom: 0 }}
                     rowsPerPageOptions={[10]}
