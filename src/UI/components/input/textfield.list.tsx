@@ -12,8 +12,9 @@ interface TextfieldListProps {
   defaultValue?: string;
 }
 
-const Cell = styled.div<{ $isSelected?: boolean }>(({ theme, $isSelected = false }) => [
-  tw`
+const Cell = styled.div<{ $isSelected?: boolean }>(
+  ({ theme, $isSelected = false }) => [
+    tw`
         rounded
         p-1.5
         font-inter
@@ -24,19 +25,21 @@ const Cell = styled.div<{ $isSelected?: boolean }>(({ theme, $isSelected = false
         transition-all
         duration-200
     `,
-  css`
-    color: ${$isSelected ? theme.buttonText : theme.blue500};
-    background-color: ${$isSelected ? theme.blue500 : 'transparent'};
+    css`
+      color: ${$isSelected ? theme.buttonText : theme.blue500};
+      background-color: ${$isSelected ? theme.blue500 : "transparent"};
 
-    &:hover {
-      background-color: ${$isSelected ? theme.blue600 : theme.blue100};
-      color: ${$isSelected ? theme.buttonText : theme.blackColor};
-    }
-  `,
-]);
+      &:hover {
+        background-color: ${$isSelected ? theme.blue600 : theme.blue100};
+        color: ${$isSelected ? theme.buttonText : theme.blackColor};
+      }
+    `,
+  ]
+);
 
-const DropdownButton = styled.div<{ $isOpen?: boolean }>(({ theme, $isOpen = false }) => [
-  tw`
+const DropdownButton = styled.div<{ $isOpen?: boolean }>(
+  ({ theme, $isOpen = false }) => [
+    tw`
     flex
     border
     border-solid
@@ -52,15 +55,16 @@ const DropdownButton = styled.div<{ $isOpen?: boolean }>(({ theme, $isOpen = fal
    relative
    z-10
   `,
-  css`
-    border-color: ${$isOpen ? theme.blue500 : theme.borderColor};
-    box-shadow: ${$isOpen ? `0 0 0 2px ${theme.blue100}` : 'none'};
-    
-    &:hover {
-      border-color: ${theme.blue500};
-    }
-  `,
-]);
+    css`
+      border-color: ${$isOpen ? theme.blue500 : theme.borderColor};
+      box-shadow: ${$isOpen ? `0 0 0 2px ${theme.blue100}` : "none"};
+
+      &:hover {
+        border-color: ${theme.blue500};
+      }
+    `,
+  ]
+);
 
 export const TextfieldList: React.FC<TextfieldListProps> = ({
   valuesToDisplay,
@@ -77,41 +81,47 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleMouseDownOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
     const handleTouchStartOutside = (event: TouchEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleMouseDownOutside);
-      document.addEventListener('touchstart', handleTouchStartOutside);
+      document.addEventListener("mousedown", handleMouseDownOutside);
+      document.addEventListener("touchstart", handleTouchStartOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleMouseDownOutside);
-      document.removeEventListener('touchstart', handleTouchStartOutside);
+      document.removeEventListener("mousedown", handleMouseDownOutside);
+      document.removeEventListener("touchstart", handleTouchStartOutside);
     };
   }, [isOpen]);
 
   // Close dropdown on Escape key
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
+      if (event.key === "Escape" && isOpen) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen]);
 
@@ -137,8 +147,8 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({
   return (
     <div className="flex flex-col w-full relative z-20" ref={containerRef}>
       {label && <LabelStyle>{label}</LabelStyle>}
-      
-      <DropdownButton 
+
+      <DropdownButton
         onClick={toggleDropdown}
         $isOpen={isOpen}
         role="button"
@@ -146,7 +156,7 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({
         aria-haspopup="listbox"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             e.stopPropagation();
             setIsOpen(!isOpen);
@@ -156,29 +166,26 @@ export const TextfieldList: React.FC<TextfieldListProps> = ({
         <span className="text-textfield-color font-inter text-sm select-none">
           {selectedValue}
         </span>
-        <KeyboardArrowDownIcon 
+        <KeyboardArrowDownIcon
           className={`text-slate-400 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : 'rotate-0'
-          }`} 
+            isOpen ? "rotate-180" : "rotate-0"
+          }`}
         />
       </DropdownButton>
-      
+
       {isOpen && (
-        <Modal 
-          onClose={() => setIsOpen(false)} 
-          fullWidth
-        >
+        <Modal onClose={() => setIsOpen(false)} fullWidth>
           <div role="listbox" aria-label={label} className="relative z-[10001]">
             {valuesToDisplay.map((element, index) => (
-              <Cell 
-                key={index} 
+              <Cell
+                key={index}
                 onClick={() => handleCellClick(element)}
                 $isSelected={element === selectedValue}
                 role="option"
                 aria-selected={element === selectedValue}
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     handleCellClick(element);
                   }

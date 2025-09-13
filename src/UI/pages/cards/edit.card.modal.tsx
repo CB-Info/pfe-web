@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FullScreenModal } from "../../components/modals/full-screen-modal";
-import { ConfirmationModal } from "../../components/modals/confirmation.modal";
+import { DetailedConfirmationModal } from "../../components/modals/detailed-confirmation.modal";
 import { TextInput } from "../../components/input/textInput";
 import { CardsRepositoryImpl } from "../../../network/repositories/cards.repository";
 import { DishesRepositoryImpl } from "../../../network/repositories/dishes.repository";
@@ -136,11 +136,6 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
     setIsSubmitting(true);
     try {
       await onCardDeleted(card._id);
-      addAlert({
-        severity: "success",
-        message: `La carte "${card.name}" a été supprimée avec succès`,
-        timeout: 3,
-      });
       handleClose();
     } catch (error) {
       addAlert({
@@ -302,60 +297,44 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
       </FullScreenModal>
 
       {/* Delete Confirmation Modal */}
-      <ConfirmationModal
+      <DetailedConfirmationModal
         modalName="delete-card-confirm-modal"
         isOpen={isDeleteConfirmOpen}
         onClose={() => setIsDeleteConfirmOpen(false)}
-      >
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-red-100 rounded-full">
-              <Trash2 className="w-6 h-6 text-red-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              Supprimer la carte
-            </h2>
-          </div>
-
-          <div className="mb-6">
-            <p className="text-gray-600 mb-2">
-              Êtes-vous sûr de vouloir supprimer la carte{" "}
-              <strong>"{card.name}"</strong> ?
-            </p>
-            <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
-              ⚠️ Cette action est irréversible et supprimera définitivement la
-              carte.
-            </p>
-          </div>
-
-          <div className="flex justify-end gap-3">
-            <button
-              onClick={() => setIsDeleteConfirmOpen(false)}
-              disabled={isSubmitting}
-              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
-            >
-              Annuler
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={isSubmitting}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 disabled:opacity-50 font-medium"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loading size="small" />
-                  Suppression...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4" />
-                  Supprimer définitivement
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </ConfirmationModal>
+        onConfirm={handleDelete}
+        title="Supprimer la carte"
+        message={`Êtes-vous sûr de vouloir supprimer la carte "${card.name}" ?`}
+        details={[
+          { label: "Nom", value: card.name },
+          { label: "Statut", value: card.isActive ? "Active" : "Inactive" },
+          {
+            label: "Nombre de plats",
+            value: `${card.dishesId.length} plat${
+              card.dishesId.length > 1 ? "s" : ""
+            }`,
+          },
+          {
+            label: "Date de création",
+            value: new Date(card.dateOfCreation).toLocaleDateString("fr-FR", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }),
+          },
+        ]}
+        warningMessage="Cette action est irréversible et supprimera définitivement la carte."
+        confirmButtonText={
+          isSubmitting ? "Suppression..." : "Supprimer définitivement"
+        }
+        confirmButtonIcon={
+          isSubmitting ? (
+            <Loading size="small" />
+          ) : (
+            <Trash2 className="w-4 h-4" />
+          )
+        }
+        isLoading={isSubmitting}
+      />
     </>
   );
 };

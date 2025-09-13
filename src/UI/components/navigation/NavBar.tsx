@@ -3,9 +3,6 @@ import { NavBarCloseButton } from "./NavBarCloseButton";
 import { NavBarCollapseButton } from "./NavBarCollapseButton";
 import { NavBarItems } from "./NavBarItems";
 import { NavBarFooter } from "./NavBarFooter";
-import { useUsersListerDispatchContext } from "../../../reducers/auth.reducer";
-import { useAlerts } from "../../../hooks/useAlerts";
-import { UserRepositoryImpl } from "../../../network/repositories/user.respository";
 
 interface NavBarProps {
   isOpen: boolean;
@@ -13,10 +10,6 @@ interface NavBarProps {
 }
 
 export const NavBar: React.FC<NavBarProps> = ({ isOpen, onClose }) => {
-  const userRepository = new UserRepositoryImpl();
-  const { addAlert } = useAlerts();
-  const dispatch = useUsersListerDispatchContext();
-
   const [isCollapsed, setIsCollapsed] = useState(
     () => localStorage.getItem("navCollapsed") === "true"
   );
@@ -51,18 +44,7 @@ export const NavBar: React.FC<NavBarProps> = ({ isOpen, onClose }) => {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, onClose]);
 
-  // Chargement user
-  useEffect(() => {
-    userRepository
-      .getMe()
-      .then((u) => dispatch({ type: "UPDATE_USER", payload: u }))
-      .catch(() =>
-        addAlert({
-          severity: "error",
-          message: "Erreur lors de la récupération de l'utilisateur",
-        })
-      );
-  }, []);
+  // Le chargement des données utilisateur se fait maintenant dans AuthProvider
 
   return (
     <nav

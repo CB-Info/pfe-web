@@ -30,6 +30,7 @@ export const ProfilContent: React.FC = () => {
           email: email,
           firstname: firstName,
           lastname: lastName,
+          role: currentUser.role,
         });
 
         dispatch({ type: "UPDATE_USER", payload: updatedUser });
