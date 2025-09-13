@@ -44,10 +44,23 @@ const Wrapper: FC<{ children: ReactNode }> = ({ children }) => {
     usersListerlocalReducer,
     UsersListerInitialState
   );
+
+  // Ajouter un utilisateur au contexte pour les tests
+  const stateWithUser = {
+    ...state,
+    currentUser: {
+      id: "1",
+      email: "test@example.com",
+      firstname: "John",
+      lastname: "Doe",
+      role: "CUSTOMER" as const,
+    },
+  };
+
   return (
     <MemoryRouter>
       <AlertsProvider>
-        <UsersListerStateContext.Provider value={state}>
+        <UsersListerStateContext.Provider value={stateWithUser}>
           <UsersListerDispatchContext.Provider value={dispatch}>
             {children}
           </UsersListerDispatchContext.Provider>

@@ -27,7 +27,8 @@ export class UserRepositoryImpl {
     const body: Data<UserDto> = await response.json();
 
     // Gestion défensive : si le backend n'expose pas encore le rôle
-    const backendRole = (body.data as any).role || "customer";
+    const backendRole =
+      (body.data as UserDto & { role?: string }).role || "customer";
 
     // Mapper les rôles du backend (minuscules) vers le frontend (majuscules)
     const role = mapBackendRoleToFrontend(backendRole);
