@@ -27,43 +27,45 @@ describe("NavBarItems", () => {
     vi.clearAllMocks();
   });
 
-  test("should show only Dashboard for CUSTOMER", () => {
+  test("should show only Accueil for CUSTOMER", () => {
     vi.mocked(authReducer.useUsersListerStateContext).mockReturnValue({
       currentUser: createMockUser("CUSTOMER"),
     });
 
     renderWithRouter(<NavBarItems collapsed={false} />);
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Accueil")).toBeInTheDocument();
     expect(screen.queryByText("Stock")).not.toBeInTheDocument();
-    expect(screen.queryByText("Cards")).not.toBeInTheDocument();
-    expect(screen.queryByText("Dishes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cartes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Plats")).not.toBeInTheDocument();
   });
 
-  test("should show Dashboard for WAITER", () => {
+  test("should show Accueil and Commandes for WAITER", () => {
     vi.mocked(authReducer.useUsersListerStateContext).mockReturnValue({
       currentUser: createMockUser("WAITER"),
     });
 
     renderWithRouter(<NavBarItems collapsed={false} />);
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Accueil")).toBeInTheDocument();
+    expect(screen.getByText("Commandes")).toBeInTheDocument();
     expect(screen.queryByText("Stock")).not.toBeInTheDocument();
-    expect(screen.queryByText("Cards")).not.toBeInTheDocument();
-    expect(screen.queryByText("Dishes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cartes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Plats")).not.toBeInTheDocument();
   });
 
-  test("should show Dashboard, Stock, and Dishes for KITCHEN_STAFF", () => {
+  test("should show Accueil, Cuisine, Stock, and Plats for KITCHEN_STAFF", () => {
     vi.mocked(authReducer.useUsersListerStateContext).mockReturnValue({
       currentUser: createMockUser("KITCHEN_STAFF"),
     });
 
     renderWithRouter(<NavBarItems collapsed={false} />);
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Accueil")).toBeInTheDocument();
+    expect(screen.getByText("Cuisine")).toBeInTheDocument();
     expect(screen.getByText("Stock")).toBeInTheDocument();
-    expect(screen.getByText("Dishes")).toBeInTheDocument();
-    expect(screen.queryByText("Cards")).not.toBeInTheDocument();
+    expect(screen.getByText("Plats")).toBeInTheDocument();
+    expect(screen.queryByText("Cartes")).not.toBeInTheDocument();
   });
 
   test("should show all items for MANAGER", () => {
@@ -73,10 +75,12 @@ describe("NavBarItems", () => {
 
     renderWithRouter(<NavBarItems collapsed={false} />);
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Accueil")).toBeInTheDocument();
+    expect(screen.getByText("Commandes")).toBeInTheDocument();
+    expect(screen.getByText("Cuisine")).toBeInTheDocument();
     expect(screen.getByText("Stock")).toBeInTheDocument();
-    expect(screen.getByText("Cards")).toBeInTheDocument();
-    expect(screen.getByText("Dishes")).toBeInTheDocument();
+    expect(screen.getByText("Cartes")).toBeInTheDocument();
+    expect(screen.getByText("Plats")).toBeInTheDocument();
   });
 
   test("should show all items for OWNER", () => {
@@ -86,10 +90,12 @@ describe("NavBarItems", () => {
 
     renderWithRouter(<NavBarItems collapsed={false} />);
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Accueil")).toBeInTheDocument();
+    expect(screen.getByText("Commandes")).toBeInTheDocument();
+    expect(screen.getByText("Cuisine")).toBeInTheDocument();
     expect(screen.getByText("Stock")).toBeInTheDocument();
-    expect(screen.getByText("Cards")).toBeInTheDocument();
-    expect(screen.getByText("Dishes")).toBeInTheDocument();
+    expect(screen.getByText("Cartes")).toBeInTheDocument();
+    expect(screen.getByText("Plats")).toBeInTheDocument();
   });
 
   test("should show all items for ADMIN", () => {
@@ -99,10 +105,12 @@ describe("NavBarItems", () => {
 
     renderWithRouter(<NavBarItems collapsed={false} />);
 
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Accueil")).toBeInTheDocument();
+    expect(screen.getByText("Commandes")).toBeInTheDocument();
+    expect(screen.getByText("Cuisine")).toBeInTheDocument();
     expect(screen.getByText("Stock")).toBeInTheDocument();
-    expect(screen.getByText("Cards")).toBeInTheDocument();
-    expect(screen.getByText("Dishes")).toBeInTheDocument();
+    expect(screen.getByText("Cartes")).toBeInTheDocument();
+    expect(screen.getByText("Plats")).toBeInTheDocument();
   });
 
   test("should show no items when no user is present", () => {
@@ -112,9 +120,11 @@ describe("NavBarItems", () => {
 
     renderWithRouter(<NavBarItems collapsed={false} />);
 
-    expect(screen.queryByText("Dashboard")).not.toBeInTheDocument();
+    expect(screen.queryByText("Accueil")).not.toBeInTheDocument();
+    expect(screen.queryByText("Commandes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cuisine")).not.toBeInTheDocument();
     expect(screen.queryByText("Stock")).not.toBeInTheDocument();
-    expect(screen.queryByText("Cards")).not.toBeInTheDocument();
-    expect(screen.queryByText("Dishes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cartes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Plats")).not.toBeInTheDocument();
   });
 });
