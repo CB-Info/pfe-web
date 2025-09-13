@@ -29,6 +29,7 @@ export interface OrderDto {
   totalPrice: number;
   tips: number;
   dateOfCreation: string;
+  dateLastModified?: string;
   waiterId?: string;
 }
 

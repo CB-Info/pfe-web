@@ -22,6 +22,7 @@ export class Order {
   totalPrice: number;
   tips: number;
   dateOfCreation: string;
+  dateLastModified?: string;
   waiterId?: string;
 
   constructor(
@@ -32,6 +33,7 @@ export class Order {
     totalPrice: number,
     tips: number,
     dateOfCreation: string,
+    dateLastModified?: string,
     waiterId?: string
   ) {
     this._id = _id;
@@ -41,6 +43,7 @@ export class Order {
     this.totalPrice = totalPrice;
     this.tips = tips;
     this.dateOfCreation = dateOfCreation;
+    this.dateLastModified = dateLastModified;
     this.waiterId = waiterId;
   }
 
@@ -54,6 +57,7 @@ export class Order {
       dto.totalPrice,
       dto.tips,
       dto.dateOfCreation,
+      dto.dateLastModified,
       dto.waiterId
     );
   }
