@@ -16,6 +16,25 @@ import {
 
 export type SSETarget = "kitchen" | "service";
 
+/**
+ * Interface pour notre EventSource-like personnalisé
+ */
+interface CustomEventSource {
+  readyState: number;
+  url: string;
+  withCredentials: boolean;
+  CONNECTING: number;
+  OPEN: number;
+  CLOSED: number;
+  onopen: ((event: Event) => void) | null;
+  onmessage: ((event: MessageEvent) => void) | null;
+  onerror: ((event: Event) => void) | null;
+  addEventListener: typeof EventTarget.prototype.addEventListener;
+  removeEventListener: typeof EventTarget.prototype.removeEventListener;
+  dispatchEvent: typeof EventTarget.prototype.dispatchEvent;
+  close: () => void;
+}
+
 class SSENotificationsService {
   private static instance: SSENotificationsService;
   private eventSources: Map<SSETarget, EventSource> = new Map();
@@ -369,22 +388,22 @@ class SSENotificationsService {
     const eventTarget = new EventTarget();
 
     // Propriétés EventSource
-    const eventSourceLike = {
+    const eventSourceLike: CustomEventSource = {
       readyState: EventSource.OPEN,
       url: "",
       withCredentials: false,
       CONNECTING: EventSource.CONNECTING,
       OPEN: EventSource.OPEN,
       CLOSED: EventSource.CLOSED,
-      onopen: null as ((event: Event) => void) | null,
-      onmessage: null as ((event: MessageEvent) => void) | null,
-      onerror: null as ((event: Event) => void) | null,
+      onopen: null,
+      onmessage: null,
+      onerror: null,
       addEventListener: eventTarget.addEventListener.bind(eventTarget),
       removeEventListener: eventTarget.removeEventListener.bind(eventTarget),
       dispatchEvent: eventTarget.dispatchEvent.bind(eventTarget),
       close: () => {
         reader.cancel();
-        (eventSourceLike as EventSource).readyState = EventSource.CLOSED;
+        eventSourceLike.readyState = EventSource.CLOSED;
       },
     };
 

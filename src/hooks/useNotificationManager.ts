@@ -101,11 +101,11 @@ export function useNotificationManager(
   // Initialiser l'AudioContext
   const initAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      const AudioContext =
+      const AudioContextClass =
         window.AudioContext ||
         (window as typeof window & { webkitAudioContext: typeof AudioContext })
           .webkitAudioContext;
-      audioContextRef.current = new AudioContext();
+      audioContextRef.current = new AudioContextClass();
     }
     return audioContextRef.current;
   }, []);
@@ -117,6 +117,10 @@ export function useNotificationManager(
 
       try {
         const audioContext = initAudioContext();
+        if (!audioContext) {
+          console.warn("[NotificationManager] AudioContext non disponible");
+          return;
+        }
 
         // Utiliser des sons générés programmatiquement pour éviter les fichiers externes
         const frequency = getSoundFrequency(soundType);
