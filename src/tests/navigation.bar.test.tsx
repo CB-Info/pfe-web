@@ -93,8 +93,8 @@ describe("NavBar collapsed state", () => {
       render(<NavBar isOpen={true} onClose={() => {}} />, { wrapper: Wrapper });
     });
 
-    // Check that the Dashboard text is hidden (has the collapsed CSS classes)
-    const dashboardText = screen.getByText("Dashboard");
+    // Check that the Accueil text is hidden (has the collapsed CSS classes)
+    const dashboardText = screen.getByText("Accueil");
     expect(dashboardText.parentElement).toHaveClass("w-0", "opacity-0");
   });
 

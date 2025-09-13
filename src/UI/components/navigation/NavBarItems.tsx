@@ -23,7 +23,7 @@ interface NavItem {
 const allItems: NavItem[] = [
   {
     icon: <SpaceDashboardRoundedIcon />,
-    label: "Dashboard",
+    label: "Accueil",
     path: "/dashboard",
     roles: ["CUSTOMER", "WAITER", "KITCHEN_STAFF", "MANAGER", "OWNER", "ADMIN"],
   },
@@ -47,13 +47,13 @@ const allItems: NavItem[] = [
   },
   {
     icon: <StyleRoundedIcon />,
-    label: "Cards",
+    label: "Cartes",
     path: "/cards",
     roles: ["MANAGER", "OWNER", "ADMIN"],
   },
   {
     icon: <LocalDiningRoundedIcon />,
-    label: "Dishes",
+    label: "Plats",
     path: "/dishes",
     roles: ["KITCHEN_STAFF", "MANAGER", "OWNER", "ADMIN"],
   },
