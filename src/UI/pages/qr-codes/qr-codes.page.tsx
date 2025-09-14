@@ -138,7 +138,6 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ table, onGenerateQR }) => {
           >
             {table.isOccupied ? "Occupée" : "Libre"}
           </span>
-          <span>• {table.capacity} places</span>
         </div>
       </div>
 

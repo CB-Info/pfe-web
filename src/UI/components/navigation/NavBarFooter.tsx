@@ -87,7 +87,7 @@ export const NavBarFooter: React.FC<NavBarFooterProps> = ({ collapsed }) => {
                       }`}
                     >
                       <span className="font-lufga font-normal whitespace-nowrap">
-                        Settings
+                        Paramètres
                       </span>
                     </div>
                   </div>
@@ -108,7 +108,7 @@ export const NavBarFooter: React.FC<NavBarFooterProps> = ({ collapsed }) => {
                     }`}
                   >
                     <span className="font-lufga font-normal whitespace-nowrap">
-                      Log out
+                      Déconnexion
                     </span>
                   </div>
                 </button>
