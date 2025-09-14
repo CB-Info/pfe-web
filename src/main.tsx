@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
+import PublicApp from "./PublicApp.tsx";
 import "./applications/css/index.css";
 import { BrowserRouter } from "react-router-dom";
 import SSECleanupService from "./services/sse-cleanup.service";
@@ -21,10 +22,17 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// Fonction pour déterminer quelle app utiliser basée sur la route
+const AppRouter = () => {
+  const isCustomerRoute = window.location.pathname.startsWith("/customer/");
+
+  return (
+    <BrowserRouter>{isCustomerRoute ? <PublicApp /> : <App />}</BrowserRouter>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <AppRouter />
   </React.StrictMode>
 );

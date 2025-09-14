@@ -6,6 +6,7 @@ import StyleRoundedIcon from "@mui/icons-material/StyleRounded";
 import LocalDiningRoundedIcon from "@mui/icons-material/LocalDiningRounded";
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import ChefHatIcon from "@mui/icons-material/Restaurant";
+import QrCodeIcon from "@mui/icons-material/QrCode";
 import { useUsersListerStateContext } from "../../../reducers/auth.reducer";
 import { UserRole } from "../../../data/models/user.model";
 
@@ -56,6 +57,12 @@ const allItems: NavItem[] = [
     label: "Plats",
     path: "/dishes",
     roles: ["KITCHEN_STAFF", "MANAGER", "OWNER", "ADMIN"],
+  },
+  {
+    icon: <QrCodeIcon />,
+    label: "QR Codes",
+    path: "/qr-codes",
+    roles: ["MANAGER", "OWNER", "ADMIN"],
   },
 ];
 

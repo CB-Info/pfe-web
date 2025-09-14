@@ -8,6 +8,8 @@ const OrdersPage = lazy(() => import("./UI/pages/orders/orders.page"));
 const KitchenOrdersPage = lazy(
   () => import("./UI/pages/kitchen/kitchen-orders.page")
 );
+// CustomerMenuPage sera utilisé dans PublicApp.tsx
+const QRCodesPage = lazy(() => import("./UI/pages/qr-codes/qr-codes.page"));
 const NotFoundPage = lazy(() => import("./UI/pages/NotFoundPage"));
 import { lightTheme, darkTheme } from "./applications/theme/theme";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
@@ -110,6 +112,14 @@ const ThemedApp = () => {
                     element={
                       <RequireRole allowed={["MANAGER", "OWNER", "ADMIN"]}>
                         <CardsPage />
+                      </RequireRole>
+                    }
+                  />
+                  <Route
+                    path="/qr-codes"
+                    element={
+                      <RequireRole allowed={["MANAGER", "OWNER", "ADMIN"]}>
+                        <QRCodesPage />
                       </RequireRole>
                     }
                   />
